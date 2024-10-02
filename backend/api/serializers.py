@@ -18,3 +18,9 @@ class NoteSerializer(serializers.ModelSerializer):
         model = Note
         fields = ["id", "title", "content", "created_at", "author"]
         extra_kwargs = {"author": {"read_only": True}}
+
+class PostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ["postID", "user", "community", "postDate","title","description","hasEdit","editDate"]
+        extra_kwargs = {"postID": {"read_only": True}, "user": {"read_only": True},"postDate": {"read_only": True},"hasEdit": {"read_only": True},"editDate": {"read_only": True}}

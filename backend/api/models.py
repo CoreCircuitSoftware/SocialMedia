@@ -59,6 +59,22 @@ class CustomUser(AbstractBaseUser):
     def __str__(self):
         return self.name
 
+class Post(models.Model):
+    postID = models.AutoField(primary_key=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    community = models.ForeignKey('Community', on_delete=models.CASCADE, null=True, blank=True)
+    postDate = models.DateTimeField(auto_now_add=True)
+    title = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, null=True, blank=True)
+    hasEdit = models.BooleanField(default=False, blank=True)
+    editDate = models.DateTimeField(null=True, blank=True)
+
+class Community(models.Model):
+    communityID = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=20)
+    description = models.CharField(max_length=255, blank=True)
+    iconURL = models.CharField(max_length=255, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
 
 # Create your models here.
 class Note(models.Model):   #This acts to create a new table within the database using these params

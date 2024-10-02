@@ -8,6 +8,7 @@ import Notes from "./pages/Notes"
 import NotFound from "./pages/NotFound"
 import ProtectedRoute from "./components/ProtectedRoute"
 import ProfileForm from "./components/ProfileForm"
+import PostForm from "./components/PostForm"
 
 function Logout() { //Clear local storage of any tokens and redirect to login screen
   localStorage.clear()
@@ -40,6 +41,7 @@ function App() {
         <Route path="profile" element={<UserProfile />} />
         <Route path="edit-profile" element={<ProfileForm />} />
         <Route path="notes" element={<Notes />} />
+        <Route path="create-post" element={<PostForm />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

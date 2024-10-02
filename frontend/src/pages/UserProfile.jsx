@@ -28,6 +28,9 @@ function UserProfile() {
     const handleLogout = () => {
         navigate("/logout")
     }
+    const handlePostCreate = () => {
+        navigate("/create-post/")
+    }
 
     return (
         <div>
@@ -40,6 +43,7 @@ function UserProfile() {
                         <p className="username">{profile.username}</p>
                     </div>
                     <div className="buttons">
+                        <button className="logout-button" type="button" onClick={handlePostCreate}>Create Post</button>
                         <button className="logout-button" type="button" onClick={handleLogout}>Logout</button>
                         <button className="edit-button" type="button" onClick={handleEdit}>Edit</button>
                     </div>

@@ -3,7 +3,7 @@ from django.contrib.auth import get_user
 #from django.contrib.auth.models import User    #"User" references replaced with "CustomUser" custom model
 from .models import *
 from rest_framework import generics
-from .serializers import UserSerializer, NoteSerializer
+from .serializers import *
 from rest_framework.permissions import IsAuthenticated, AllowAny
 #from .models import Note   #Imported above via *
 
@@ -26,7 +26,16 @@ class UserProfileUpdate(generics.RetrieveUpdateAPIView):
     
     def get_object(self):
         return self.request.user
-        
+    
+class PostCreate(generics.CreateAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [AllowAny]
+
+    def perform_create(self, serializer):
+        if serializer.is_valid():
+            serializer.save(user=self.request.user)
+        else:
+            print(serializer.errors)
     
 class NoteListCreate(generics.ListCreateAPIView):   #Note we are displaying a list, so using 'generics.ListCreateAPIView' instead
     serializer_class = NoteSerializer
