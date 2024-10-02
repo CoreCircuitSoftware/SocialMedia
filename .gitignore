@@ -1,0 +1,6 @@
+env/
+backend/__init__.py
+backend/api/__pycache__/
+backend/api/migrations/
+backend/backend/__init__.py
+backend/backend/__pycache__/
