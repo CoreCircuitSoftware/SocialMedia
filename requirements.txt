@@ -9,3 +9,5 @@ sqlparse
 psycopg2-binary
 python-dotenv
 pymysql
+mysqlclient
+cryptography
