@@ -3,6 +3,7 @@ from django.contrib.auth import get_user
 #from django.contrib.auth.models import User    #"User" references replaced with "CustomUser" custom model
 from .models import *
 from rest_framework import generics
+from rest_framework.response import Response
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated, AllowAny
 #from .models import Note   #Imported above via *
@@ -20,6 +21,14 @@ class UserProfileRead(generics.RetrieveAPIView):
     def get_object(self):
         return self.request.user
     
+class UserDataRead(generics.ListAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user_id = self.kwargs['user_id']
+        return CustomUser.objects.filter(id=user_id)
+    
 class UserProfileUpdate(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
@@ -29,14 +38,35 @@ class UserProfileUpdate(generics.RetrieveUpdateAPIView):
     
 class PostCreate(generics.CreateAPIView):
     serializer_class = PostSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         if serializer.is_valid():
             serializer.save(user=self.request.user)
         else:
             print(serializer.errors)
-    
+
+class PostListView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+
+    # def get_queryset(self, userID):
+    #     posts = Post.objects.filter(user=userID)
+    #     serializer = PostSerializer(posts)
+    #     return Response(serializer.data)
+    def get_queryset(self):
+        user_id = self.kwargs['user_id']
+        return Post.objects.filter(user__id=user_id)
+
+# class PostListView(generics.ListAPIView):
+#     serializer_class = PostSerializer
+#     permission_classes = [IsAuthenticated]
+
+#     def get_queryset(self):
+#         # Extract the user_id from the URL and filter the posts by user UUID
+#         user_id = self.kwargs['user_id']
+#         return Post.objects.filter(user__id=user_id)
+
 class NoteListCreate(generics.ListCreateAPIView):   #Note we are displaying a list, so using 'generics.ListCreateAPIView' instead
     serializer_class = NoteSerializer
     permission_classes = [IsAuthenticated]          #Allows only authenticated to access list

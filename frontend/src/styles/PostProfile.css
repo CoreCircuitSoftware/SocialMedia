@@ -1,0 +1,33 @@
+.post-container {
+    border-style: solid;
+    border-color: darkgray;
+    border-radius: 2dvh;
+    padding: 1dvh;
+    margin: 2dvh;
+}
+
+header {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    padding-left: 1em;
+    padding-top: 1em;
+    border-bottom: .1em solid gray;
+}
+
+header .name-text {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 1em;
+    font-size : 0.7em;
+    max-height: 10%;
+}
+
+header .pfp {
+    border: .3em solid slateblue;
+    width: 3em;
+    height: 3em;
+    max-width: 20%;
+    max-height: 20%;
+}
