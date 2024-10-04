@@ -6,7 +6,7 @@ from rest_framework import serializers
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ["username", "password", "email", "displayName", "profilePicture", "bio", "backgroundColor", "backgroundImage"]                 #These are all the fields which will be serialized when accepting and/or returning a user
+        fields = ["id", "username", "password", "email", "displayName", "profilePicture", "bio", "backgroundColor", "backgroundImage"]                 #These are all the fields which will be serialized when accepting and/or returning a user
         extra_kwargs = {"password": {"write_only": True}}       #Write only means this field wont be returned and cant be read be users
         
     def create(self, validated_data):                           #This will be called when creaing a user. validated data is sent via JSON and contains the fields created above
