@@ -5,3 +5,5 @@ backend/api/migrations/*_initial.py
 backend/api/migrations/__pycache__/
 backend/backend/__init__.py
 backend/backend/__pycache__/
+backend/backend/settings.py
+frontend/package-lock.json
