@@ -48,7 +48,7 @@ function ProfileForm() {
 
     const handleCancel = async (e) => {
         e.preventDefault();
-        navigate("/profile")
+        navigate(`/profile/${profile.username}`)
     }
 
     return (

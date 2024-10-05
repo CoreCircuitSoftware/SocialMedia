@@ -10,6 +10,7 @@ import ProtectedRoute from "./components/ProtectedRoute"
 import ProfileForm from "./components/ProfileForm"
 import PostForm from "./components/PostForm"
 import PostDisplay from "./components/ProfilePostDisplay"
+import GetMyProfile from "./components/GetMyProfile"
 
 function Logout() { //Clear local storage of any tokens and redirect to login screen
   localStorage.clear()
@@ -32,18 +33,19 @@ function App() {
           path="/"
           element={
             <ProtectedRoute>
-              <Home />
+              <GetMyProfile />
             </ProtectedRoute>
           }
         />
         <Route path="login" element={<Login />} />
         <Route path="logout" element={<Logout />} />
         <Route path="register" element={<RegisterAndLogout />} />
-        <Route path="profile" element={<UserProfile />} />
-        <Route path="edit-profile" element={<ProfileForm />} />
+        <Route path="profile/:username" element={<UserProfile />} />
+        <Route path="profile/" element={<GetMyProfile />} />
+        <Route path="profile/edit" element={<ProfileForm />} />
         <Route path="notes" element={<Notes />} />
-        <Route path="create-post" element={<PostForm />} />
-        <Route path="view-posts" element={<PostDisplay />} />
+        <Route path="post/create" element={<PostForm />} />
+        <Route path="post/view" element={<PostDisplay />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
