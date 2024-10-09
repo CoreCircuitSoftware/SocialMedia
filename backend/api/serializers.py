@@ -24,3 +24,23 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ["postID", "user", "community", "postDate","title","description","hasEdit","editDate"]
         extra_kwargs = {"postID": {"read_only": True}, "user": {"read_only": True},"postDate": {"read_only": True},"hasEdit": {"read_only": True},"editDate": {"read_only": True}}
+
+class ConvoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Convo
+        fields = ['convoID', 'convoName', 'created']
+
+class ConvoParticipantSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ConvoParticipant
+        fields = ['participantID', 'user', 'convo']
+
+class MessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ['messageID', 'convo', 'sender', 'messageDate', 'message', 'hasEdit', 'editDate']
+
+class ConvoSettingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ConvoSetting
+        fields = ['settingID', 'convo', 'user', 'isMuted', 'isPinned']

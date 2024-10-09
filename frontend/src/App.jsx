@@ -11,6 +11,7 @@ import ProfileForm from "./components/ProfileForm"
 import PostForm from "./components/PostForm"
 import PostDisplay from "./components/ProfilePostDisplay"
 import GetMyProfile from "./components/GetMyProfile"
+import MessagePage from "./pages/Message"
 
 function Logout() { //Clear local storage of any tokens and redirect to login screen
   localStorage.clear()
@@ -41,6 +42,7 @@ function App() {
         <Route path="logout" element={<Logout />} />
         <Route path="register" element={<RegisterAndLogout />} />
         <Route path="profile/:username" element={<UserProfile />} />
+        <Route path="profile/:username/message" element={<MessagePage />} />
         <Route path="profile/" element={<GetMyProfile />} />
         <Route path="profile/edit" element={<ProfileForm />} />
         <Route path="notes" element={<Notes />} />

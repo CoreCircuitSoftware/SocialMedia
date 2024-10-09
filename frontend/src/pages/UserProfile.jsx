@@ -76,6 +76,9 @@ export default function UserProfileTest() {
     const handlePostCreate = () => {
         navigate("/post/create")
     }
+    const handleMesage = () => {
+        navigate(`/profile/${profile.username}/message`)
+    }
 
     return (
         <main>
@@ -91,12 +94,18 @@ export default function UserProfileTest() {
                             <div className="names">
                                 <p className="display-name">{profile.displayName}</p>
                                 <p className="username">{profile.username}</p>
-                            </div> {isMyProfile && (
+                            </div> 
                                 <div className="buttons">
+                                {isMyProfile && (<div>
                                     <button className="logout-button" type="button" onClick={handlePostCreate}>Create Post</button>
                                     <button className="logout-button" type="button" onClick={handleLogout}>Logout</button>
                                     <button className="edit-button" type="button" onClick={handleEdit}>Edit</button>
-                                </div>)}
+                                    </div>)}
+                                    { !isMyProfile && (
+                                        <div>
+                                            <button className="edit-button" type="button" onClick={handleMesage}>Message</button>
+                                        </div>)}
+                                        </div>
                         </div>
                         <div className="bio">{profile.bio}</div>
                         <div className="post-holder">
