@@ -1,10 +1,14 @@
 import api from "../api.js"
 import "../styles/Home.css"
 import "../styles/Profile.css"
+import "../styles/Layout.css"
 import { useState, useEffect } from "react";
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useParams } from "react-router-dom";
 import PostDisplay from "../components/ProfilePostDisplay.jsx"
+import SearchBar from "../components/SearchBar"
+import Menu from "../components/Menu"
+import Footer from "../components/Footer"
 
 export default function UserProfileTest() {
     const { username } = useParams();
@@ -44,17 +48,17 @@ export default function UserProfileTest() {
     }
 
     useEffect(() => {
-        getPosts()  
+        getPosts()
     }, [profile]);
 
     const getPosts = () => {
         api
-        .get(`/api/profile/posts/${profile.id}/`)
-        .then((res) => res.data)
-        .then((data) => {
-            setPosts(data.reverse());
-        })
-        .catch((err) => console.log("Error getting posts"))
+            .get(`/api/profile/posts/${profile.id}/`)
+            .then((res) => res.data)
+            .then((data) => {
+                setPosts(data.reverse());
+            })
+            .catch((err) => console.log("Error getting posts"))
     }
 
     useEffect(() => {
@@ -75,34 +79,34 @@ export default function UserProfileTest() {
 
     return (
         <main>
-            <div className="profile-top">
-                <img className="back-img" src={profile.backgroundImage} />
-                <div className="profile-card">
-                    <div className="card-upper">
-                        <img className="pfp" src={profile.profilePicture} />
-                        <div className="names">
-                            <p className="display-name">{profile.displayName}</p>
-                            <p className="username">{profile.username}</p>
-                        </div> { isMyProfile && (
-                        <div className="buttons">
-                            <button className="logout-button" type="button" onClick={handlePostCreate}>Create Post</button>
-                            <button className="logout-button" type="button" onClick={handleLogout}>Logout</button>
-                            <button className="edit-button" type="button" onClick={handleEdit}>Edit</button> 
-                        </div> )}
-                    </div>
-                    <div className="bio">{profile.bio}</div>
-                    <div className="post-holder">
-                        {posts.map((post) => 
-                            <PostDisplay post={post} profile={profile} key={post.postID} />
-                        )}
+            <SearchBar />
+            <Menu />
+            <Footer />
+            <div className="content">
+                <div className="profile-top">
+                    <img className="back-img" src={profile.backgroundImage} />
+                    <div className="profile-card">
+                        <div className="card-upper">
+                            <img className="pfp" src={profile.profilePicture} />
+                            <div className="names">
+                                <p className="display-name">{profile.displayName}</p>
+                                <p className="username">{profile.username}</p>
+                            </div> {isMyProfile && (
+                                <div className="buttons">
+                                    <button className="logout-button" type="button" onClick={handlePostCreate}>Create Post</button>
+                                    <button className="logout-button" type="button" onClick={handleLogout}>Logout</button>
+                                    <button className="edit-button" type="button" onClick={handleEdit}>Edit</button>
+                                </div>)}
+                        </div>
+                        <div className="bio">{profile.bio}</div>
+                        <div className="post-holder">
+                            {posts.map((post) =>
+                                <PostDisplay post={post} profile={profile} key={post.postID} />
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
-            <footer>
-                <p>© 2024 Core Circuit Software&emsp;</p>
-                <br/>
-                <a href="https://corecircuitsoftware.github.io">About us</a>
-            </footer>
         </main>
     );
 }
@@ -145,7 +149,7 @@ export default function UserProfileTest() {
 //     }
 
 //     useEffect(() => {
-//         getPosts()  
+//         getPosts()
 //     }, [profile]);
 
 //     const getPosts = () => {
@@ -179,7 +183,7 @@ export default function UserProfileTest() {
 //                     </div>
 //                     <div className="bio">{profile.bio}</div>
 //                     <div className="post-holder">
-//                         {posts.map((post) => 
+//                         {posts.map((post) =>
 //                             <PostDisplay post={post} profile={profile} key={post.postID} />
 //                         )}
 //                     </div>
