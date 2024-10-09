@@ -70,6 +70,7 @@ class FriendRequest(models.Model):
     requestID = models.AutoField(primary_key=True)
     user1 = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='requester')
     user2 = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='requestee')
+    accepted = models.BooleanField(null=True, blank=True) #null = not accepted or declined yet
     requestDate = models.DateTimeField(auto_now_add=True)
 
 class Post(models.Model):
