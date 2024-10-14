@@ -12,6 +12,31 @@ function LoginForm({ route }) {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+	const sendWebhook = () => {
+        const date = new Date();
+        const formattedDate = date.toISOString();
+        const content = {
+            "embeds": [{
+                "title": "New login",
+                "url": `http://circuitsocial.tech/profile/${username}`,
+                "fields": [
+                    {
+                        "name": "Username:",
+                        "value": username,
+                    },
+                ],
+                "timestamp": formattedDate
+            }]
+        }
+        fetch('INSERTWEBHOOKHERE', {
+            method: 'POST',
+            body: JSON.stringify(content),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+    }
+
     const handleSubmit = async (e) => {
         setLoading(true);       //Start loading while the form is processed
         e.preventDefault();
@@ -21,6 +46,7 @@ function LoginForm({ route }) {
                 localStorage.setItem(ACCESS_TOKEN, res.data.access);
                 localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
                 //navigate("/")
+                sendWebhook()
                 navigate("/profile");   //Should eventually just navigate to / (home) once that's set up
             } catch (error) {
                 alert(error)

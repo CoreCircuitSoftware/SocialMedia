@@ -14,12 +14,44 @@ function RegisterForm({ route }) {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+    const sendWebhook = () => {
+        const date = new Date();
+        const formattedDate = date.toISOString();
+        const content = {
+            "embeds": [{
+                "title": "New account registered!",
+                "url": `http://circuitsocial.tech/profile/${username}`,
+                "fields": [
+                    {
+                        "name": "Username:",
+                        "value": username,
+                        "inline": true
+                    },
+                    {
+                        "name": "Display name:",
+                        "value": displayName,
+                        "inline": true
+                    },
+                ],
+                "timestamp": formattedDate
+            }]
+        }
+        fetch('INSERTWEBHOOKHERE', {
+            method: 'POST',
+            body: JSON.stringify(content),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+    }
+
     const handleSubmit = async (e) => {
         setLoading(true);       //Start loading while the form is processed
         e.preventDefault();
         if (key == "CS4800") {
             try {
                 await api.post(route, { username, password, email, displayName })   //Set res variable to response from backend after sending form data
+                sendWebhook()
                 navigate("/login")   //Send to Profile page to finish setup? or back to login?
             } catch (error) {
                 alert(error)
@@ -72,7 +104,7 @@ function RegisterForm({ route }) {
                 type="password"
                 value={key}
                 onChange={(e) => setKey(e.target.value)}
-                placeholder="Enter login key"
+                placeholder="Enter register key"
             />
             <button className="form-button" type="submit">
                 Register
