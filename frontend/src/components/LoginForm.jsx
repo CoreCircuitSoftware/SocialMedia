@@ -8,22 +8,27 @@ import "../styles/Form.css"
 function LoginForm({ route }) {
     const [username, setUsername] = useState("");    //These are the fields that must be filled out by the form
     const [password, setPassword] = useState("");
+    const [key, setKey] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         setLoading(true);       //Start loading while the form is processed
         e.preventDefault();
-
-        try {
-            const res = await api.post(route, { username, password })   //Set res variable to response from backend after sending form data
-            localStorage.setItem(ACCESS_TOKEN, res.data.access);
-            localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
-            //navigate("/")
-            navigate("/profile");   //Should eventually just navigate to / (home) once that's set up
-        } catch (error) {
-            alert(error)
-        } finally { //Eventually, no matter what happens, loading must stop at the end
+        if (key == "CS4800") { 
+            try {
+                const res = await api.post(route, { username, password })   //Set res variable to response from backend after sending form data
+                localStorage.setItem(ACCESS_TOKEN, res.data.access);
+                localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
+                //navigate("/")
+                navigate("/profile");   //Should eventually just navigate to / (home) once that's set up
+            } catch (error) {
+                alert(error)
+            } finally { //Eventually, no matter what happens, loading must stop at the end
+                setLoading(false)
+            }
+        } else {
+            alert("Invalid Key")
             setLoading(false)
         }
     }
@@ -48,6 +53,13 @@ function LoginForm({ route }) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
+            />
+            <input
+                className="form-input"
+                type="password"
+                value={key}
+                onChange={(e) => setKey(e.target.value)}
+                placeholder="Enter login key"
             />
             <button className="form-button" type="submit">
                 Login

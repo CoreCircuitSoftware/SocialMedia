@@ -10,19 +10,24 @@ function RegisterForm({ route }) {
     const [password, setPassword] = useState("");
     const [email, setEmail] = useState("");
     const [displayName, setDisplayName] = useState("");
+    const [key, setKey] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         setLoading(true);       //Start loading while the form is processed
         e.preventDefault();
-
-        try {
-            await api.post(route, { username, password, email, displayName })   //Set res variable to response from backend after sending form data
-            navigate("/login")   //Send to Profile page to finish setup? or back to login?
-        } catch (error) {
-            alert(error)
-        } finally { //Eventually, no matter what happens, loading must stop at the end
+        if (key == "CS4800") {
+            try {
+                await api.post(route, { username, password, email, displayName })   //Set res variable to response from backend after sending form data
+                navigate("/login")   //Send to Profile page to finish setup? or back to login?
+            } catch (error) {
+                alert(error)
+            } finally { //Eventually, no matter what happens, loading must stop at the end
+                setLoading(false)
+            }
+        } else {
+            alert("Invalid Key")
             setLoading(false)
         }
     }
@@ -61,6 +66,13 @@ function RegisterForm({ route }) {
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="Display Name"
+            />
+            <input
+                className="form-input"
+                type="password"
+                value={key}
+                onChange={(e) => setKey(e.target.value)}
+                placeholder="Enter login key"
             />
             <button className="form-button" type="submit">
                 Register
