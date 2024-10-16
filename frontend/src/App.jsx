@@ -1,4 +1,4 @@
-import react from "react"
+import react from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
@@ -12,6 +12,8 @@ import PostForm from "./components/PostForm"
 import PostDisplay from "./components/ProfilePostDisplay"
 import GetMyProfile from "./components/GetMyProfile"
 import MessagePage from "./pages/Message"
+import FriendsList from "./pages/FriendsList"; // Adjust path if necessary
+
 
 function Logout() { //Clear local storage of any tokens and redirect to login screen
   localStorage.clear()
@@ -48,7 +50,9 @@ function App() {
         <Route path="notes" element={<Notes />} />
         <Route path="post/create" element={<PostForm />} />
         <Route path="post/view" element={<PostDisplay />} />
+        <Route path="message/" element={<PostForm />}  />
         <Route path="*" element={<NotFound />} />
+        <Route path="profile/:username/friends" element={<FriendsList />} />
       </Routes>
     </BrowserRouter>
   )

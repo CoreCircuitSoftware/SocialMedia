@@ -14,5 +14,9 @@ urlpatterns = [
     path("profile/getuserdata2/<uuid:id>/", views.UserProfileRead2.as_view(), name="profile-get-data-uuid"),
     path("profile/edit/", views.UserProfileUpdate.as_view(), name="profile-update"),
     path("createpost/", views.PostCreate.as_view(), name="create-post"),
-    path("profile/posts/<uuid:user_id>/", views.PostListView.as_view(), name="view-post-user")
+    path("profile/posts/<uuid:user_id>/", views.PostListView.as_view(), name="view-post-user"),
+    path('friends/<uuid:user_id>/', views.ListFriends.as_view(), name='list-friends'),
+    path('friend-request/<uuid:user2_id>/', views.SendFriendRequest.as_view(), name='send-friend-request'),
+    path('friend-request/accept/<int:pk>/', views.AcceptFriendRequest.as_view(), name='accept-friend-request'),
+    path('friend-requests/', views.ListFriendRequests.as_view(), name='list-friend-requests'),
 ]

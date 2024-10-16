@@ -44,3 +44,35 @@ export default function PostDisplay(slug) {
         </div>
     );
 }
+// import { useState } from "react";
+// import "../styles/PostProfile.css";  // Assuming some custom styles are kept
+
+// export default function PostDisplay({ post, profile }) {
+//     const thisUser = profile;
+//     const thisPost = post;
+//     const formattedDate = new Date(thisPost.postDate).toLocaleDateString("en-US");
+
+//     return (
+//         <div className="card mb-3">
+//             <div className="card-header d-flex align-items-center">
+//                 <img
+//                     className="rounded-circle me-3"
+//                     src={thisUser.profilePicture}
+//                     alt="User Profile"
+//                     style={{ width: "50px", height: "50px" }}
+//                 />
+//                 <div>
+//                     <h5 className="mb-0">{thisUser.displayName}</h5>
+//                     <small className="text-muted">@{thisUser.username}</small>
+//                 </div>
+//             </div>
+//             <div className="card-body">
+//                 <h5 className="card-title">{thisPost.title}</h5>
+//                 <p className="card-text">{thisPost.description}</p>
+//             </div>
+//             <div className="card-footer text-muted">
+//                 <small>Posted on {formattedDate}</small>
+//             </div>
+//         </div>
+//     );
+// }

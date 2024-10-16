@@ -44,3 +44,13 @@ class ConvoSettingSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConvoSetting
         fields = ['settingID', 'convo', 'user', 'isMuted', 'isPinned']
+
+class FriendSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Friend
+        fields = ['user1', 'user2', 'friendDate']
+
+class FriendRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FriendRequest
+        fields = ['user1', 'user2', 'accepted', 'requestDate']
