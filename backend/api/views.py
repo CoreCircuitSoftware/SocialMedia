@@ -6,6 +6,8 @@ from rest_framework import generics
 from rest_framework.response import Response
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.views import APIView
+from django.shortcuts import get_object_or_404
 #from .models import Note   #Imported above via *
 
 # Create your views here.
@@ -189,11 +191,20 @@ class AcceptFriendRequest(generics.UpdateAPIView):  # This view allows updating 
 
     def perform_update(self, serializer):  # Custom behavior when updating a friend request
         friend_request = self.get_object()  # Retrieves the specific friend request that is being updated (accepted in this case)
-        friend_request.accepted = True  # Marks the request as accepted
-        friend_request.save()  # Saves the updated request in the database
+        if friend_request.user2 != self.request.user:
+            raise ValidationError("You cannot respond to this friend request.")
+        accepted = self.request.data.get('accepted')
+        if accepted is True:
+            friend_request.accepted = True
+            friend_request.save()
+            # Create Friend instance
+            Friend.objects.create(user1=friend_request.user1, user2=friend_request.user2)
+        elif accepted is False:
+            friend_request.accepted = False
+            friend_request.save()
+        else:
+            raise ValidationError("Invalid value for 'accepted'.")
 
-        # Once accepted, a new Friend object is created to record the friendship between user1 and user2
-        Friend.objects.create(user1=friend_request.user1, user2=friend_request.user2)  
         
 # List Friend Requests for the current logged-in user
 class ListFriendRequests(generics.ListAPIView):
@@ -203,3 +214,14 @@ class ListFriendRequests(generics.ListAPIView):
     def get_queryset(self):
         # Return friend requests where the current user is the receiver (user2)
         return FriendRequest.objects.filter(user2=self.request.user, accepted__isnull=True)
+    
+class FriendStatusView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_id):
+        current_user = request.user
+        other_user = get_object_or_404(CustomUser, id=user_id)
+
+        status = current_user.get_friend_status(other_user)
+        serializer = FriendStatusSerializer({'status': status})
+        return Response(serializer.data)

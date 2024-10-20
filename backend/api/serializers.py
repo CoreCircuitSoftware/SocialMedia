@@ -46,11 +46,27 @@ class ConvoSettingSerializer(serializers.ModelSerializer):
         fields = ['settingID', 'convo', 'user', 'isMuted', 'isPinned']
 
 class FriendSerializer(serializers.ModelSerializer):
+    user1 = UserSerializer()  # Include the full user details for user1
+    user2 = UserSerializer()  # Include the full user details for user2
+    
     class Meta:
         model = Friend
-        fields = ['user1', 'user2', 'friendDate']
+        fields = ['user1', 'user2', 'friendDate', 'friendShipID']
+
+from rest_framework import serializers
 
 class FriendRequestSerializer(serializers.ModelSerializer):
+    # Nesting the UserSerializer to include user details for user1 and user2
+    user1 = UserSerializer(read_only=True)  # The sender of the friend request
+    user2 = UserSerializer(read_only=True)  # The receiver of the friend request
+
     class Meta:
         model = FriendRequest
-        fields = ['user1', 'user2', 'accepted', 'requestDate']
+        fields = ['requestID', 'user1', 'user2', 'accepted', 'requestDate']
+        extra_kwargs = {
+            'accepted': {'read_only': True},    # Prevent clients from setting this field during creation
+            'requestDate': {'read_only': True}, # Auto-set by the server; clients shouldn't modify it
+        }
+
+class FriendStatusSerializer(serializers.Serializer):
+    status = serializers.CharField()

@@ -1,45 +1,47 @@
-import api from "../api.js"
-import "../styles/Home.css"
-import "../styles/Profile.css"
-import "../styles/Layout.css"
+import api from "../api.js";
+import "../styles/Home.css";
+import "../styles/Profile.css";
+import "../styles/Layout.css";
 import { useState, useEffect } from "react";
 import React from "react";
-import { BrowserRouter, Routes, Route, Navigate, useNavigate, useParams } from "react-router-dom";
-import PostDisplay from "../components/ProfilePostDisplay.jsx"
-import SearchBar from "../components/SearchBar"
-import Menu from "../components/Menu"
-import Footer from "../components/Footer"
+import { useNavigate, useParams } from "react-router-dom";
+import PostDisplay from "../components/ProfilePostDisplay.jsx";
+import SearchBar from "../components/SearchBar";
+import Menu from "../components/Menu";
+import Footer from "../components/Footer";
 
 export default function UserProfileTest() {
     const { username } = useParams();
     const navigate = useNavigate();
-    const postType = 1; //post type 1=user posts
     const [profile, setProfile] = useState([]);
     const [myProfile, setMyProfile] = useState([]);
     const [posts, setPosts] = useState([]);
     const [isMyProfile, setIsMyProfile] = useState(false);
     const [friendCount, setFriendCount] = useState(0);
-    const [friends, setFriends] = useState([]);
-    const [friendRequestSent, setFriendRequestSent] = useState(false);
+    const [friendStatus, setFriendStatus] = useState('');
     const [friendRequests, setFriendRequests] = useState([]);
+    const [friends, setFriends] = useState([]);
 
     useEffect(() => {
         getProfile(); // Fetch profile of the user being viewed
         getMyProfile(); // Fetch current logged-in user's profile
-    }, []);
+    }, [username]);
 
     useEffect(() => {
-        if (profile.id) {
-            getFriends(); // Only fetch friends after profile.id is available
-            getPosts();   // Only fetch posts after profile.id is available
+        if (profile.id && myProfile.id) {
             if (profile.id === myProfile.id) {
-                setIsMyProfile(true); // Check if this is the logged-in user's profile
-                getPendingFriendRequests();  // Fetch pending friend requests if it's the user's own profile
+                setIsMyProfile(true);
+                getPendingFriendRequests();
+            } else {
+                setIsMyProfile(false);
             }
+            getFriends();
+            getPosts();
+            checkFriendStatus();
         }
     }, [profile, myProfile]);
 
-    const getProfile = () => {
+    const getProfile = () => { 
         api
             .get(`/api/profile/getuserdata/${username}/`)
             .then((res) => res.data)
@@ -52,7 +54,7 @@ export default function UserProfileTest() {
             })
             .catch((err) => console.log(err));
     };
-    
+
     const getMyProfile = () => {
         api
             .get(`/api/profile/`)
@@ -77,40 +79,66 @@ export default function UserProfileTest() {
             console.error("Profile ID or MyProfile ID is not defined.");
             return;
         }
-    
-        // Send friend request using both user1 (current user) and user2 (profile)
         api
-            .post(`/api/friend-request/${profile.id}/`, {
-                user1: myProfile.id,  // The logged-in user's ID
-                user2: profile.id     // The ID of the profile being viewed
-            })
+            .post(`/api/friend-request/${profile.id}/`, {})
             .then(() => {
-                alert(`${profile.username} added to friend requests!`);
-                setFriendRequestSent(true);
+                alert(`Friend request sent to ${profile.username}!`);
+                setFriendStatus('pending');
             })
             .catch((err) => {
                 console.error("Error sending friend request:", err);
             });
     };
 
-    const handleAcceptFriendRequest = (requestID) => {
-        api.put(`/api/friend-request/accept/${requestID}/`)
+    const handleAcceptFriendRequest = (requestID, accepted) => {
+        api.put(`/api/friend-request/accept/${requestID}/`, { accepted })
             .then(() => {
-            alert('Friend request accepted!');
-            getFriends(); // Fetch the updated list of friends after accepting
+                alert(`Friend request ${accepted ? 'accepted' : 'declined'}!`);
+                // Remove the processed request
+                setFriendRequests((prevRequests) =>
+                    prevRequests.filter((request) => request.requestID !== requestID)
+                );
+                if (accepted) {
+                    getFriends(); // Update friends list
+                    setFriendStatus('friends');
+                } else {
+                    setFriendStatus('none');
+                }
             })
-            .catch((err) => console.log("Error accepting friend request:", err));
+            .catch((err) => console.log("Error responding to friend request:", err));
+    };
+
+    const handleAcceptFriendRequestByButton = (accepted) => {
+        // Find the friend request where user1 is the profile user and user2 is the current user
+        const request = friendRequests.find(
+            (req) => req.user1.id === profile.id && req.user2.id === myProfile.id
+        );
+        if (request) {
+            handleAcceptFriendRequest(request.requestID, accepted);
+        } else {
+            alert('No friend request found.');
+        }
+    };
+
+    const checkFriendStatus = () => {
+        console.log(`Profile ID: ${profile.id}`);  // Ensure this is a valid ID without extra characters
+        api.get(`/api/friend-status/${profile.id}/`)
+            .then((res) => res.data)
+            .then((data) => {
+                console.log('Friend status:', data.status); // Debugging log
+                setFriendStatus(data.status);
+            })
+            .catch((err) => console.log(err));
     };
 
     const getPendingFriendRequests = () => {
         api.get(`/api/friend-requests/`)
-        .then((res) => {
-            console.log("Friend requests:", res.data); // Debug output
-            setFriendRequests(res.data);
-        })
-        .catch((err) => console.log("Error fetching friend requests:", err));
+            .then((res) => {
+                setFriendRequests(res.data);
+            })
+            .catch((err) => console.log("Error fetching friend requests:", err));
     };
-    
+
     const getPosts = () => {
         api
             .get(`/api/profile/posts/${profile.id}/`)
@@ -127,66 +155,95 @@ export default function UserProfileTest() {
 
     return (
         <main>
-        <SearchBar />
-        <Menu />
-        <Footer />
-        <div className="content">
-            <div className="profile-top">
-                <img className="back-img" src={profile.backgroundImage} alt="background" />
-                <div className="profile-card">
-                    <div className="card-upper">
-                        <img className="pfp" src={profile.profilePicture} alt="profile" />
-                        <div className="names">
-                            <p className="display-name">{profile.displayName}</p>
-                            <p className="username">@{profile.username}</p>
-                        </div>
-                        <div className="buttons">
-                            {isMyProfile ? (
-                                <div>
-                                    <button className="logout-button" onClick={handlePostCreate}>Create Post</button>
-                                    <button className="logout-button" onClick={handleLogout}>Logout</button>
-                                    <button className="edit-button" onClick={handleEdit}>Edit</button>
+            <SearchBar />
+            <Menu />
+            <Footer />
+            <div className="content">
+                <div className="profile-top">
+                    <img className="back-img" src={profile.backgroundImage} alt="background" />
+                    <div className="profile-card">
+                        <div className="card-upper">
+                            <img className="pfp" src={profile.profilePicture} alt="profile" />
+                            <div className="names">
+                                <p className="display-name">{profile.displayName}</p>
+                                <p className="username">@{profile.username}</p>
+                            </div>
+                            <div className="buttons">
+                                {isMyProfile ? (
+                                    <div>
+                                        <button className="logout-button" onClick={handlePostCreate}>Create Post</button>
+                                        <button className="logout-button" onClick={handleLogout}>Logout</button>
+                                        <button className="edit-button" onClick={handleEdit}>Edit</button>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <button className="edit-button" onClick={handleMessage}>Message</button>
+                                        {friendStatus === 'none' && (
+                                            <button className="edit-button" onClick={handleAddFriend}>Add Friend</button>
+                                        )}
+                                        {friendStatus === 'pending' && (
+                                            <p>Friend Request Sent</p>
+                                        )}
+                                        {friendStatus === 'pending_received' && (
+                                            <div>
+                                                <button onClick={() => handleAcceptFriendRequestByButton(true)}>Accept Friend Request</button>
+                                                <button onClick={() => handleAcceptFriendRequestByButton(false)}>Decline</button>
+                                            </div>
+                                        )}
+                                        {friendStatus === 'friends' && (
+                                            <button className="edit-button" disabled>Friends</button>
+                                        )}
+                                    </div>
+                                )}
+                                <div className="friends-count">
+                                    <p onClick={handleViewFriends}>Friends {friendCount}</p>
                                 </div>
-                            ) : (
-                                <div>
-                                    <button className="edit-button" onClick={handleMessage}>Message</button>
-                                    {!friendRequestSent ? (
-                                        <button className="edit-button" onClick={handleAddFriend}>Add Friend</button>
-                                    ) : (
-                                        <p>Friend Request Sent</p>
-                                    )}
-                                </div>
-                            )}
-                            <div className="friends-count">
-                                <p onClick={handleViewFriends}>Friends {friendCount}</p>
                             </div>
                         </div>
-                    </div>
 
-                    <div className="bio">{profile.bio}</div>
+                        <div className="bio">{profile.bio}</div>
 
-                    {/* Display Pending Friend Requests */}
-                    {isMyProfile && friendRequests.length > 0 && (
-                        <div className="friend-requests">
-                            <h3>Pending Friend Requests</h3>
-                            {friendRequests.map(request => (
-                                <div key={request.requestID}>
-                                    <p>{request.user1.username} has sent you a friend request!</p>
-                                    <button onClick={() => handleAcceptFriendRequest(request.requestID)}>Accept</button>
-                                </div>
-                            ))}
+                        {/* Display Pending Friend Requests */}
+                        {isMyProfile && friendRequests.length > 0 && (
+                            <div className="friend-requests">
+                                <h3>Pending Friend Requests</h3>
+                                {friendRequests.map(request => (
+                                    <div key={request.requestID}>
+                                        <p>{request.user1.username} has sent you a friend request!</p>
+                                        <button onClick={() => handleAcceptFriendRequest(request.requestID, true)}>Accept</button>
+                                        <button onClick={() => handleAcceptFriendRequest(request.requestID, false)}>Decline</button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Display Friends List */}
+                        {/* {friends.length > 0 && (
+                            <div className="friends-list">
+                                <h3>Friends</h3>
+                                <ul>
+                                    {friends.map((friend) => {
+                                        const friendUser = friend.user1.id === profile.id ? friend.user2 : friend.user1;
+                                        return (
+                                            <li key={friend.friendShipID}>
+                                                <a href={`/profile/${friendUser.username}`}>{friendUser.username}</a>
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
+                            </div>
+                        )} */}
+
+                        <div className="post-holder">
+                            {posts.map((post) => <PostDisplay post={post} profile={profile} key={post.postID} />)}
                         </div>
-                    )}
-
-                    <div className="post-holder">
-                        {posts.map((post) => <PostDisplay post={post} profile={profile} key={post.postID} />)}
                     </div>
                 </div>
             </div>
-        </div>
-    </main>
+        </main>
     );
 }
+
 
 // import api from "../api.js"
 // import "../styles/Home.css"

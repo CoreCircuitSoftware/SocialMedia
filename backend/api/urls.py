@@ -19,4 +19,5 @@ urlpatterns = [
     path('friend-request/<uuid:user2_id>/', views.SendFriendRequest.as_view(), name='send-friend-request'),
     path('friend-request/accept/<int:pk>/', views.AcceptFriendRequest.as_view(), name='accept-friend-request'),
     path('friend-requests/', views.ListFriendRequests.as_view(), name='list-friend-requests'),
+    path('friend-status/<uuid:user_id>/', views.FriendStatusView.as_view(), name='friend-status'),
 ]

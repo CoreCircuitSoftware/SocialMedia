@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.db.models import Q
 #from django.contrib.auth.models import User    # "User" references replaced with "CustomUser" custom model
 import uuid
     
@@ -58,6 +59,33 @@ class CustomUser(AbstractBaseUser):
 
     def __str__(self):
         return self.name
+    # Add the get_friend_status method here
+    def get_friend_status(self, other_user):
+        if self == other_user:
+            return 'self'
+
+        # Check if already friends
+        friendship_exists = Friend.objects.filter(
+            Q(user1=self, user2=other_user) | Q(user1=other_user, user2=self)
+        ).exists()
+        if friendship_exists:
+            return 'friends'
+
+        # Check if there's a pending friend request from self to other_user
+        pending_request = FriendRequest.objects.filter(
+            user1=self, user2=other_user, accepted__isnull=True
+        ).exists()
+        if pending_request:
+            return 'pending'
+
+        # Check if there's a pending friend request from other_user to self
+        pending_received = FriendRequest.objects.filter(
+            user1=other_user, user2=self, accepted__isnull=True
+        ).exists()
+        if pending_received:
+            return 'pending_received'
+
+        return 'none'
     
 class Friend(models.Model):
     friendShipID = models.AutoField(primary_key=True)
