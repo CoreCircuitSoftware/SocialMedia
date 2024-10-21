@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useParams } from "react-router-dom";
 import MessageDisplay from "../components/MessageDisplay";
+import "../styles/Message.css"
 
 export default function MessagePage() {
     const { username } = useParams();
@@ -159,7 +160,7 @@ export default function MessagePage() {
     }, [convoID])
 
     return (
-        <div>
+        <main className="messages-page">
             <div className="title">
                 {/* <div> { thisConvo.convoName && (
                     <h1>{thisConvo.convoName}</h1>)}
@@ -197,6 +198,6 @@ export default function MessagePage() {
                     </button>
                 </form>
             )}
-        </div> 
+        </main> 
     )
 }

@@ -1,0 +1,10 @@
+.messages-page {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.messages-page img {
+    max-height: 5dvh;
+    max-width: 5dvh;
+}

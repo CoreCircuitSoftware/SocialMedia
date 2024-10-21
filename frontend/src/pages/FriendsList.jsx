@@ -4,7 +4,7 @@ import api from "../api";  // Assume you have an API setup
 import Menu from '../components/Menu'; // Adjust the path as needed
 import SearchBar from '../components/SearchBar';
 import Footer from '../components/Footer'; // If you want to include the footer too
-
+import '../styles/FriendsList.css'
 
 export default function FriendsList() {
     const { username } = useParams();  // Get the username from the URL
@@ -54,7 +54,11 @@ export default function FriendsList() {
                         console.log(friendUser);
                         return (
                             <li key={friend.friendShipID}>
+                                <img className="friendlistimage" src={friendUser.profilePicture} alt="profile" />
                                 <a href={`/profile/${friendUser.username}`}>{friendUser.username}</a>
+                                <a href={`/profile/${friendUser.username}/message`}>
+                                    <img className="friendlistimage" src="https://icons.veryicon.com/png/o/miscellaneous/official-icon-of-flying-pig/mailbox-82.png"></img>
+                                </a>
                             </li>
                         );
                     }) : (

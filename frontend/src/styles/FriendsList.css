@@ -1,0 +1,12 @@
+li {
+    width: fit-content;
+    border: 1px solid black;
+    display: flex;
+    gap: 1dvh;
+    align-items: center;
+}
+
+.friendlistimage {
+    max-height: 5dvh;
+    max-width: 5dvh;
+}
