@@ -15,6 +15,16 @@ main {
     background-color: ghostwhite
 }
 
+.search-bar input{
+    width: 60%;
+    height: 3dvh;
+    border-radius: 10px;
+}
+.search-bar button{
+    height: 3dvh;
+    width: 10%;
+}
+
 .menu { 
     grid-area: menu;
     display: flex;

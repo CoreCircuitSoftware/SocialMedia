@@ -225,3 +225,20 @@ class FriendStatusView(APIView):
         status = current_user.get_friend_status(other_user)
         serializer = FriendStatusSerializer({'status': status})
         return Response(serializer.data)
+
+class SearchProfiles(generics.ListAPIView):
+    print('searching')
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        username_chunk = self.kwargs['username_chunk']
+        return CustomUser.objects.filter(username__icontains=username_chunk)
+    
+class SearchProfilesAll(generics.ListAPIView):
+    print('loading all users')
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return CustomUser.objects.all()

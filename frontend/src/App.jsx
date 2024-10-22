@@ -13,6 +13,7 @@ import PostDisplay from "./components/ProfilePostDisplay"
 import GetMyProfile from "./components/GetMyProfile"
 import MessagePage from "./pages/Message"
 import FriendsList from "./pages/FriendsList"; // Adjust path if necessary
+import ProfileSearch from "./pages/ProfileSearch";
 
 
 function Logout() { //Clear local storage of any tokens and redirect to login screen
@@ -50,9 +51,10 @@ function App() {
         <Route path="notes" element={<Notes />} />
         <Route path="post/create" element={<PostForm />} />
         <Route path="post/view" element={<PostDisplay />} />
-        <Route path="message/" element={<PostForm />}  />
-        <Route path="*" element={<NotFound />} />
+        <Route path="message/" element={<PostForm />} />
         <Route path="profile/:username/friends" element={<FriendsList />} />
+        <Route path="search/profile/:userchunk?" element={<ProfileSearch />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   )
