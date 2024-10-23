@@ -1,9 +1,9 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import api from "../api";  // Assume you have an API setup
-import Menu from '../components/Menu'; // Adjust the path as needed
+import api from "../api";  
+import Menu from '../components/Menu'; 
 import SearchBar from '../components/SearchBar';
-import Footer from '../components/Footer'; // If you want to include the footer too
+import Footer from '../components/Footer'; 
 import '../styles/FriendsList.css'
 
 export default function FriendsList() {
@@ -17,7 +17,7 @@ export default function FriendsList() {
             .then((res) => res.data)
             .then((data) => {
                 if (data && data.length > 0) {
-                    setUserId(data[0].id);  // Set the user ID here
+                    setUserId(data[0].id);
                 } else {
                     console.error("No profile data found.");
                 }
@@ -30,7 +30,7 @@ export default function FriendsList() {
         if (userId) {
             api.get(`/api/friends/${userId}/`)
                 .then((res) => {
-                    console.log(res.data);  // Log the response to see if data is correct
+                    console.log(res.data); 
                     setFriends(res.data)
                 })
                 .catch((err) => console.log(err));
@@ -39,13 +39,13 @@ export default function FriendsList() {
     
     return (
         <main>
-            {/* Add the search bar at the top */}
+            
             <SearchBar />
             
-            {/* Add the menu bar */}
+            
             <Menu />
             
-            {/* The friends list content */}
+            
             <div className="content">
                 <h1>{username}'s Friends</h1>
                 <ul>
@@ -66,8 +66,6 @@ export default function FriendsList() {
                     )}
                 </ul>
             </div>
-    
-            {/* Optional Footer */}
             <Footer />
         </main>
     );    

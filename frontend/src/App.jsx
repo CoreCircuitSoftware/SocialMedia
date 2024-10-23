@@ -44,6 +44,7 @@ function App() {
         <Route path="login" element={<Login />} />
         <Route path="logout" element={<Logout />} />
         <Route path="register" element={<RegisterAndLogout />} />
+        <Route path="home" element={<Home />} />
         <Route path="profile/:username" element={<UserProfile />} />
         <Route path="profile/:username/message" element={<MessagePage />} />
         <Route path="profile/" element={<GetMyProfile />} />

@@ -6,29 +6,24 @@ import "../styles/PostProfile.css"
 
 
 export default function PostDisplay(slug) {
-    const [user, setUser] = useState([]);
-    const [thisUser, setThisUser] = useState(slug.profile);
-    // const thisUser = slug.user
-    const thisPost = slug.post
+   // const [user, setUser] = useState([]);
+    const [thisUser, setThisUser] = useState(slug.post.user);
+    const [thisPost, setThisPost] = useState(slug.post)
     const formattedDate = new Date(thisPost.postDate).toLocaleDateString("en-US")
 
+    useEffect(() => {
+        getUser()
+    }, [])
 
-    // useEffect(() => {
-    //     console.log(slug.profile)
-    //     getUser()
-    //     console.log(user.id)
-    // }, [])
-
-
-    // const getUser = async () => {
-    //     api
-    //         .get(`/api/profile/getuserdata/${thisUser.id}/`)
-    //         .then((res) => res.data)
-    //         .then((data) => {
-    //             setUser(data[0])
-    //         })
-    //         .catch((err) => alert(err));
-    // }
+    const getUser = async () => {
+        api
+            .get(`/api/profile/getuserdata2/${thisUser}/`)
+            .then((res) => res.data)
+            .then((data) => {
+                setThisUser(data)
+            })
+            .catch((err) => alert(err));
+    }
 
     return (
         <div className="post-container">

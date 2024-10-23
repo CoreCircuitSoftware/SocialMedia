@@ -242,3 +242,11 @@ class SearchProfilesAll(generics.ListAPIView):
     
     def get_queryset(self):
         return CustomUser.objects.all()
+    
+class PostListSortNew(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return Post.objects.all()
+    

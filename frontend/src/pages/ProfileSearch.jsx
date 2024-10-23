@@ -12,7 +12,7 @@ import Footer from "../components/Footer.jsx";
 
 export default function ProfileSearch() {
     console.log('hello')
-    const { userchunk } = useParams();  // Get the username chunk from the URL
+    const { userchunk } = useParams(); 
     console.log(`hello again`)
     console.log(`userchunk: ${userchunk}`)
     const [results, setResults] = useState([]);
@@ -30,7 +30,7 @@ export default function ProfileSearch() {
         if (userchunk !== undefined) {
             api.get(`/api/search/profile/${userchunk}/`)
                 .then((res) => {
-                    console.log(res.data);  // Log the response to see if data is correct
+                    console.log(res.data);  
                     setResults(res.data)
                 })
                 .catch((err) => console.log(err));
@@ -38,7 +38,7 @@ export default function ProfileSearch() {
         else {
             api.get(`/api/search/profile/`)
                 .then((res) => {
-                    console.log(res.data);  // Log the response to see if data is correct
+                    console.log(res.data); 
                     setResults(res.data)
                 })
                 .catch((err) => console.log(err));

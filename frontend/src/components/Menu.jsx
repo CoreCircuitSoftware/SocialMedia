@@ -6,7 +6,7 @@ export default function Menu() {
         navigate("/profile")
     }
     const handleHome = () => {
-        navigate("/")
+        navigate("/home")
     }
     const handleCommunities = () => {
         navigate("/communities")

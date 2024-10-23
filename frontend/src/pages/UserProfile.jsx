@@ -28,6 +28,10 @@ export default function UserProfileTest() {
     }, [username]);
 
     useEffect(() => {
+        console.log(posts)
+    }, [posts]);
+
+    useEffect(() => {
         if (profile.id && myProfile.id) {
             if (profile.id === myProfile.id) {
                 setIsMyProfile(true);
@@ -235,7 +239,7 @@ export default function UserProfileTest() {
                         )} */}
 
                         <div className="post-holder">
-                            {posts.map((post) => <PostDisplay post={post} profile={profile} key={post.postID} />)}
+                            {posts.map((post) => <PostDisplay post={post} key={post.postID} />)}
                         </div>
                     </div>
                 </div>
