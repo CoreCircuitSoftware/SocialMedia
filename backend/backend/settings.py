@@ -107,9 +107,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'latestClone',
-        'USER': 'admin',
-        'PASSWORD': 'socialMedia1',
-        'HOST':'social-media-db-v1.ctaoamggw23g.us-east-2.rds.amazonaws.com',
+        'USER': 'root',
+        'PASSWORD': 'admin',
+        'HOST':'localhost',
         'PORT':'3306',
     }
 }
