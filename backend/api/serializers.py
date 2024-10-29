@@ -12,12 +12,6 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):                           #This will be called when creaing a user. validated data is sent via JSON and contains the fields created above
         user = CustomUser.objects.create_user(**validated_data)       #This data is then stored in a user and returned, this def is created in CustomUserManager
         return user
-    
-class NoteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Note
-        fields = ["id", "title", "content", "created_at", "author"]
-        extra_kwargs = {"author": {"read_only": True}}
 
 class PostSerializer(serializers.ModelSerializer):
     class Meta:

@@ -12,7 +12,6 @@ export default function MessageDisplay(slug) {
             .get(`/api/profile/getuserdata2/${slug.message.sender}/`)
             .then((res) => res.data)
             .then((data) => {
-                console.log(data)
                 setUsername(data.username)
                 setPfp(data.profilePicture)
             })

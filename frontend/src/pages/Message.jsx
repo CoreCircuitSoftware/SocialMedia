@@ -23,10 +23,7 @@ export default function MessagePage() {
         const newSocket = new WebSocket(`ws://localhost:8000/ws/chat/${convoID}/`);
         //const newSocket = new WebSocket(`ws://localhost:8000/ws/chat/`);
         newSocket.onmessage = (e) => {
-          console.log(e)
-          const data = JSON.parse(e.data);
-          console.log("message here:")
-          console.log(data)  
+          const data = JSON.parse(e.data); 
           setMessages((prev) => {//[...prev, e.data]);
             if (!prev.some(messages => messages.messageID === data.messageID)) {
                 return [...prev, data];
@@ -79,7 +76,6 @@ export default function MessagePage() {
     }
 
     const addParticipant = (participant, newConvoID) => {
-        console.log("Participant:", participant, "Convo ID:", newConvoID);
         try {
             api
                 .post("/api/profile/message/setconvoparticipant/", {
@@ -137,9 +133,7 @@ export default function MessagePage() {
                   sender: myProfile.id,
                   message: curMessage 
                 }, );
-                console.log("sent message: ", response.data);
                 const messageData = JSON.stringify(response.data)
-                console.log(messageData)
                 socket.send(messageData);
             }catch (error) {
                 //console.error('Error sending message:', error.response ? error.response.data : error.message);

@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from api.views import CreatedUserView   #The view we created in the api/views file
+from api.Views.user import CreatedUserView   #The view we created in the api/views file
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView    #premade views to access and refresh tokens
 
 urlpatterns = [     #If Users go to a url directory, the corresponding actions will be performed such as loading a view
