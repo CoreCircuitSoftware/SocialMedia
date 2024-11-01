@@ -1,6 +1,7 @@
 asgiref
 Django
 django-cors-headers
+django_cypress
 djangorestframework
 djangorestframework-simplejwt
 PyJWT
