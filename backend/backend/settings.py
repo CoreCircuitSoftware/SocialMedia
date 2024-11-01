@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "rest_framework",
     'channels', #ADD THIS TO EC2
     "corsheaders",
+    'django_cypress',
 ]
 
 MIDDLEWARE = [

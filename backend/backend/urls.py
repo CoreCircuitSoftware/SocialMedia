@@ -26,4 +26,5 @@ urlpatterns = [     #If Users go to a url directory, the corresponding actions w
     path("api/token/refresh/", TokenRefreshView.as_view(), name="refresh"),
     path("api-auth/", include("rest_framework.urls")),
     path("api/", include("api.urls")),  #links urls.py from backend/api/
+    path("/", include("django_cypress.urls")),
 ]

@@ -72,6 +72,7 @@ function LoginForm({ route }) {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Username"
+                data-cy="username"
             />
             <input
                 className="form-input"
@@ -79,6 +80,7 @@ function LoginForm({ route }) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
+                data-cy="password"
             />
             <input
                 className="form-input"
@@ -86,11 +88,12 @@ function LoginForm({ route }) {
                 value={key}
                 onChange={(e) => setKey(e.target.value)}
                 placeholder="Enter login key"
+                data-cy="key"
             />
-            <button className="form-button" type="submit">
+            <button className="form-button" type="submit" data-cy="login">
                 Login
             </button>
-            <button className="form-button" type="button" onClick={handleRegister}>
+            <button className="form-button" type="button" data-cy="register" onClick={handleRegister}>
                 Register
             </button>
         </form>

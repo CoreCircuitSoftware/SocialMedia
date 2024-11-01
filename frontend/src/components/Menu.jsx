@@ -17,8 +17,8 @@ export default function Menu() {
 
     return (
         <div className="menu">
-            <button className="menu-button" type="button" onClick={handleProfile}>Profile</button>
-            <button className="menu-button" type="button" onClick={handleHome}>Home</button>
+            <button className="menu-button" type="button" data-cy="profile" onClick={handleProfile}>Profile</button>
+            <button className="menu-button" type="button" data-cy="home" onClick={handleHome}>Home</button>
             <button className="menu-button" type="button" onClick={handleCommunities}>Communities</button>
             <button className="menu-button" type="button" onClick={handleMessages}>Messages</button>
             {/* <h1>Profile</h1>
