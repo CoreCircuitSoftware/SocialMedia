@@ -1,6 +1,7 @@
 from rest_framework import generics
 from rest_framework.response import Response
 from ..Models.user import *
+from ..Models.friends import *
 from ..serializers import *
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
@@ -69,6 +70,6 @@ class FriendStatusView(APIView):
         current_user = request.user
         other_user = get_object_or_404(CustomUser, id=user_id)
 
-        status = current_user.get_friend_status(other_user)
+        status = get_friend_status(current_user, other_user)
         serializer = FriendStatusSerializer({'status': status})
         return Response(serializer.data)

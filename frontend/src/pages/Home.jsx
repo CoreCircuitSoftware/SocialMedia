@@ -17,7 +17,7 @@ export default function Home() {
     useEffect(() => {
         getPostsSortByNew()
         getMyProfile();
-    },[])
+    }, [])
 
     useEffect(() => {
         findUsersToDisplay()
@@ -45,22 +45,22 @@ export default function Home() {
 
     const findUsersToDisplay = () => {
         api.get(`/api/search/profile/`)
-        .then((res) => {
-            var userArr = new Array()
-            var numUsers = res.data.length
-            for (var i = 0, j = 1; i < 3; i++) {
-                var randomNum = Math.floor(Math.random() * (numUsers + (j - i)))
-                if (res.data[randomNum] && ((!userArr.includes(res.data[randomNum], 0)) && (myProfile.id != res.data[randomNum].id))) {
-                    userArr.push(res.data[randomNum])
+            .then((res) => {
+                var userArr = new Array()
+                var numUsers = res.data.length
+                for (var i = 0, j = 1; i < 3 && i < numUsers - 1; i++) {
+                    var randomNum = Math.floor(Math.random() * (numUsers + (j - i)))
+                    if (res.data[randomNum] && ((!userArr.includes(res.data[randomNum], 0)) && (myProfile.id != res.data[randomNum].id))) {
+                        userArr.push(res.data[randomNum])
+                    }
+                    else {
+                        i--
+                    }
                 }
-                else {
-                    i--
-                }
-            }
-            console.log(userArr)
-            setUserRec(userArr)
-        })
-        .catch((err) => console.log(err));
+                console.log(userArr)
+                setUserRec(userArr)
+            })
+            .catch((err) => console.log(err));
     }
 
     return (
@@ -76,7 +76,7 @@ export default function Home() {
             <div className="recs">
                 <h2>Check out these accounts!</h2>
                 <div>
-                    {userRec.map((rec) => <RecsDisplay rec={rec} key={rec.id}/>)}
+                    {userRec.map((rec) => <RecsDisplay rec={rec} key={rec.id} />)}
                 </div>
             </div>
         </main>
