@@ -6,7 +6,7 @@ import "../styles/PostProfile.css"
 
 
 export default function PostDisplay(slug) {
-   // const [user, setUser] = useState([]);
+    // const [user, setUser] = useState([]);
     const [thisUser, setThisUser] = useState(slug.post.user);
     const [thisPost, setThisPost] = useState(slug.post)
     const formattedDate = new Date(thisPost.postDate).toLocaleDateString("en-US")
@@ -25,10 +25,13 @@ export default function PostDisplay(slug) {
             .catch((err) => alert(err));
     }
 
+    const navigate = useNavigate();
+    const handleProfileClick = () => navigate(`/profile/${thisUser.username}`);
+
     return (
         <div className="post-container">
             <header>
-                <img className="pfp" src={thisUser.profilePicture} />
+                <button onClick={handleProfileClick}><img className="pfp" src={thisUser.profilePicture} /></button>
                 <div className="name-text">
                     <h1>{thisUser.displayName}  @{thisUser.username}</h1>
                 </div>

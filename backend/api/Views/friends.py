@@ -52,7 +52,16 @@ class AcceptFriendRequest(generics.UpdateAPIView):  # This view allows updating 
             friend_request.save()
         else:
             raise ValidationError("Invalid value for 'accepted'.")
-
+        
+class RemoveFriend(generics.DestroyAPIView):
+    queryset = Friend.objects.all()
+    serializer_class = FriendSerializer
+    # permission_classes = [IsAuthenticated]
+    
+    def perform_destroy(self, instance):
+        friend_ship_id = self.kwargs['pk']
+        friend_instance = get_object_or_404(Friend, friendShipID=friend_ship_id)
+        friend_instance.delete()
         
 # List Friend Requests for the current logged-in user
 class ListFriendRequests(generics.ListAPIView):
@@ -73,3 +82,18 @@ class FriendStatusView(APIView):
         status = get_friend_status(current_user, other_user)
         serializer = FriendStatusSerializer({'status': status})
         return Response(serializer.data)
+    
+class RetrieveFriendshipByUsername(generics.RetrieveAPIView):
+    serializer_class = FriendSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self):
+        username1 = self.kwargs['username1']
+        username2 = self.kwargs['username2']
+        friendship = get_object_or_404(
+            Friend,
+            Q(user1__username=username1, user2__username=username2) |
+            Q(user1__username=username2, user2__username=username1)
+        )
+        return friendship
+        

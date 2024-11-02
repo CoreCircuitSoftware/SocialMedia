@@ -101,7 +101,7 @@ body {
     cursor: pointer;
 }
 
-.profile-card .btn:hover {
+.profile-card .logout-button:hover {
     opacity: 0.8;
 }
 

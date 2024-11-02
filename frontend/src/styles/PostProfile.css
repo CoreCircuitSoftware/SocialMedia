@@ -28,6 +28,14 @@ header .pfp {
     border: .3em solid slateblue;
     width: 3em;
     height: 3em;
-    max-width: 20%;
-    max-height: 20%;
+}
+
+header button {
+    border: 0;
+    background-color: white;
+    width: 4em;
+    height: 4em;
+}
+header button:hover {
+    opacity: 80%;
 }

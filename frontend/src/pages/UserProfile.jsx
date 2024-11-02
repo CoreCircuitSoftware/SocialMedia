@@ -21,6 +21,7 @@ export default function UserProfileTest() {
     const [friendStatus, setFriendStatus] = useState('');
     const [friendRequests, setFriendRequests] = useState([]);
     const [friends, setFriends] = useState([]);
+    const [friendShipID, setFriendshipID] = useState();
 
     useEffect(() => {
         getProfile(); // Fetch profile of the user being viewed
@@ -45,7 +46,7 @@ export default function UserProfileTest() {
         }
     }, [profile, myProfile]);
 
-    const getProfile = () => { 
+    const getProfile = () => {
         api
             .get(`/api/profile/getuserdata/${username}/`)
             .then((res) => res.data)
@@ -131,9 +132,22 @@ export default function UserProfileTest() {
             .then((data) => {
                 console.log('Friend status:', data.status); // Debugging log
                 setFriendStatus(data.status);
+                if (data.status === 'friends')
+                    getFriendship();
             })
             .catch((err) => console.log(err));
     };
+
+    const getFriendship = () => {
+        api.get(`/api/friend/${myProfile.username}/${profile.username}/`)
+            .then((res) => res.data)
+            .then((data) => {
+                console.log('FriendshipID: ', data.friendShipID)
+                setFriendshipID(data.friendShipID)
+            })
+            .catch((err) => console.log(err));
+    };
+
 
     const getPendingFriendRequests = () => {
         api.get(`/api/friend-requests/`)
@@ -156,6 +170,20 @@ export default function UserProfileTest() {
     const handlePostCreate = () => navigate("/post/create");
     const handleMessage = () => navigate(`/profile/${profile.username}/message`);
     const handleViewFriends = () => navigate(`/profile/${profile.username}/friends`);
+    const handleShare = async () => {
+        try {
+            await navigator.clipboard.writeText(`http://circuitsocial.tech/profile/${profile.username}`);
+            alert("Copied");
+            console.log('Profile link copied')
+        } catch (err) {
+            console.log('Error copying profile link')
+        }
+    }
+
+    const handleRemoveFriend = () => {
+        if (window.confirm("Remove Friend?"))
+            api.delete(`/api/friend/remove/${friendShipID}/`)
+    }
 
     return (
         <main>
@@ -175,6 +203,7 @@ export default function UserProfileTest() {
                             <div className="buttons">
                                 {isMyProfile ? (
                                     <div>
+                                        <button className="logout-button" onClick={handleShare}>Share</button>
                                         <button className="logout-button" onClick={handlePostCreate}>Create Post</button>
                                         <button className="logout-button" onClick={handleLogout}>Logout</button>
                                         <button className="edit-button" onClick={handleEdit}>Edit</button>
@@ -195,7 +224,7 @@ export default function UserProfileTest() {
                                             </div>
                                         )}
                                         {friendStatus === 'friends' && (
-                                            <button className="edit-button" disabled>Friends</button>
+                                            <button className="logout-button" onClick={handleRemoveFriend} >Remove Friend</button>
                                         )}
                                     </div>
                                 )}

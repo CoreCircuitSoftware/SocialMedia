@@ -23,6 +23,8 @@ urlpatterns = [
     path('friend-request/accept/<int:pk>/', AcceptFriendRequest.as_view(), name='accept-friend-request'),
     path('friend-requests/', ListFriendRequests.as_view(), name='list-friend-requests'),
     path('friend-status/<uuid:user_id>/', FriendStatusView.as_view(), name='friend-status'),
+    path('friend/<str:username1>/<str:username2>/', RetrieveFriendshipByUsername.as_view(), name='retrieve-friendship'),
+    path('friend/remove/<int:pk>/', RemoveFriend.as_view(), name='remove-friend'),
     path("search/profile/<str:username_chunk>/", SearchProfiles.as_view(), name="profile-search"),
     path("search/profile/", SearchProfilesAll.as_view(), name="profile-search-all"),
 ]
