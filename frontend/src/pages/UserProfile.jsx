@@ -29,10 +29,6 @@ export default function UserProfileTest() {
     }, [username]);
 
     useEffect(() => {
-        console.log(posts)
-    }, [posts]);
-
-    useEffect(() => {
         if (profile.id && myProfile.id) {
             if (profile.id === myProfile.id) {
                 setIsMyProfile(true);
@@ -266,10 +262,13 @@ export default function UserProfileTest() {
                                 </ul>
                             </div>
                         )} */}
-
-                        <div className="post-holder">
-                            {posts.map((post) => <PostDisplay post={post} key={post.postID} />)}
-                        </div>
+                        {(posts.length > 0) ? (
+                            <div className="post-holder">
+                                {posts.map((post) => <PostDisplay post={post} key={post.postID} />)}
+                            </div>
+                            ) : (
+                                <h3 data-cy="user-no-posts">{username} hasn't made any posts yet</h3>
+                            )}
                     </div>
                 </div>
             </div>

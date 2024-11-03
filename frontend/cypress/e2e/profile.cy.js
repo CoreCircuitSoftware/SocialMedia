@@ -4,7 +4,7 @@ const key = "CS4800"
 
 describe('profile page buttons', () => {
     beforeEach(() => {
-        cy.login();
+      cy.login(username, password);
     });
 
     it('user presses the profile button from the profile page to bring them to their user page', () => {      
@@ -21,15 +21,60 @@ describe('profile page buttons', () => {
         cy.url().should('include', '/home')
       })
 
-    // it('user presses the ', () => {
-    //     cy.visit('/')
-
-    // })
-
     it('user presses the logout button to log out of their account', () => {
         cy.visit('/')
         cy.url().should('include', '/profile/' + username)
         cy.get('[data-cy="logout"]').click()
         cy.url().should('include', '/login')
     })
+
+    it('user navigates to a profile, user\'s post is loaded', () => {
+        cy.visit('/')
+        cy.url().should('include', '/profile/' + username)
+        cy.get('[data-cy="post-display"]').first().should('exist')
+        cy.get('[data-cy="post-display"]').first().should('contain', username)
+    })
+
+    it('user navigates to a profile that contains no posts', () => { //needs to have user named "registertest2"
+      cy.visit('/profile/registertest2/')
+      cy.url().should('include', '/profile/registertest2/')
+      cy.get('[data-cy="user-no-posts"]').should('exist')
+  })
+})
+
+describe('search', () => {
+  beforeEach(() => {
+    cy.login(username, password);
+  });
+
+  it('user searches a query for usernames', () => { //query = 'test'
+    cy.visit('/')
+    cy.get('[data-cy="search-bar"]').should('exist')
+    cy.get('[data-cy="search-input"]').should('exist').type('test')
+    cy.get('[data-cy="search-button"]').should('exist').click()
+    cy.url().should('include', '/search/')
+    cy.get('[data-cy="search-user"]').each(($searchUser) => {
+      cy.wrap($searchUser).should('contain', 'test')
+    })
+  })
+
+  it('user searches for all users', () => { //query = 'test'
+    cy.visit('/')
+    cy.get('[data-cy="search-bar"]').should('exist')
+    cy.get('[data-cy="search-button"]').should('exist').click()
+    cy.url().should('include', '/search/')
+    cy.get('[data-cy="search-all"]').should('contain', 'All Profiles')
+    cy.get('[data-cy="search-user"]').each(($searchUser) => {
+      cy.wrap($searchUser).should('exist')
+    })
+  })
+
+  it('user searches for user with no matches', () => { //query = 'test'
+    cy.visit('/')
+    cy.get('[data-cy="search-bar"]').should('exist')
+    cy.get('[data-cy="search-input"]').should('exist').type('jfasi398c89c2e0q9283mxwxcnfahcfacc381xashjmxaiufm')
+    cy.get('[data-cy="search-button"]').should('exist').click()
+    cy.url().should('include', '/search/')
+    cy.get('[data-cy="no-results"]').should('contain', 'No Results found.')
+  })
 })

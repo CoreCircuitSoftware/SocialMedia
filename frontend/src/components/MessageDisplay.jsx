@@ -23,6 +23,6 @@ export default function MessageDisplay(slug) {
     }, [slug.message.sender])
 
     return (
-        <p><img className="pfp_icon" src={pfp} alt="profile" /> {username}: {message}</p>
+        <p data-cy="message-display"><img className="pfp_icon" src={pfp} alt="profile"/> {username}: {message}</p>
     )
 }
