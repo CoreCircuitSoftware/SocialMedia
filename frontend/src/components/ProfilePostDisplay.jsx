@@ -31,7 +31,7 @@ export default function PostDisplay(slug) {
     return (
         <div className="post-container">
             <header>
-                <button onClick={handleProfileClick}><img className="pfp" src={thisUser.profilePicture} /></button>
+                <button onClick={handleProfileClick} data-cy="profile-picture"><img className="pfp" src={thisUser.profilePicture} /></button>
                 <div className="name-text">
                     <h1>{thisUser.displayName}  @{thisUser.username}</h1>
                 </div>
