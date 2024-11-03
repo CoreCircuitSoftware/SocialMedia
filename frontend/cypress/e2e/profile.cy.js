@@ -2,17 +2,6 @@ const username = "123"
 const password = "123"
 const key = "CS4800"
 
-Cypress.Commands.add('login', () => {
-    cy.session('user', () => {
-        cy.visit('/login')
-        cy.get('[data-cy="username"]').type(username)
-        cy.get('[data-cy="password"]').type(password)
-        cy.get('[data-cy="key"]').type(key)
-        cy.get('[data-cy="login"]').click()
-        cy.url().should('include', '/profile');
-    })
-})
-
 describe('profile page buttons', () => {
     beforeEach(() => {
         cy.login();
@@ -31,4 +20,16 @@ describe('profile page buttons', () => {
         cy.get('[data-cy="home"]').click()
         cy.url().should('include', '/home')
       })
+
+    // it('user presses the ', () => {
+    //     cy.visit('/')
+
+    // })
+
+    it('user presses the logout button to log out of their account', () => {
+        cy.visit('/')
+        cy.url().should('include', '/profile/' + username)
+        cy.get('[data-cy="logout"]').click()
+        cy.url().should('include', '/login')
+    })
 })
