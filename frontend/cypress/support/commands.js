@@ -38,3 +38,11 @@ Cypress.Commands.add('login', (username, password) => {
         cy.url().should('include', '/profile');
     })
 })
+
+Cypress.Commands.add('assertValueCopiedToClipboard', value => { // Used to access clipboard to verify copy
+    cy.window().then(win => {
+      win.navigator.clipboard.readText().then(text => {
+        expect(text).to.eq(value)
+      })
+    })
+})
