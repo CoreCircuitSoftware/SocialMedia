@@ -1,6 +1,8 @@
+@import "Themes.css";
+
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
+    background-color: var(--Tertiary1);
     margin: 0px;
     padding: 0px;
 }
@@ -20,7 +22,7 @@ body {
 
 .profile-card {
     position: relative;
-    background-color: #fff;
+    background-color: var(--Primary1);
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -42,7 +44,7 @@ body {
     width: 150px;
     height: 150px;
     object-fit: cover;
-    border: 5px solid #eaeaea;
+    border: 5px solid var(--Tertiary1);
     margin-bottom: 20px;
 }
 
@@ -61,13 +63,13 @@ body {
 .username {
     font-size: 20px;
     font-weight: bold;
-    color: #777777;
+    color: var(--Quarternary1);
     margin-bottom: 10px;
 }
 
 .bio {
     font-size: 16px;
-    color: #777;
+    color: var(--Quarternary1);
     margin-top: 20px;
     width: 100%;
     display: block;
@@ -81,18 +83,28 @@ body {
     right: 10px;
 }
 .profile-card .edit-button {
+    background-color: var(--Tertiary1 );
+    color: white;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
 }
+
+.profile-card .edit-button:hover {
+    /*background-color: #770000;  red buttons  */
+    background-color: #176346;
+
+
+}
+
 .profile-card .post-holder {
     width: 50%;
 }
 
 .profile-card .logout-button {
-    background-color: #dc3545;
+    background-color: var(--Tertiary1 );
     color: white;
     padding: 10px 20px;
     border: none;
@@ -102,7 +114,7 @@ body {
 }
 
 .profile-card .logout-button:hover {
-    opacity: 0.8;
+    background-color: #176346;
 }
 
 /* footer {

@@ -1,3 +1,5 @@
+@import "Themes.css";
+
 main {
     display: grid;
     grid-template-areas:
@@ -12,7 +14,7 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: ghostwhite
+    background-color: var(--Quarternary1);
 }
 
 .search-bar input{
@@ -31,11 +33,12 @@ main {
     flex-direction: column;
     justify-content: start;
     align-items: center;
-    background-color: gainsboro;
+    background-color: var(--Quarternary1);
     border-radius: 10px;
 }
 .menu-button {
     border: none;
+    color: var(--menutextcolor);
     background: none;
     font-size: 2.5dvh;
     padding-top: 3.5dvh;
@@ -52,13 +55,13 @@ main {
 
 footer { 
     grid-area: footer;
-    height: 4dvh;
+    height: 10dvh;
     display: flex;
     margin-top: 1dvh;
     padding-top: 1dvh;
     padding-bottom: 1dvh;
     justify-content: center;
     align-items: center;
-    background-color:ghostwhite
+    background-color:var(--Primary1)
 }
 
