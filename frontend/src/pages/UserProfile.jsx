@@ -169,7 +169,7 @@ export default function UserProfileTest() {
     const handleShare = async () => {
         try {
             await navigator.clipboard.writeText(`http://circuitsocial.tech/profile/${profile.username}`);
-            alert("Copied");
+            // alert("Copied");
             console.log('Profile link copied')
         } catch (err) {
             console.log('Error copying profile link')

@@ -9,7 +9,16 @@ export default function PostDisplay(slug) {
     // const [user, setUser] = useState([]);
     const [thisUser, setThisUser] = useState(slug.post.user);
     const [thisPost, setThisPost] = useState(slug.post)
-    const formattedDate = new Date(thisPost.postDate).toLocaleDateString("en-US")
+    // const formattedDate = new Date(thisPost.postDate).toLocaleDateString("en-US")
+    const formattedDate = new Date(thisPost.postDate).toLocaleString("en-US", {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+    });
 
     useEffect(() => {
         getUser()
@@ -27,6 +36,7 @@ export default function PostDisplay(slug) {
 
     const navigate = useNavigate();
     const handleProfileClick = () => navigate(`/profile/${thisUser.username}`);
+    const handlePostClick = () => navigate(`/post/view/${thisPost.postID}`);
 
     return (
         <div className="post-container" data-cy="post-display">
@@ -39,6 +49,7 @@ export default function PostDisplay(slug) {
             <h2 className="post-title" data-cy="post-title">{thisPost.title}</h2>
             <p className="post-description" data-cy="post-description">{thisPost.description}</p>
             <h5 className="post-date" data-cy="post-date">{formattedDate}</h5>
+            <button onClick={handlePostClick}>x comments</button>
         </div>
     );
 }
