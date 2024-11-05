@@ -3,7 +3,8 @@ import { useState } from "react";
 import api from "../api"
 import { useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
-import "../styles/Form.css"
+// import "../styles/Form.css"
+
 
 function LoginForm({ route }) {
     const [username, setUsername] = useState("");    //These are the fields that must be filled out by the form
@@ -66,6 +67,8 @@ function LoginForm({ route }) {
     return (
         <form onSubmit={handleSubmit} className="form-container">
             <h1>Login</h1>
+            <div>
+            </div>
             <input
                 className="form-input"
                 type="text"

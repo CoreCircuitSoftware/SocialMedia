@@ -14,6 +14,7 @@ import GetMyProfile from "./components/GetMyProfile"
 import MessagePage from "./pages/Message"
 import FriendsList from "./pages/FriendsList"; // Adjust path if necessary
 import ProfileSearch from "./pages/ProfileSearch";
+import './globals.css'
 
 
 function Logout() { //Clear local storage of any tokens and redirect to login screen
@@ -42,8 +43,8 @@ function App() {
           }
         />
         <Route path="login" element={<Login />} />
-        <Route path="logout" element={<Logout />} />
         <Route path="register" element={<RegisterAndLogout />} />
+        <Route path="logout" element={<Logout />} />
         <Route path="home" element={<Home />} />
         <Route path="profile/:username" element={<UserProfile />} />
         <Route path="profile/:username/message" element={<MessagePage />} />

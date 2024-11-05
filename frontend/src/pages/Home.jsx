@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react"
 import React from "react"
 import api from "../api"
-import "../styles/Home.css"
+// import "../styles/Home.css"
 import { useNavigate } from "react-router-dom";
+import { AppBar, Toolbar, Typography, Container, Grid2, Paper, Box } from "@mui/material";
 import SearchBar from "../components/SearchBar";
 import Menu from "../components/Menu";
 import Footer from "../components/Footer";
@@ -63,21 +64,64 @@ export default function Home() {
     }
 
     return (
-        <main>
-            <SearchBar />
+        // <main>
+        //     <SearchBar />
+        //     <Menu />
+        //     <Footer />
+        //     <div className="feed-center">
+        //         <div className="post-holder">
+        //             {posts.map((post) => <PostDisplay post={post} key={post.postID} />)}
+        //         </div>
+        //     </div>
+        //     <div className="recs">
+        //         <h2>Check out these accounts!</h2>
+        //         <div>
+        //             {userRec.map((rec) => <RecsDisplay rec={rec} key={rec.id} />)}
+        //         </div>
+        //     </div>
+        // </main>
+        
+        <Box sx={{ display: 'flex' }}>
+            {/* Sidebar Menu */}
             <Menu />
-            <Footer />
-            <div className="feed-center">
-                <div className="post-holder">
-                    {posts.map((post) => <PostDisplay post={post} key={post.postID} />)}
-                </div>
-            </div>
-            <div className="recs">
-                <h2>Check out these accounts!</h2>
-                <div>
-                    {userRec.map((rec) => <RecsDisplay rec={rec} key={rec.id} />)}
-                </div>
-            </div>
-        </main>
+
+            {/* Main Content */}
+            <Box sx={{ flexGrow: 1, marginLeft: '250px', mt: 8 }}>
+                <AppBar position="fixed">
+                    <Toolbar>
+                        <Typography variant="h6" sx={{ flexGrow: 2, marginRight: 3 }}>
+                            CircuitSocial
+                        </Typography>
+                        <SearchBar />
+                    </Toolbar>
+                </AppBar>
+
+                <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+                    <Grid2 container spacing={4}>
+                        {/* Feed */}
+                        <Grid2 item xs={12} md={8}>
+                            {posts.map((post) => (
+                                <PostDisplay post={post} key={post.postID} />
+                            ))}
+                        </Grid2>
+
+                        {/* Right Sidebar */}
+                        <Grid2 item xs={12} md={4}>
+                            <Paper elevation={3} sx={{ p: 2 }}>
+                                <Typography variant="h6" gutterBottom>
+                                    Check out these accounts!
+                                </Typography>
+                                {userRec.map((rec) => (
+                                    <RecsDisplay rec={rec} key={rec.id} />
+                                ))}
+                            </Paper>
+                        </Grid2>
+                    </Grid2>
+                </Container>
+
+                {/* Footer */}
+                <Footer />
+            </Box>
+         </Box>
     );
 }
