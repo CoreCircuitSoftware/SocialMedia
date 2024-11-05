@@ -1,6 +1,10 @@
+@import "Themes.css";
+
+
 .post-container {
     border-style: solid;
-    border-color: darkgray;
+    background-color: var(--Secondary1);
+    border-color: var(--Quarternary1);
     border-radius: 2dvh;
     padding: 1dvh;
     margin: 2dvh;
@@ -12,7 +16,7 @@ header {
     align-items: center;
     padding-left: 1em;
     padding-top: 1em;
-    border-bottom: .1em solid gray;
+    border-bottom: .1em solid var(--Secondary1);
 }
 
 header .name-text {
@@ -25,14 +29,14 @@ header .name-text {
 }
 
 header .pfp {
-    border: .3em solid slateblue;
+    border: .3em solid var(--Tertiary1);
     width: 3em;
     height: 3em;
 }
 
 header button {
     border: 0;
-    background-color: white;
+    background-color: var(--Secondary1);
     width: 4em;
     height: 4em;
 }

@@ -1,0 +1,24 @@
+:root{
+
+    /* Quite clear */
+ 
+  --Primary1: #cbcbcc;
+  --Secondary1: #f2f2f2;
+  --Tertiary1: #174d38;
+  --Quarternary1: #4d1717;
+  --menutextcolor: white;
+
+  /* Harbor Haze */
+  /*
+  --Primary1: #909eae;
+  --Secondary1: #5c8dc5;
+  --Tertiary1: #ad9e90;
+  --Quarternary1: #736f60;
+  --menutextcolor: black;
+  */
+
+
+   /*NOTE I NEED TO DO COLOR MATH FOR HOVER EVENTS SO IT WORKS WITH DIFFERENT THEMES*/
+
+  /* To change theme, comment out current, then uncomment chosen*/
+}

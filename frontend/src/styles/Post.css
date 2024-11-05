@@ -1,5 +1,9 @@
+
+@import "Themes.css";
+
 Form {
     display: flex;
+    background-color: var(--Primary1);
     flex-direction: column;
     align-items: center;
     justify-content: center;
