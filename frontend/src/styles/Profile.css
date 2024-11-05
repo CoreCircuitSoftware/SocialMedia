@@ -15,9 +15,12 @@ body {
 
 .back-img{
     width: 100%;
+    object-fit: cover;
     height: 15vh;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
+    background-repeat: no-repeat;
+
 }
 
 .profile-card {
@@ -116,7 +119,21 @@ body {
 .profile-card .logout-button:hover {
     background-color: #176346;
 }
+.friend-requests{
+    color: black;
+    padding: 8px;
+    background-color: var(--Secondary1);
+    border-style: outset;
+    border-width: 5px;
+    border-color: var(--Tertiary1);
+    border-radius: 8px;
+    
 
+}
+.friend-requests .b{
+
+    background-color: var(--Quarternary1);
+}
 /* footer {
     display: flex;
     margin-top: 1dvh;

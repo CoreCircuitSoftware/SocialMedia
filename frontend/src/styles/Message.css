@@ -2,9 +2,26 @@
     display: flex;
     align-items: center;
     flex-direction: column;
+    background-color: white;
+    margin-left: 200px;
+    margin-right: 200px;
 }
 
 .messages-page img {
     max-height: 5dvh;
     max-width: 5dvh;
+}
+
+P{
+    color: black;
+    /* border-top-style: ridge;
+    border-left-style: ridge; */
+    max-width: 500px;
+    /* border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px; */
+    border-width: 3px;
+    margin-top: 5px;
+    padding: 5px;
+    word-wrap: break-word; /* Ensures long words break */
+    hyphens: auto; /* this doesnt work so sad*/
 }
