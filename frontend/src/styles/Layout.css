@@ -34,7 +34,7 @@ main {
     justify-content: start;
     align-items: center;
     background-color: var(--Quarternary1);
-    border-radius: 10px;
+    border-radius: 0px;
 }
 .menu-button {
     border: none;
