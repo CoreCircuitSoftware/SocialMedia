@@ -203,10 +203,10 @@ export default function UserProfileTest() {
                             <div className="buttons">
                                 {isMyProfile ? (
                                     <div>
-                                        <button className="logout-button" onClick={handleShare}>Share</button>
-                                        <button className="logout-button" onClick={handlePostCreate}>Create Post</button>
-                                        <button className="logout-button" data-cy="logout" onClick={handleLogout}>Logout</button>
+                                        <button className="edit-button" onClick={handleShare}>Share</button>
+                                        <button className="edit-button" onClick={handlePostCreate}>Create Post</button>
                                         <button className="edit-button" onClick={handleEdit}>Edit</button>
+                                        <button className="logout-button" data-cy="logout" onClick={handleLogout}>Logout</button>
                                     </div>
                                 ) : (
                                     <div>

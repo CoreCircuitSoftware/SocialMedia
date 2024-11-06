@@ -36,7 +36,7 @@
 .form-button:hover {
     outline: solid;
     outline-color: white;
-    background-color: #176346;
-
+    background-color:color-mix(in srgb, var(--Tertiary1) 100%, rgb(0, 255, 238) 20%) ;
+    
     
   }
