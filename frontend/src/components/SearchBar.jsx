@@ -18,15 +18,16 @@ export default function SearchBar() {
     }
 
     return (
-        <div className="search-bar">
+        <div className="search-bar" data-cy="search-bar">
             <input
                 className="search-input"
                 type="text"
                 value={userChunk}
                 onChange={(e) => setUserChunk(e.target.value)}
                 placeholder="Find users"
+                data-cy="search-input"
             />
-            <button className="form-button" onClick={handleSearch}>
+            <button className="form-button" onClick={handleSearch} data-cy="search-button">
                 Search
             </button>
         </div>
