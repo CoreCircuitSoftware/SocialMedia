@@ -24,11 +24,11 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
-const username = "123"
-const password = "123"
+// const username = "123"
+// const password = "123"
 const key = "CS4800"
 
-Cypress.Commands.add('login', () => {
+Cypress.Commands.add('login', (username, password) => {
     cy.session('user', () => {
         cy.visit('/login')
         cy.get('[data-cy="username"]').type(username)
@@ -36,5 +36,13 @@ Cypress.Commands.add('login', () => {
         cy.get('[data-cy="key"]').type(key)
         cy.get('[data-cy="login"]').click()
         cy.url().should('include', '/profile');
+    })
+})
+
+Cypress.Commands.add('assertValueCopiedToClipboard', value => { // Used to access clipboard to verify copy
+    cy.window().then(win => {
+      win.navigator.clipboard.readText().then(text => {
+        expect(text).to.eq(value)
+      })
     })
 })

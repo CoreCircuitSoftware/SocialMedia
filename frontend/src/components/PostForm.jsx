@@ -10,43 +10,13 @@ export default function PostForm() {
     const [profile, setProfile] = useState([]);
     const [user, setUser] = useState([])
     const [title, setTitle] = useState("");
+    const [titleError, setTitleError] = useState(false);
     const [description, setDescription] = useState("");
-    //const [community, setCommunity] = useState("");
-
-    // useEffect(() => {
-    //     getProfile();
-    //     setUser(profile.id)
-    // }, [])
-    // const getProfile = () => {
-    //     api
-    //         .get(`/api/profile/`)
-    //         .then((res) => res.data)
-    //         .then((data) => {
-    //             console.log(data)
-    //             setProfile(data)
-    //         })
-    //         .catch((err) => alert(err));
-    // }
-
-    // useEffect(() => {
-    //     getProfile(); // Fetch profile when component mounts
-    // }, []);
-
-    // const getProfile = async () => {
-    //     try {
-    //         const res = await api.get(`/api/profile/`);
-    //         const data = res.data;
-    //         console.log(data);
-    //         setProfile(data); // Set profile data
-    //         setUser(data.id); // Set user ID based on profile data
-    //     } catch (err) {
-    //         alert("Failed to load profile: " + err);
-    //     }
-    // };
 
     const createPost = (e) => {
         e.preventDefault();
-        api
+        if (title) {
+            api
             .post("/api/createpost/", {title, description})
             .then((res) => {
                 //if (res.status === 201) alert("Post created!");
@@ -55,6 +25,9 @@ export default function PostForm() {
                 navigate("/profile")
             })
             .catch((err) => alert(err));
+        } else {
+            setTitleError(true)
+        }
     }
 
     const handleReturn = async (e) => {
@@ -66,13 +39,17 @@ export default function PostForm() {
         <form onSubmit={createPost} className="post-submit-container">
             <h2>Create Post</h2>
             <label htmlFor="title">Title:</label>
+            {titleError && (
+                <h5 data-cy="title-error">Error: Title required for post</h5> 
+            )}
             <input id="post_title"
-                className="form-input"
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Enter Post Title"
-                />
+            className="form-input"
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter Post Title"
+            data-cy="post-title"
+            />
             <label htmlFor="description">Description:</label>
             <input id="post_description"
                 className="form-input"
@@ -80,11 +57,12 @@ export default function PostForm() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Enter Post Description"
+                data-cy="post-description"
                 />
-            <button className="form-button" type="submit">
+            <button className="form-button" type="submit" data-cy="submit-post">
                 Submit Post
             </button>
-            <button className="form-button" type="button" onClick={handleReturn}>
+            <button className="form-button" type="button" onClick={handleReturn} data-cy="go-back">
                 Go Back
             </button>
         </form>
