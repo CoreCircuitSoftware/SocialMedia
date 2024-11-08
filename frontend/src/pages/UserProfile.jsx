@@ -29,6 +29,10 @@ export default function UserProfileTest() {
     }, [username]);
 
     useEffect(() => {
+        console.log(posts)
+    }, [posts]);
+
+    useEffect(() => {
         if (profile.id && myProfile.id) {
             if (profile.id === myProfile.id) {
                 setIsMyProfile(true);
@@ -188,22 +192,21 @@ export default function UserProfileTest() {
             <Footer />
             <div className="content">
                 <div className="profile-top">
-                    <img className="back-img" src={profile.backgroundImage} alt="background" data-cy="banner" />
+                    <img className="back-img" src={profile.backgroundImage} alt="background" />
                     <div className="profile-card">
                         <div className="card-upper">
-                            <img className="pfp" src={profile.profilePicture} alt="profile" data-cy="pfp" />
+                            <img className="pfp" src={profile.profilePicture} alt="profile" />
                             <div className="names">
-                                <p className="display-name" data-cy="display-name">{profile.displayName} </p>
-                                <p className="username" data-cy="username">@{profile.username}</p>
+                                <p className="display-name">{profile.displayName}</p>
+                                <p className="username">@{profile.username}</p>
                             </div>
                             <div className="buttons">
                                 {isMyProfile ? (
                                     <div>
-
-                                        <button className="edit-button" onClick={handleShare} data-cy="share">Share</button>
-                                        <button className="edit-button" onClick={handlePostCreate} data-cy="create-post">Create Post</button>
-                                        <button className="edit-button" onClick={handleLogout} data-cy="logout">Logout</button>
-                                        <button className="logout-button" onClick={handleEdit} data-cy="edit">Edit</button>
+                                        <button className="edit-button" onClick={handleShare}>Share</button>
+                                        <button className="edit-button" onClick={handlePostCreate}>Create Post</button>
+                                        <button className="edit-button" onClick={handleEdit}>Edit</button>
+                                        <button className="logout-button" data-cy="logout" onClick={handleLogout}>Logout</button>
                                     </div>
                                 ) : (
                                     <div>
@@ -226,12 +229,12 @@ export default function UserProfileTest() {
                                     </div>
                                 )}
                                 <div className="friends-count">
-                                    <p onClick={handleViewFriends} data-cy="friends">Friends {friendCount}</p>
+                                    <p onClick={handleViewFriends}>Friends {friendCount}</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="bio" data-cy="bio" >{profile.bio}</div>
+                        <div className="bio">{profile.bio}</div>
 
                         {/* Display Pending Friend Requests */}
                         {isMyProfile && friendRequests.length > 0 && (
@@ -263,13 +266,10 @@ export default function UserProfileTest() {
                                 </ul>
                             </div>
                         )} */}
-                    {(posts.length > 0) ? (
-                        <div className="post-holder" data-cy="posts">
+
+                        <div className="post-holder">
                             {posts.map((post) => <PostDisplay post={post} key={post.postID} />)}
                         </div>
-                        ) : (
-                            <h3 data-cy="user-no-posts">{username} hasn't made any posts yet</h3>
-                        )}
                     </div>
                 </div>
             </div>

@@ -57,6 +57,7 @@ export default function Home() {
                         i--
                     }
                 }
+                console.log(userArr)
                 setUserRec(userArr)
             })
             .catch((err) => console.log(err));

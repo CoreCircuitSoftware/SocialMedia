@@ -29,16 +29,16 @@ export default function PostDisplay(slug) {
     const handleProfileClick = () => navigate(`/profile/${thisUser.username}`);
 
     return (
-        <div className="post-container" data-cy="post-display">
+        <div className="post-container">
             <header>
-                <button onClick={handleProfileClick} data-cy="profile-picture"><img className="pfp" src={thisUser.profilePicture} /></button>
+                <button onClick={handleProfileClick}><img className="pfp" src={thisUser.profilePicture} /></button>
                 <div className="name-text">
                     <h1>{thisUser.displayName}  @{thisUser.username}</h1>
                 </div>
             </header>
-            <h2 className="post-title" data-cy="post-title">{thisPost.title}</h2>
-            <p className="post-description" data-cy="post-description">{thisPost.description}</p>
-            <h5 className="post-date" data-cy="post-date">{formattedDate}</h5>
+            <h2 className="post-title">{thisPost.title}</h2>
+            <p className="post-description">{thisPost.description}</p>
+            <h5 className="post-date">{formattedDate}</h5>
         </div>
     );
 }

@@ -62,7 +62,6 @@ function ProfileForm() {
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder={profile.displayName}
-                data-cy="display-name"
             />
             <label htmlFor="bio">Bio</label>
             <textarea id="bio"
@@ -71,7 +70,6 @@ function ProfileForm() {
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 placeholder={profile.bio}
-                data-cy="bio"
             />
             <label htmlFor="pfp">Profile Picture</label>
             <input id="pfp"
@@ -80,16 +78,14 @@ function ProfileForm() {
                 value={pfp}
                 onChange={(e) => setPfp(e.target.value)}
                 placeholder={profile.profilePicture}
-                data-cy="pfp"
             />
-            <label htmlFor="back_img">Banner</label>
+            <label htmlFor="back_img">Background Image</label>
             <input id="back_img"
                 className="form-input"
                 type="text"
                 value={backImg}
                 onChange={(e) => setBackImg(e.target.value)}
                 placeholder={profile.backgroundImage}
-                data-cy="banner"
             />
             {/* <label htmlFor="back_col">Background Color</label>
             <input id="back_col"
@@ -99,10 +95,10 @@ function ProfileForm() {
                 onChange={(e) => setBackCol(e.target.value)}
                 placeholder={profile.backgroundImage}
             /> */}
-            <button className="form-button" type="submit" data-cy="confirm">
+            <button className="form-button" type="submit">
                 Confirm
             </button>
-            <button className="form-button" type="button" onClick={handleCancel} data-cy="cancel">
+            <button className="form-button" type="button" onClick={handleCancel}>
                 Cancel
             </button>
         </form>

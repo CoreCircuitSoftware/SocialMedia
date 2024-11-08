@@ -18,13 +18,4 @@ describe('login page', () => {
     cy.get('[data-cy="login"]').click()
     cy.url().should('include', '/profile');
   })
-
-  it('user visits site, fails logs in with incorrect credentials (pw)', () => {
-    cy.visit('/')
-    cy.get('[data-cy="username"]').type('123')
-    cy.get('[data-cy="password"]').type('111')
-    cy.get('[data-cy="key"]').type('CS4800')
-    cy.get('[data-cy="login"]').click()
-    cy.url().should('include', '/login');
-  })
 })

@@ -14,7 +14,7 @@ export default function RecsDisplay(slug) {
 
     return (
         <div className="recs-container">
-            <button className="user-rec" onClick={handleGoToAccount} data-cy="rec">{thisUser.username}</button>
+            <button className="user-rec" onClick={handleGoToAccount}>{thisUser.username}</button>
         </div>
     );
 }

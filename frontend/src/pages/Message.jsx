@@ -165,27 +165,26 @@ export default function MessagePage() {
                 <h1>Your convo with {profile.username}</h1>
             </div>
             
-            <div className="message-holder" data-cy="message-holder">
+            <div className="message-holder">
                 {messages.map((messages) =>
                 <MessageDisplay message={messages} key={`${messages.messageID}`} />
                 )}
             </div>
-            { convoExists ? (
-            <form onSubmit={handleSendMessage} className="message-input" data-cy="message-form">
+            { convoExists && (
+            <form onSubmit={handleSendMessage} className="message-input">
                 <input id="input-box"
                     className="form-input"
                     type="text"
                     value={curMessage}
                     onChange={(e) => setCurMessage(e.target.value)}
                     placeholder={placeholderText}
-                    data-cy="message-input"
                 />
-                <button className="send-message" type="submit" data-cy="send-message">
+                <button className="send-message" type="submit">
                     Send Message
                 </button>
-            </form> )
-            :  (
-                <form data-cy="no-msg-user-before">
+            </form> )}
+            { !convoExists && (
+                <form>
                     <h3>You have not messaged this user before</h3>
                     <h4>Begin here!</h4>
                     <button onClick={createConvo} type="submit">

@@ -51,11 +51,11 @@ export default function ProfileSearch() {
             <Menu />
             <Footer />
             <div className="content">
-                {userchunk !== undefined ? <h1>Results</h1> : <h1 data-cy="search-all">All Profiles</h1>}
+                {userchunk !== undefined ? <h1>Results</h1> : <h1>All Profiles</h1>}
                 <ul>
                     {results.length > 0 ? results.map((profile) => {
                         return (
-                            <li key={profile.username} data-cy="search-user">
+                            <li key={profile.username}>
                                 <img className="friendlistimage" src={profile.profilePicture} alt="profile" />
                                 <a href={`/profile/${profile.username}`}>{profile.username}</a>
                                 <a href={`/profile/${profile.username}/message`}>
@@ -64,7 +64,7 @@ export default function ProfileSearch() {
                             </li>
                         );
                     }) : (
-                        <p data-cy="no-results">No Results found.</p>
+                        <p>No Results found.</p>
                     )}
                 </ul>
             </div>
