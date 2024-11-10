@@ -51,6 +51,13 @@ function ProfileForm() {
         navigate(`/profile/${profile.username}`)
     }
 
+    const handleDeleteProfile = () => {
+        if (window.confirm("Delete your account? This cannot be undone")) {
+            api.delete(`/api/profile/delete/`)
+            navigate(`/login`).then(alert('Account deleted!'))
+        }
+    }
+
     return (
         <form onSubmit={handleSubmit} className="form-container">
             <h1>Edit Profile</h1>
@@ -104,6 +111,9 @@ function ProfileForm() {
             </button>
             <button className="form-button" type="button" onClick={handleCancel} data-cy="cancel">
                 Cancel
+            </button>
+            <button className="form-button" type="button" onClick={handleDeleteProfile} data-cy="delete">
+                Delete
             </button>
         </form>
     );

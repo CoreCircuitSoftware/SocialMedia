@@ -173,6 +173,25 @@ class TestUserProfileUpdateView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.user.refresh_from_db()
         self.assertEqual(self.user.displayName, 'updatedDisplayName')
+        
+class TestUserProfileDeleteView(TestCase):
+    url = reverse('user-profile-delete')
+
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create_user(
+            username='testUsername',
+            password='testPassword',
+            email='test@mail.com',
+            displayName='testDisplayName'
+        )
+        self.token = str(AccessToken.for_user(self.user))
+        self.client = APIClient()
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
+
+    def test_profile_delete(self):
+        response = self.client.delete(self.url)
+        self.assertEqual(response.status_code, 204)
 
 class TestSearchProfilesView(TestCase):
     url = reverse('profile-search', kwargs={'username_chunk': 'search'})

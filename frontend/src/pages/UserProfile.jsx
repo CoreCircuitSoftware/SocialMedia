@@ -177,8 +177,9 @@ export default function UserProfileTest() {
     }
 
     const handleRemoveFriend = () => {
-        if (window.confirm("Remove Friend?"))
-            api.delete(`/api/friend/remove/${friendShipID}/`)
+        if (window.confirm("Remove Friend?")) {
+            api.delete(`/api/friends/remove/${friendShipID}/`).then(getProfile())
+        }
     }
 
     return (
@@ -262,10 +263,10 @@ export default function UserProfileTest() {
                                 </ul>
                             </div>
                         )} */}
-                    {(posts.length > 0) ? (
-                        <div className="post-holder" data-cy="posts">
-                            {posts.map((post) => <PostDisplay post={post} key={post.postID} />)}
-                        </div>
+                        {(posts.length > 0) ? (
+                            <div className="post-holder" data-cy="posts">
+                                {posts.map((post) => <PostDisplay post={post} key={post.postID} />)}
+                            </div>
                         ) : (
                             <h3 data-cy="user-no-posts">{username} hasn't made any posts yet</h3>
                         )}

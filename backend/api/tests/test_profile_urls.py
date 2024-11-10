@@ -55,6 +55,10 @@ class TestUrls(TestCase):
         url = reverse('user-profile-update')
         self.assertEqual(resolve(url).func.view_class, UserProfileUpdate)
         
+    def test_delete_is_resolved(self):
+        url = reverse('user-profile-delete')
+        self.assertEqual(resolve(url).func.view_class, UserProfileDelete)
+        
     def test_search_profile_is_resolved(self):
         url = reverse('profile-search', kwargs={'username_chunk':'test'})
         self.assertEqual(resolve(url).func.view_class, SearchProfiles)

@@ -42,6 +42,14 @@ class UserProfileUpdate(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user
     
+class UserProfileDelete(generics.DestroyAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self):
+        print(self.request.method)
+        return self.request.user
+    
 class SearchProfiles(generics.ListAPIView):
     print('searching')
     serializer_class = UserSerializer

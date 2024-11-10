@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics, permissions
 from rest_framework.response import Response
 from ..Models.user import *
 from ..Models.friends import *
@@ -6,6 +6,8 @@ from ..serializers import *
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
+from django.http import Http404
+from rest_framework import status
 
 class ListFriends(generics.ListAPIView):  # This view allows a user to see a list of their friends (ListAPIView provides a read-only list of records)
     serializer_class = FriendSerializer  # Specifies the serializer that will format the output data (Friend objects)
@@ -53,15 +55,17 @@ class AcceptFriendRequest(generics.UpdateAPIView):  # This view allows updating 
         else:
             raise ValidationError("Invalid value for 'accepted'.")
         
-class RemoveFriend(generics.DestroyAPIView):
+class DeleteFriendship(generics.DestroyAPIView):
     queryset = Friend.objects.all()
     serializer_class = FriendSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     
-    def perform_destroy(self, instance):
+    def get_object(self):
         friend_ship_id = self.kwargs['pk']
-        friend_instance = get_object_or_404(Friend, friendShipID=friend_ship_id)
-        friend_instance.delete()
+        try:
+            return Friend.objects.get(friendShipID=friend_ship_id)
+        except Friend.DoesNotExist:
+            raise Http404("Friendship not found")
         
 # List Friend Requests for the current logged-in user
 class ListFriendRequests(generics.ListAPIView):
