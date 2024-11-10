@@ -264,7 +264,7 @@ export default function UserProfileTest() {
                         )} */}
                     {(posts.length > 0) ? (
                         <div className="post-holder" data-cy="posts">
-                            {posts.map((post) => <PostDisplay post={post} key={post.postID} />)}
+                            {posts.map((post) => <PostDisplay post={post} curUser={myProfile} key={post.postID} />)}
                         </div>
                         ) : (
                             <h3 data-cy="user-no-posts">{username} hasn't made any posts yet</h3>

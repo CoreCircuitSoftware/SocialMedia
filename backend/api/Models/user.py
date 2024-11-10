@@ -49,4 +49,4 @@ class CustomUser(AbstractBaseUser):
     objects = CustomUserManager()
 
     def __str__(self):
-        return self.name
+        return self.username

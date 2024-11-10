@@ -4,6 +4,7 @@ from .Views.user import *
 from .Views.friends import *
 from .Views.message import *
 from .Views.post import *
+from .Views.comment import *
 
 urlpatterns = [
     path("profile/", UserProfileRead.as_view(), name="profile-read"),
@@ -19,7 +20,23 @@ urlpatterns = [
     path("profile/posts/<uuid:user_id>/", PostListView.as_view(), name="view-post-user"),
     path("posts/new/", PostListSortNew.as_view(), name="view-post-sort-new"),
     path("posts/<int:pk>/", PostDetailView.as_view(), name="view-post"),
+    path("posts/vote/delete/<int:pk>/", PostVoteDeleteView.as_view(), name="delete-post"),
+    path("posts/vote/new/", PostVotesCreate.as_view(), name="create-vote"),
+    path("posts/vote/update/<int:pk>/", PostVotesUpdate.as_view(), name="update-vote"),
+    path("posts/vote/gettotal/<int:pk>/", PostVotesReturnView.as_view(), name="get-total-votes"),
+    path("posts/vote/get/<int:pk>/", PostVotesGetView.as_view(), name="get-vote"),
+    path("posts/comments/gettotal/<int:pk>/", PostCommentsVotesReturnView.as_view(), name="get-total-votes-comments"),
+    path("posts/delete/<int:pk>/", PostDeleteView.as_view(), name="delete-post"),
     path("comment/submit/", CommentCreate.as_view(), name="submit-comment"),
+    path("comment/get/from-post/<int:pk>/", PostCommentsView.as_view(), name="get-comments-post"),
+    path("comment/<int:pk>/", CommentDetailView.as_view(), name="get-comments-replies"),
+    path("comment/get/replies/<int:pk>/", CommentPageReplies.as_view(), name="get-comments-replies"),
+    path("comment/delete/<int:pk>/", CommentDeleteView.as_view(), name="delete-comment"),
+    path("comment/vote/gettotal/<int:pk>/", CommentsVotesReturnView.as_view(), name="get-total-votes"),
+    path("comment/vote/new/", HandleCommentsVoteCreate.as_view(), name="handle-vote"),
+    path("comment/vote/get/<int:pk>/", HandleCommentVoteGet.as_view(), name="handle-vote-get"),
+    path("comment/vote/delete/<int:pk>/", HandleCommentVoteDelete.as_view(), name="handle-vote-delete"),
+    path("comment/vote/update/<int:pk>/", HandleCommentVoteUpdate.as_view(), name="handle-vote-update"),
     path('friends/<uuid:user_id>/', ListFriends.as_view(), name='list-friends'),
     path('friend-request/<uuid:user2_id>/', SendFriendRequest.as_view(), name='send-friend-request'),
     path('friend-request/accept/<int:pk>/', AcceptFriendRequest.as_view(), name='accept-friend-request'),

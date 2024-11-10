@@ -5,16 +5,16 @@ import Menu from '../components/Menu';
 import SearchBar from '../components/SearchBar';
 import Footer from '../components/Footer';
 import CommentDisplay from "../components/CommentsDisplay";
-import "../styles/Post.css";
+import "../styles/CommentPage.css";
 
-export default function PostPage() {
-    const { postid } = useParams()
-    const [post, setPost] = useState([])
+export default function CommentPage() {
+    const { commentID } = useParams()
+    const [mainComment, setMainComment] = useState([])
     const [thisUser, setThisUser] = useState([])
     const [commentContent, setcommentContent] = useState('')
     const [comments, setComments] = useState([])
     // const formattedDate = new Date(post.postDate).toLocaleDateString("en-US")
-    const formattedDate = new Date(post.postDate).toLocaleString("en-US", {
+    const formattedDate = new Date(mainComment.commentDate).toLocaleString("en-US", {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
@@ -25,30 +25,30 @@ export default function PostPage() {
     });
 
     useEffect(() => { 
-        api.get(`/api/posts/${postid}/`)
+        api.get(`/api/comment/${commentID}/`)
             .then((res) => res.data)
             .then((data) => {
-                setPost(data)
+                setMainComment(data)
             })
             .catch((err) => console.log("Error LOL"))
-    }, [postid])
+    }, [commentID])
 
     useEffect(() => {
-        if (post.user === undefined) return
+        if (mainComment.user === undefined) return
         api
-            .get(`/api/profile/getuserdata2/${post.user}/`)
+            .get(`/api/profile/getuserdata2/${mainComment.user}/`)
             .then((res) => res.data)
             .then((data) => {
                 setThisUser(data)
                 setcommentContent('')
             })
             .catch((err) => alert("error"));
-    }, [post])
+    }, [mainComment])
 
     const handleCommentSubmit = (e) => {
         console.log("submitting comment")
         api
-            .post('/api/comment/submit/', {commentContent: commentContent, post: post.postID})
+            .post('/api/comment/submit/', {commentContent: commentContent, post: mainComment.post, replyTo: mainComment.commentID})
             .then((res) => {
                 window.location.reload();
             })
@@ -56,9 +56,9 @@ export default function PostPage() {
     }
 
     const getComments = () => {
-        if (typeof(post.postID) == "number") {
+        if (typeof(mainComment.commentID) == "number") {
             api
-            .get(`/api/comment/get/from-post/${post.postID}/`)
+            .get(`/api/comment/get/replies/${mainComment.commentID}/`)
             .then((res) => res.data)
             .then((data) => {
                 setComments(data.reverse())
@@ -69,15 +69,14 @@ export default function PostPage() {
 
     useEffect(() => {
         getComments()
-    }, [post])
-    
+    }, [mainComment])    
 
     const navigate = useNavigate()
     const handleProfileClick = () => navigate(`/profile/${thisUser.username}`)
     const handleShare = async () => {
         event.preventDefault()
         try {
-            await navigator.clipboard.writeText(`http://circuitsocial.tech/profile/${post.postID}`);
+            await navigator.clipboard.writeText(`http://circuitsocial.tech/comment/view/${mainComment.commentID}`);
         } catch (err) {
             console.log('Error copying profile link')
         }
@@ -95,12 +94,11 @@ export default function PostPage() {
             <SearchBar />
             <Menu />
             <div className="content">
-                <div className="main-post">
+                <div className="main-comment">
                 <button onClick={handleProfileClick} data-cy="profile-picture"><img className="pfp" src={thisUser.profilePicture} /></button>
                 <button className="logout-button" onClick={handleShare} data-cy="share">Share</button> 
-                <h1 className="post-title" data-cy="post-title">{post.title}</h1>
-                <p className="post-description" data-cy="post-description">{post.description}</p>
-                <h5 className="post-date" data-cy="post-date">{formattedDate}</h5>
+                <h1 className="comment">{mainComment.commentContent}</h1>
+                <h5 className="comment-date">{formattedDate}</h5>
                 </div>
                 <div className="comments-textbox">
                     <form>

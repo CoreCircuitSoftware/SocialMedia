@@ -14,6 +14,7 @@ import MessagePage from "./pages/Message"
 import FriendsList from "./pages/FriendsList"; // Adjust path if necessary
 import ProfileSearch from "./pages/ProfileSearch";
 import PostPage from "./pages/PostPage";
+import CommentPage from "./pages/CommentPage";
 
 
 function Logout() { //Clear local storage of any tokens and redirect to login screen
@@ -52,6 +53,7 @@ function App() {
         <Route path="notes" element={<Notes />} />
         <Route path="post/create" element={<PostForm />} />
         <Route path="post/view/:postid" element={<PostPage />} />
+        <Route path="comment/view/:commentID" element={<CommentPage />} />
         <Route path="message/" element={<PostForm />} />
         <Route path="profile/:username/friends" element={<FriendsList />} />
         <Route path="search/profile/:userchunk?" element={<ProfileSearch />} />
