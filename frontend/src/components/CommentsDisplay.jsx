@@ -8,8 +8,19 @@ export default function CommentDisplay(slug) {
     const [thisUser, setThisUser] = useState();
     const [commentVote, setCommentVote] = useState();
     const [isMyComment, setIsMyComment] = useState(false);
+    const [numOfReplies, setNumOfReplies] = useState(0);
     const [votes, setVotes] = useState({upvotes: 0, downvotes: 0, total: 0});
     const formattedDate = new Date(comment.commentDate).toLocaleString("en-US", {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+    });
+
+    const formattedEditDate = new Date(comment.editDate).toLocaleString("en-US", {
         year: 'numeric',
         month: 'short',
         day: 'numeric',
@@ -113,7 +124,6 @@ export default function CommentDisplay(slug) {
                 setCommentVote(voteType)
         } else if (commentVote == voteType) {
            changeVoteCountLocally(voteType, 1)
-            console.log(votes)
             api
                 .delete(`api/comment/vote/delete/${comment.commentID}/`)
                 .catch((err) => console.log(err))
@@ -127,6 +137,16 @@ export default function CommentDisplay(slug) {
         }
     }
 
+    const getCommentRepliesTotal = async () => {
+        api
+            .get(`/api/comment/replies/gettotal/${comment.commentID}/`)
+            .then((res) => res.data)
+            .then((data) => {
+                setNumOfReplies(data.length)
+            })
+            .catch((err) => console.log(err))
+    }
+
     const handleCommentDelete = () => {
         api
             .delete(`/api/comment/delete/${comment.commentID}/`)
@@ -136,24 +156,31 @@ export default function CommentDisplay(slug) {
             .catch((err) => console.log(err))
     }
 
-    useEffect(() => {getUser(), getVoteTotals()}, [])
+    useEffect(() => {getUser(), getVoteTotals(), getCommentRepliesTotal()}, [])
     useEffect(() => {getVote(), getMyProfile()}, [thisUser])
 
     const navigate = useNavigate();
     const handleProfileClick = () => navigate(`/profile/${thisUser.username}`);
     const handleCommentClick = () => navigate(`/comment/view/${comment.commentID}`);
+    const handleCommentsShare = async () => {
+        event.preventDefault()
+        try {
+            await navigator.clipboard.writeText(`http://circuitsocial.tech/comment/view/${comment.commentID}`);
+        } catch (err) {
+            console.log('Error copying profile link')
+        }
+    }
 
     return (
         <div className="comment_main">
             {thisUser ? (
-                <div className="comment_container">
-                    <div class="dropdown-content">
-                        {(isMyComment) ? 
-                            (<div>
-                                <button className="comment-edit-button">edit</button>
-                                <button className="comment-delete-button" onClick={handleCommentDelete}>delete</button>
-                                {!comment.replyTo ? <button className="comment-share-button">share</button> : null}
-                            </div>) : (!comment.replyTo ? <button className="comment-share-button">share</button> : null)}
+                <div className="comment_container">              
+                    <p>{comment.commentContent}</p>
+                    <p>{thisUser.username}</p>
+                    <p>{formattedDate}</p>
+                    {comment.hasEdit && (<p>Edited: {formattedEditDate}</p>)}
+                    <div className="comment-stats">
+                        {votes ? <p>{votes.total} votes</p> : <p>No votes yet</p>}
                     </div>
                     <div className="comment-options">
                         <button onClick={() => handleVote(true)}>
@@ -162,14 +189,16 @@ export default function CommentDisplay(slug) {
                         <button onClick={() => handleVote(false)}>
                             {commentVote == 0 ? <b>Downvoted</b> : "Downvote"}
                         </button>
-                        {!comment.replyTo ? <button className="comment-reply-button" onClick={handleCommentClick}>replies</button> : null}
+                        {!comment.replyTo ? <button className="comment-reply-button" onClick={handleCommentClick}>{numOfReplies} replies</button> : null}
                     </div>
-                    <div className="comment-stats">
-                        {votes ? <p>{votes.total} votes</p> : <p>No votes yet</p>}
-                    </div>                   
-                    <p>{comment.commentContent}</p>
-                    <p>{thisUser.username}</p>
-                    <p>{formattedDate}</p>                    
+                    <div class="dropdown-content">
+                        {(isMyComment) ? 
+                            (<div>
+                                <button className="comment-edit-button" onClick={() => navigate(`/comment/edit/${comment.commentID}`)}>edit</button>
+                                <button className="comment-delete-button" onClick={handleCommentDelete}>delete</button>
+                                {!comment.replyTo ? <button className="comment-share-button" onClick={handleCommentsShare}>share</button> : null}
+                            </div>) : (!comment.replyTo ? <button className="comment-share-button" onClick={handleCommentsShare}>share</button> : null)}
+                    </div>              
                 </div>
             ) : comment.user}
         </div>

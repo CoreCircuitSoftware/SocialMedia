@@ -11,6 +11,7 @@ export default function PostPage() {
     const { postid } = useParams()
     const [post, setPost] = useState([])
     const [thisUser, setThisUser] = useState([])
+    const [isMyPost, setIsMyPost] = useState(false)
     const [commentContent, setcommentContent] = useState('')
     const [comments, setComments] = useState([])
     // const formattedDate = new Date(post.postDate).toLocaleDateString("en-US")
@@ -23,6 +24,24 @@ export default function PostPage() {
         second: '2-digit',
         hour12: true
     });
+
+    const formattedEditDate = new Date(post.editDate).toLocaleString("en-US", {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+    });
+
+    const getMyProfile = () => {
+        api
+            .get(`/api/profile/`)
+            .then((res) => {
+                setIsMyPost(res.data.id === post.user)
+            }
+    )}
 
     useEffect(() => { 
         api.get(`/api/posts/${postid}/`)
@@ -69,6 +88,7 @@ export default function PostPage() {
 
     useEffect(() => {
         getComments()
+        getMyProfile()
     }, [post])
     
 
@@ -77,7 +97,7 @@ export default function PostPage() {
     const handleShare = async () => {
         event.preventDefault()
         try {
-            await navigator.clipboard.writeText(`http://circuitsocial.tech/profile/${post.postID}`);
+            await navigator.clipboard.writeText(`http://circuitsocial.tech/post/view/${post.postID}`);
         } catch (err) {
             console.log('Error copying profile link')
         }
@@ -97,10 +117,14 @@ export default function PostPage() {
             <div className="content">
                 <div className="main-post">
                 <button onClick={handleProfileClick} data-cy="profile-picture"><img className="pfp" src={thisUser.profilePicture} /></button>
-                <button className="logout-button" onClick={handleShare} data-cy="share">Share</button> 
+                <div>
+                    <button className="share-post-button" onClick={handleShare} data-cy="share-post">Share</button>
+                    {isMyPost && (<button className="post-edit-button" onClick={() => navigate(`/post/edit/${thisPost.postID}`)}>edit</button>)}
+                </div>  
                 <h1 className="post-title" data-cy="post-title">{post.title}</h1>
                 <p className="post-description" data-cy="post-description">{post.description}</p>
                 <h5 className="post-date" data-cy="post-date">{formattedDate}</h5>
+                {post.hasEdit && (<h6 className="edit-date">Edited: {formattedEditDate}</h6>)}
                 </div>
                 <div className="comments-textbox">
                     <form>

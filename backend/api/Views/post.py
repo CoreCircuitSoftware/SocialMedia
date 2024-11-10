@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.exceptions import ValidationError, PermissionDenied
+from django.utils import timezone
 
 class PostCreate(generics.CreateAPIView):
     serializer_class = PostSerializer
@@ -128,3 +129,21 @@ class PostDeleteView(generics.DestroyAPIView):
             instance.delete()
         except Exception as e:
             raise ValidationError(f"Error deleting post: {str(e)}")
+        
+class PostUpdate(generics.UpdateAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        user = self.request.user
+        post_id = self.kwargs['pk']
+        post = get_object_or_404(Post, user=user, postID=post_id)
+        if post.user != self.request.user:
+            raise PermissionDenied("You cannot update another user's post")
+        return post
+
+    def perform_update(self, serializer):
+        try:
+            serializer.save(hasEdit=True,editDate=timezone.now())
+        except Exception as e:
+            raise ValidationError(f"Error updating post: {str(e)}")

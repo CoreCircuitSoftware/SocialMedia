@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.exceptions import ValidationError, PermissionDenied
-
+from django.utils import timezone
 
 class CommentCreate(generics.CreateAPIView):
     serializer_class = CommentSerializer
@@ -123,3 +123,30 @@ class CommentsVotesReturnView(generics.ListAPIView):
     def get_queryset(self):
         comment_id = self.kwargs['pk']
         return CommentVote.objects.filter(comment=comment_id)
+    
+class CommentUpdate(generics.UpdateAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        user = self.request.user
+        comment_id = self.kwargs['pk']
+        comment = get_object_or_404(Comment, user=user, commentID=comment_id)
+        if comment.user != self.request.user:
+            raise PermissionDenied("You cannot update another user's comment")
+        return comment
+    
+    def perform_update(self, serializer):
+        try:
+            serializer.save(hasEdit=True,editDate=timezone.now())
+        except ValidationError as e:
+            print("Validation error:", e.detail)
+            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+        
+class CommentRepliesReturnView(generics.ListAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        comment_id = self.kwargs['pk']
+        return Comment.objects.filter(replyTo=comment_id)

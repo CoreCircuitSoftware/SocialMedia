@@ -24,6 +24,16 @@ export default function PostDisplay(slug) {
         hour12: true
     });
 
+    const formattedEditDate = new Date(thisPost.editDate).toLocaleString("en-US", {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+    });
+
     const getUser = async () => {
         api
             .get(`/api/profile/getuserdata2/${thisUser}/`)
@@ -157,12 +167,6 @@ export default function PostDisplay(slug) {
         getCommentsTotal()
     }, [])
 
-    useEffect(() => {
-        if (slug.post && slug.curUser && slug.post.user && slug.curUser.id) {
-            console.log(slug.post.user === slug.curUser.id);
-        }
-    }, [slug.post, slug.curUser]);
-
     useEffect(() => {if (thisUser.id) {getMyProfile()}}, [thisUser])
 
     const navigate = useNavigate();
@@ -171,7 +175,7 @@ export default function PostDisplay(slug) {
     const handlePostShare = async () => {
         event.preventDefault()
         try {
-            await navigator.clipboard.writeText(`http://circuitsocial.tech/post/view/${post.postID}`);
+            await navigator.clipboard.writeText(`http://circuitsocial.tech/post/view/${thisPost.postID}`);
         } catch (err) {
             console.log('Error copying profile link')
         }
@@ -188,10 +192,11 @@ export default function PostDisplay(slug) {
             <h2 className="post-title" data-cy="post-title">{thisPost.title}</h2>
             <p className="post-description" data-cy="post-description">{thisPost.description}</p>
             <h5 className="post-date" data-cy="post-date">{formattedDate}</h5>
+            {thisPost.hasEdit && (<h6 className="edit-date">Edited: {formattedEditDate}</h6>)}
             <div class="dropdown-content">
                     {isMyPost ? 
                         (<div>
-                            <button className="post-edit-button">edit</button>
+                            <button className="post-edit-button" onClick={() => navigate(`/post/edit/${thisPost.postID}`)}>edit</button>
                             <button className="post-delete-button" onClick={handlePostDelete}>delete</button>
                             <button className="post-share-button" onClick={handlePostShare}>share</button>
                         </div>
@@ -207,8 +212,8 @@ export default function PostDisplay(slug) {
                 <button onClick={() => handleVote(false)}>
                     {postVote == 0 ? <b>Downvoted</b> : "Downvote"}
                 </button>
+                <button onClick={handlePostClick}>{numOfComments} comments</button>
             </div>
-            <button onClick={handlePostClick}>{numOfComments} comments</button>
         </div>
     );
 }

@@ -13,6 +13,7 @@ export default function CommentPage() {
     const [thisUser, setThisUser] = useState([])
     const [commentContent, setcommentContent] = useState('')
     const [comments, setComments] = useState([])
+    const [isMyComment, setIsMyComment] = useState(false)
     // const formattedDate = new Date(post.postDate).toLocaleDateString("en-US")
     const formattedDate = new Date(mainComment.commentDate).toLocaleString("en-US", {
         year: 'numeric',
@@ -23,6 +24,24 @@ export default function CommentPage() {
         second: '2-digit',
         hour12: true
     });
+
+    const formattedEditDate = new Date(mainComment.editDate).toLocaleString("en-US", {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+    });
+
+    const getMyProfile = () => {
+        api
+            .get(`/api/profile/`)
+            .then((res) => {
+                setIsMyComment(res.data.id === mainComment.user)
+            }
+    )}
 
     useEffect(() => { 
         api.get(`/api/comment/${commentID}/`)
@@ -69,11 +88,12 @@ export default function CommentPage() {
 
     useEffect(() => {
         getComments()
+        getMyProfile()
     }, [mainComment])    
 
     const navigate = useNavigate()
     const handleProfileClick = () => navigate(`/profile/${thisUser.username}`)
-    const handleShare = async () => {
+    const handleCommentShare = async () => {
         event.preventDefault()
         try {
             await navigator.clipboard.writeText(`http://circuitsocial.tech/comment/view/${mainComment.commentID}`);
@@ -96,9 +116,14 @@ export default function CommentPage() {
             <div className="content">
                 <div className="main-comment">
                 <button onClick={handleProfileClick} data-cy="profile-picture"><img className="pfp" src={thisUser.profilePicture} /></button>
-                <button className="logout-button" onClick={handleShare} data-cy="share">Share</button> 
+                <div>
+                    <button className="comment-share-button" onClick={handleCommentShare} data-cy="share">Share</button>
+                    {isMyComment && (<button className="comment-edit-button" onClick={() => navigate(`/comment/edit/${mainComment.commentID}`)}>edit</button>)}
+                </div>
                 <h1 className="comment">{mainComment.commentContent}</h1>
                 <h5 className="comment-date">{formattedDate}</h5>
+                {mainComment.hasEdit && (<h6 className="edit-date">Edited: {formattedEditDate}</h6>)}
+                <button onClick={() => navigate(`/post/view/${mainComment.post}`)}>Go back</button>
                 </div>
                 <div className="comments-textbox">
                     <form>
