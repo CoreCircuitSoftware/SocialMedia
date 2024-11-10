@@ -6,15 +6,18 @@ from .Views.message import *
 from .Views.post import *
 
 urlpatterns = [
-    path("profile/", UserProfileRead.as_view(), name="profile-read"),
-    path("profile/message/<uuid:user_1>/<uuid:user_2>/", CheckConvo.as_view(), name="profile-read"),
+    path("profile/", UserProfileRead.as_view(), name="user-profile-read"),
+    path("profile/getuserdata/<str:username>/", UserDataReadByUsername.as_view(), name="user-data-read-by-username"),
+    path("profile/getuserdata2/<uuid:id>/", UserDataReadByID.as_view(), name="user-data-read-by-id"),
+    path("profile/edit/", UserProfileUpdate.as_view(), name="user-profile-update"),
+    path("profile/delete/", UserProfileDelete.as_view(), name="user-profile-delete"),
+    path("search/profile/<str:username_chunk>/", SearchProfiles.as_view(), name="profile-search"),
+    path("search/profile/", SearchProfilesAll.as_view(), name="profile-search-all"),
+    path("profile/message/<uuid:user_1>/<uuid:user_2>/", CheckConvo.as_view(), name="check-convo"),
     path("profile/message/setconvoparticipant/", AddConvoParticipant.as_view(), name="set-convo-participant"),
     path("profile/message/createconvo/", CreateConvo.as_view(), name="create-convo"),
     path("profile/message/send/", SendMessage.as_view(), name="send-message"),
     path("profile/message/getmessages/<int:convoID>/", GetMessages.as_view(), name="get-messages"),
-    path("profile/getuserdata/<str:username>/", UserDataRead.as_view(), name="profile-get-data"),
-    path("profile/getuserdata2/<uuid:id>/", UserProfileRead2.as_view(), name="profile-get-data-uuid"),
-    path("profile/edit/", UserProfileUpdate.as_view(), name="profile-update"),
     path("createpost/", PostCreate.as_view(), name="create-post"),
     path("profile/posts/<uuid:user_id>/", PostListView.as_view(), name="view-post-user"),
     path("posts/new/", PostListSortNew.as_view(), name="view-post-sort-new"),
@@ -24,7 +27,5 @@ urlpatterns = [
     path('friend-requests/', ListFriendRequests.as_view(), name='list-friend-requests'),
     path('friend-status/<uuid:user_id>/', FriendStatusView.as_view(), name='friend-status'),
     path('friend/<str:username1>/<str:username2>/', RetrieveFriendshipByUsername.as_view(), name='retrieve-friendship'),
-    path('friend/remove/<int:pk>/', RemoveFriend.as_view(), name='remove-friend'),
-    path("search/profile/<str:username_chunk>/", SearchProfiles.as_view(), name="profile-search"),
-    path("search/profile/", SearchProfilesAll.as_view(), name="profile-search-all"),
+    path('friends/remove/<int:pk>/', DeleteFriendship.as_view(), name='friend-delete'),
 ]
