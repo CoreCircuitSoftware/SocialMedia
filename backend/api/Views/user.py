@@ -14,12 +14,20 @@ class CreatedUserView(generics.CreateAPIView):
     
 class UserProfileRead(generics.RetrieveAPIView):
     serializer_class = UserSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     
     def get_object(self):
         return self.request.user
     
-class UserProfileRead2(generics.RetrieveAPIView):
+class UserDataReadByUsername(generics.ListAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        username = self.kwargs['username']
+        return CustomUser.objects.filter(username=username)
+    
+class UserDataReadByID(generics.RetrieveAPIView):
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
     
@@ -27,19 +35,19 @@ class UserProfileRead2(generics.RetrieveAPIView):
         user_id = self.kwargs['id']
         return CustomUser.objects.get(id=user_id)
     
-class UserDataRead(generics.ListAPIView):
-    serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        username = self.kwargs['username']
-        return CustomUser.objects.filter(username=username)
-    
 class UserProfileUpdate(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
     
     def get_object(self):
+        return self.request.user
+    
+class UserProfileDelete(generics.DestroyAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self):
+        print(self.request.method)
         return self.request.user
     
 class SearchProfiles(generics.ListAPIView):

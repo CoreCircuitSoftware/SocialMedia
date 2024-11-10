@@ -1,12 +1,23 @@
 li {
+    min-width: 200px;
+    
     width: fit-content;
     border: 1px solid black;
     display: flex;
     gap: 1dvh;
     align-items: center;
+    background-color: var(--Secondary1);
+    border-style: groove;
+    border-width: 5px;
+    padding: 5px;
 }
 
 .friendlistimage {
-    max-height: 5dvh;
-    max-width: 5dvh;
+    max-height: 8dvh;
+    max-width: 8dvh;
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 3px;
+    border-color: var(--Tertiary1);
+
 }

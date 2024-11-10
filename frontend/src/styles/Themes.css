@@ -2,12 +2,12 @@
 
     /* Quite clear */
  
-  --Primary1: #cbcbcc;
+/*   --Primary1: #cbcbcc;
   --Secondary1: #f2f2f2;
   --Tertiary1: #174d38;
   --Quarternary1: #4d1717;
   --menutextcolor: white;
-
+ */
   /* Harbor Haze */
   /*
   --Primary1: #909eae;
@@ -21,4 +21,16 @@
    /*NOTE I NEED TO DO COLOR MATH FOR HOVER EVENTS SO IT WORKS WITH DIFFERENT THEMES*/
 
   /* To change theme, comment out current, then uncomment chosen*/
+
+
+  --Primary1: #cbcbcc;        /* Background */
+  --Secondary1: #f2f2f2;      /* foreground */
+  --Tertiary1: #174d38;       /* general borders */
+  --Quarternary1: #00487b;    /* For attention */
+  --ButtonColorBase: #00b300;          /* General button color */
+  --ButtonColorBaseSoft: #00ff003c;  
+  --ButtonColorOther: #b30000;
+  --ButtonColorOtherSoft: #ff00002d;
+  --menutextcolor: white;     /* Background */
+
 }

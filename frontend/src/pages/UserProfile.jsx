@@ -177,8 +177,9 @@ export default function UserProfileTest() {
     }
 
     const handleRemoveFriend = () => {
-        if (window.confirm("Remove Friend?"))
-            api.delete(`/api/friend/remove/${friendShipID}/`)
+        if (window.confirm("Remove Friend?")) {
+            api.delete(`/api/friends/remove/${friendShipID}/`).then(getProfile())
+        }
     }
 
     return (
@@ -199,10 +200,11 @@ export default function UserProfileTest() {
                             <div className="buttons">
                                 {isMyProfile ? (
                                     <div>
-                                        <button className="logout-button" onClick={handleShare} data-cy="share">Share</button>
-                                        <button className="logout-button" onClick={handlePostCreate} data-cy="create-post">Create Post</button>
-                                        <button className="logout-button" onClick={handleLogout} data-cy="logout">Logout</button>
-                                        <button className="edit-button" onClick={handleEdit} data-cy="edit">Edit</button>
+
+                                        <button className="edit-button" onClick={handleShare} data-cy="share">Share</button>
+                                        <button className="edit-button" onClick={handlePostCreate} data-cy="create-post">Create Post</button>
+                                        <button className="edit-button" onClick={handleLogout} data-cy="logout">Logout</button>
+                                        <button className="logout-button" onClick={handleEdit} data-cy="edit">Edit</button>
                                     </div>
                                 ) : (
                                     <div>
@@ -262,10 +264,10 @@ export default function UserProfileTest() {
                                 </ul>
                             </div>
                         )} */}
-                    {(posts.length > 0) ? (
-                        <div className="post-holder" data-cy="posts">
-                            {posts.map((post) => <PostDisplay post={post} key={post.postID} />)}
-                        </div>
+                        {(posts.length > 0) ? (
+                            <div className="post-holder" data-cy="posts">
+                                {posts.map((post) => <PostDisplay post={post} key={post.postID} />)}
+                            </div>
                         ) : (
                             <h3 data-cy="user-no-posts">{username} hasn't made any posts yet</h3>
                         )}

@@ -2,7 +2,7 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: var(--Tertiary1);
+    background-color: var(--Primary1);
     margin: 0px;
     padding: 0px;
 }
@@ -15,14 +15,17 @@ body {
 
 .back-img{
     width: 100%;
+    object-fit: cover;
     height: 15vh;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
+    background-repeat: no-repeat;
+
 }
 
 .profile-card {
     position: relative;
-    background-color: var(--Primary1);
+    background-color: var(--Secondary1);
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -83,18 +86,23 @@ body {
     right: 10px;
 }
 .profile-card .edit-button {
-    background-color: var(--Tertiary1 );
+    background-color: var(--ButtonColorBase);
+    margin: 4px;
+    padding: 10px 20px;
     color: white;
     padding: 10px 20px;
-    border: none;
+    border-style: solid;
+    border-color: var(--Tertiary1);
+    
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
 }
 
 .profile-card .edit-button:hover {
-    /*background-color: #770000;  red buttons  */
-    background-color: #176346;
+    border-style: outset;
+    border-radius: 2px;    
+    background-color:color-mix(in srgb, var(--ButtonColorBase) 100%, white 50%) ;
 
 
 }
@@ -104,19 +112,40 @@ body {
 }
 
 .profile-card .logout-button {
-    background-color: var(--Tertiary1 );
-    color: white;
+    background-color: var(--ButtonColorOtherSoft);
+    border-style: solid;
+    border-color: var(--ButtonColorOther);
+    border-width: -2px;
+    
+    color: var(--ButtonColorOther);
+    margin: 4px;
     padding: 10px 20px;
-    border: none;
+    
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
 }
 
 .profile-card .logout-button:hover {
-    background-color: #176346;
+    border-style: outset;
+    border-radius: 3px;
+    background-color:color-mix(in srgb, var(--ButtonColorOtherSoft) 100%, white 50%) ;
 }
+.friend-requests{
+    color: black;
+    padding: 8px;
+    background-color: var(--Secondary1);
+    border-style: outset;
+    border-width: 5px;
+    border-color: var(--Tertiary1);
+    border-radius: 8px;
+    
 
+}
+.friend-requests .b{
+
+    background-color: var(--Quarternary1);
+}
 /* footer {
     display: flex;
     margin-top: 1dvh;

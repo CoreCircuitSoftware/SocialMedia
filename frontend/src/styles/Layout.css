@@ -51,6 +51,7 @@ main {
 .content { 
     grid-area: content;
     border-radius: 10px;
+    background-color: var(--Primary1);
 }
 
 footer { 
