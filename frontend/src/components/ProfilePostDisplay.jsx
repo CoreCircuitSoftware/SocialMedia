@@ -9,11 +9,30 @@ export default function PostDisplay(slug) {
     // const [user, setUser] = useState([]);
     const [thisUser, setThisUser] = useState(slug.post.user);
     const [thisPost, setThisPost] = useState(slug.post)
-    const formattedDate = new Date(thisPost.postDate).toLocaleDateString("en-US")
+    const [postVote, setPostVote] = useState(-1)
+    const [isMyPost, setIsMyPost] = useState(false);
+    const [votes, setVotes] = useState({upvotes: 0, downvotes: 0, total: 0})
+    const [numOfComments, setNumOfComments] = useState(0)
+    // const formattedDate = new Date(thisPost.postDate).toLocaleDateString("en-US")
+    const formattedDate = new Date(thisPost.postDate).toLocaleString("en-US", {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+    });
 
-    useEffect(() => {
-        getUser()
-    }, [])
+    const formattedEditDate = new Date(thisPost.editDate).toLocaleString("en-US", {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+    });
 
     const getUser = async () => {
         api
@@ -25,8 +44,142 @@ export default function PostDisplay(slug) {
             .catch((err) => alert(err));
     }
 
+    const getCommentsTotal = async () => {
+        api
+            .get(`api/posts/comments/gettotal/${thisPost.postID}/`)
+            .then((res) => {
+                const comments = res.data;
+                setNumOfComments(comments.length)
+            })
+            .catch((err) => console.log(err))
+    }
+
+    const getVoteTotals = async () => { //get all votes for this post
+        api
+            .get(`api/posts/vote/gettotal/${thisPost.postID}/`)
+            .then((res) => {
+                const votes = res.data;
+                const upvotes = votes.filter(vote => vote.vote === true).length;
+                const downvotes = votes.filter(vote => vote.vote === false).length;
+                setVotes({
+                    upvotes: upvotes,
+                    downvotes: downvotes,
+                    total: upvotes - downvotes
+                });
+            })
+            .catch((err) => console.log(err))
+    }
+
+    const getVote = async () => { //get vote for this post from current user
+        api
+            .get(`api/posts/vote/get/${thisPost.postID}/`)
+            .then((res) => setPostVote(res.data.vote))
+            .catch((err) => setPostVote(-1))
+    }
+
+    const getMyProfile = () => {
+        api
+            .get(`/api/profile/`)
+            .then((res) => {
+                setIsMyPost(res.data.id === thisUser.id)
+            }
+    )}
+
+    const changeVoteCountLocally = (voteType, e) => { // 0=add, 1=remove, 2=change
+        if (e == 0) {
+            if (voteType) {
+                setVotes({
+                    upvotes: votes.upvotes + 1,
+                    downvotes: votes.downvotes,
+                    total: votes.total + 1
+                })
+            } else {
+                setVotes({
+                    upvotes: votes.upvotes,
+                    downvotes: votes.downvotes + 1,
+                    total: votes.total - 1
+                })
+            }
+        } else if (e == 1){
+            if (voteType) {
+                setVotes({
+                    upvotes: votes.upvotes - 1,
+                    downvotes: votes.downvotes,
+                    total: votes.total - 1
+                })
+            } else {
+                setVotes({
+                    upvotes: votes.upvotes,
+                    downvotes: votes.downvotes + 1,
+                    total: votes.total + 1
+                })
+            }
+        } else if (e == 2) {
+            if (voteType) {
+                setVotes({
+                    upvotes: votes.upvotes + 1,
+                    downvotes: votes.downvotes - 1,
+                    total: votes.total + 2
+                })
+            } else {
+                setVotes({
+                    upvotes: votes.upvotes - 1,
+                    downvotes: votes.downvotes + 1,
+                    total: votes.total - 2
+                })
+            }
+        }
+    }
+
+    const handleVote = (voteType) => {        
+        if (postVote == -1) {
+            changeVoteCountLocally(voteType, 0)
+            api
+                .post('/api/posts/vote/new/', {vote: voteType, post: thisPost.postID, user: thisUser.id})
+                .catch((err) => console.log(err))
+                setPostVote(voteType)
+        } else if (postVote == voteType) {
+            changeVoteCountLocally(voteType, 1)
+            api
+                .delete(`api/posts/vote/delete/${thisPost.postID}/`)
+                .catch((err) => console.log(err))
+                setPostVote(-1)
+        } else {
+            changeVoteCountLocally(voteType, 2)
+            api
+                .patch(`api/posts/vote/update/${thisPost.postID}/`, {vote: voteType})
+                .catch((err) => console.log(err))
+                setPostVote(voteType)
+        }
+    }
+
+    const handlePostDelete = () => {
+        api
+            .delete(`api/posts/delete/${thisPost.postID}/`)
+            .then(() => window.location.reload())
+            .catch((err) => console.log(err))
+    }
+
+    useEffect(() => {
+        getUser()
+        getVoteTotals()
+        getVote()
+        getCommentsTotal()
+    }, [])
+
+    useEffect(() => {if (thisUser.id) {getMyProfile()}}, [thisUser])
+
     const navigate = useNavigate();
     const handleProfileClick = () => navigate(`/profile/${thisUser.username}`);
+    const handlePostClick = () => navigate(`/post/view/${thisPost.postID}`);
+    const handlePostShare = async () => {
+        event.preventDefault()
+        try {
+            await navigator.clipboard.writeText(`http://circuitsocial.tech/post/view/${thisPost.postID}`);
+        } catch (err) {
+            console.log('Error copying profile link')
+        }
+    }
 
     return (
         <div className="post-container" data-cy="post-display">
@@ -39,38 +192,28 @@ export default function PostDisplay(slug) {
             <h2 className="post-title" data-cy="post-title">{thisPost.title}</h2>
             <p className="post-description" data-cy="post-description">{thisPost.description}</p>
             <h5 className="post-date" data-cy="post-date">{formattedDate}</h5>
+            {thisPost.hasEdit && (<h6 className="edit-date">Edited: {formattedEditDate}</h6>)}
+            <div class="dropdown-content">
+                    {isMyPost ? 
+                        (<div>
+                            <button className="post-edit-button" onClick={() => navigate(`/post/edit/${thisPost.postID}`)}>edit</button>
+                            <button className="post-delete-button" onClick={handlePostDelete}>delete</button>
+                            <button className="post-share-button" onClick={handlePostShare}>share</button>
+                        </div>
+                        ) : <button className="post-share-button" onClick={handlePostShare}>share</button>}
+            </div>
+            <div className="post-stats">
+                {votes ? <p>{votes.total} votes</p> : <p>No votes yet</p>}
+            </div>
+            <div className="post-options">
+                <button onClick={() => handleVote(true)}>
+                    {postVote == 1 ? <b>Upvoted</b> : "Upvote"}
+                </button>
+                <button onClick={() => handleVote(false)}>
+                    {postVote == 0 ? <b>Downvoted</b> : "Downvote"}
+                </button>
+                <button onClick={handlePostClick}>{numOfComments} comments</button>
+            </div>
         </div>
     );
 }
-// import { useState } from "react";
-// import "../styles/PostProfile.css";  // Assuming some custom styles are kept
-
-// export default function PostDisplay({ post, profile }) {
-//     const thisUser = profile;
-//     const thisPost = post;
-//     const formattedDate = new Date(thisPost.postDate).toLocaleDateString("en-US");
-
-//     return (
-//         <div className="card mb-3">
-//             <div className="card-header d-flex align-items-center">
-//                 <img
-//                     className="rounded-circle me-3"
-//                     src={thisUser.profilePicture}
-//                     alt="User Profile"
-//                     style={{ width: "50px", height: "50px" }}
-//                 />
-//                 <div>
-//                     <h5 className="mb-0">{thisUser.displayName}</h5>
-//                     <small className="text-muted">@{thisUser.username}</small>
-//                 </div>
-//             </div>
-//             <div className="card-body">
-//                 <h5 className="card-title">{thisPost.title}</h5>
-//                 <p className="card-text">{thisPost.description}</p>
-//             </div>
-//             <div className="card-footer text-muted">
-//                 <small>Posted on {formattedDate}</small>
-//             </div>
-//         </div>
-//     );
-// }

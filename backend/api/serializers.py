@@ -17,7 +17,24 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ["postID", "user", "community", "postDate","title","description","hasEdit","editDate"]
-        extra_kwargs = {"postID": {"read_only": True}, "user": {"read_only": True},"postDate": {"read_only": True},"hasEdit": {"read_only": True},"editDate": {"read_only": True}}
+        extra_kwargs = {"postID": {"read_only": True}, "user": {"read_only": True},"postDate": {"read_only": True}}
+
+class PostVoteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostVote
+        fields = ["voteID", "post", "user", "vote"]
+
+class CommentVoteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommentVote
+        fields = ["voteID", "comment", "user", "vote"]
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ["commentID", "post", "user", "commentDate", "commentContent", "replyTo", "hasEdit", "editDate"]
+        extra_kwargs = {"user": {"read_only": True}}
+        # extra_kwargs = {"commentID": {"read_only": True}, "post": {"read_only": True}, "user": {"read_only": True}, "commentDate": {"read_only": True}, "hasEdit": {"read_only": True}, "editDate": {"read_only": True}}
 
 class ConvoSerializer(serializers.ModelSerializer):
     class Meta:
