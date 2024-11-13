@@ -37,3 +37,29 @@ Form {
     border-radius: 8px;
     object-fit: cover;
 }
+
+.main-post {
+    display: flex;
+    background-color: var(--Primary1);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 50px auto;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+}
+
+.comments {
+    display: flex;
+    background-color: var(--Primary1);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 50px auto;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+}

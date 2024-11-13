@@ -182,7 +182,7 @@ export default function UserProfileTest() {
     const handleShare = async () => {
         try {
             await navigator.clipboard.writeText(`http://circuitsocial.tech/profile/${profile.username}`);
-            alert("Copied");
+            // alert("Copied");
             console.log('Profile link copied')
         } catch (err) {
             console.log('Error copying profile link')
@@ -190,8 +190,9 @@ export default function UserProfileTest() {
     }
 
     const handleRemoveFriend = () => {
-        if (window.confirm("Remove Friend?"))
-            api.delete(`/api/friend/remove/${friendShipID}/`)
+        if (window.confirm("Remove Friend?")) {
+            api.delete(`/api/friends/remove/${friendShipID}/`).then(getProfile())
+        }
     }
 
     return (
@@ -218,14 +219,15 @@ export default function UserProfileTest() {
                                         gap: 1, // Space between items, equivalent to 16px (8 * 2)
                                       }}
                                     >
-                                        {/* <button className="logout-button" onClick={handleShare} data-cy="share">Share</button> */}
+
+                                        {/* <button className="edit-button" onClick={handleShare} data-cy="share">Share</button> */}
                                         <Button variant='contained' pill startIcon={<ShareIcon />} onClick={handleShare} data-cy="share">Share</Button>
                                         <Button variant='contained' pill startIcon={<CreateIcon />} onClick={handlePostCreate} data-cy="create-post">Create Post</Button>
                                         <Button variant='contained' startIcon={<LogoutIcon />} onClick={handleLogout} data-cy="logout">Logout</Button>
                                         <Button variant='contained' startIcon={<AccountBoxIcon />} onClick={handleEdit} data-cy="edit">Edit</Button>
-                                        {/* <button className="logout-button" onClick={handlePostCreate} data-cy="create-post">Create Post</button>
-                                        <button className="logout-button" onClick={handleLogout} data-cy="logout">Logout</button>
-                                        <button className="edit-button" onClick={handleEdit} data-cy="edit">Edit</button> */}
+                                        {/* <button className="edit-button" onClick={handlePostCreate} data-cy="create-post">Create Post</button>
+                                        <button className="edit-button" onClick={handleLogout} data-cy="logout">Logout</button>
+                                        <button className="logout-button" onClick={handleEdit} data-cy="edit">Edit</button> */}
                                     </Box>
                                     </ThemeProvider>
                                 ) : (
@@ -288,7 +290,7 @@ export default function UserProfileTest() {
                         )} */}
                     {(posts.length > 0) ? (
                         <div className="post-holder" data-cy="posts">
-                            {posts.map((post) => <PostDisplay post={post} key={post.postID} />)}
+                            {posts.map((post) => <PostDisplay post={post} curUser={myProfile} key={post.postID} />)}
                         </div>
                         ) : (
                             <h3 data-cy="user-no-posts">{username} hasn't made any posts yet</h3>

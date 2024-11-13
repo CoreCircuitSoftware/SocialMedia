@@ -40,6 +40,9 @@ class Comment(models.Model):
     hasEdit = models.BooleanField(default=False)
     editDate = models.DateTimeField(null=True, blank=True)
 
+    def __str__(self):
+        return str(self.commentID)
+
 class CommentVote(models.Model):
     voteID = models.AutoField(primary_key=True)
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
