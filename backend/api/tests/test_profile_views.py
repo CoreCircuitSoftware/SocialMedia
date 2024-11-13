@@ -98,6 +98,7 @@ class TestProfileDataReadView(TestCase):
     def test_profile_read(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['username'], self.user.username)
 
 class TestProfileDataReadByUsernameView(TestCase):
     def setUp(self):
@@ -124,6 +125,7 @@ class TestProfileDataReadByUsernameView(TestCase):
     def test_profile_data_read_by_username(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data[0]['id'], str(self.user2.pk))
         
 class TestProfileDataReadByIdView(TestCase):
     def setUp(self):
@@ -150,6 +152,7 @@ class TestProfileDataReadByIdView(TestCase):
     def test_profile_data_read_by_id(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['username'], self.user2.username)
         
 class TestUserProfileUpdateView(TestCase):
     url = reverse('user-profile-update')
@@ -192,6 +195,7 @@ class TestUserProfileDeleteView(TestCase):
     def test_profile_delete(self):
         response = self.client.delete(self.url)
         self.assertEqual(response.status_code, 204)
+        self.assertFalse(CustomUser.objects.filter(username=self.user.username).exists())
 
 class TestSearchProfilesView(TestCase):
     url = reverse('profile-search', kwargs={'username_chunk': 'search'})
@@ -267,34 +271,34 @@ class TestUnauthenticated(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 401)
         
-    def test_profile_data_read_by_username(self):
+    def test_unauthenticated_profile_data_read_by_username(self):
         url = reverse('user-data-read-by-username', kwargs={'username': self.user2.username})
         response = self.client.get(url, {
             'username': self.user2.username,
             })
         self.assertEqual(response.status_code, 200) #Don't need to be authenticated to view profile pages
         
-    def test_profile_data_read_by_id(self):
+    def test_unauthenticated_profile_data_read_by_id(self):
         url = reverse('user-data-read-by-id', kwargs={'id': self.user2.pk})
         response = self.client.get(url, {
             'id': self.user2.pk,
             })
         self.assertEqual(response.status_code, 200) #Don't need to be authenticated to view profile pages
         
-    def test_profile_update(self):
+    def test_unauthenticated_profile_update(self):
         url = reverse('user-profile-update')
         response = self.client.patch(url, {
             'displayName': 'updatedDisplayName'
         }, format='json')
         self.assertEqual(response.status_code, 401)
         
-    def test_search_profiles(self):
+    def test_unauthenticated_search_profiles(self):
         url = reverse('profile-search', kwargs={'username_chunk': 'search'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 401)
         self.assertGreater(len(response.data), 0)
 
-    def test_search_profiles_all(self):
+    def test_unauthenticated_search_profiles_all(self):
         url = reverse('profile-search-all')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 401)

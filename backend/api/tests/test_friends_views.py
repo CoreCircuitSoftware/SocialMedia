@@ -13,32 +13,264 @@ from api.Models.friends import *
 from api.Views.friends import *
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView    #premade views to access and refresh tokens
         
-class TestFriendDeleteView(TestCase):
+User = get_user_model()
 
+class TestListFriendsView(TestCase):
     def setUp(self):
-        User = get_user_model()
-        self.user = User.objects.create_user(
-            username='testUsername',
-            password='testPassword', 
-            email='test@mail.com', 
-            displayName='testDisplayName'
-            )
-        self.token = str(AccessToken.for_user(self.user))
+        self.user1 = User.objects.create_user(
+            username='testUser1',
+            password='testPassword1',
+            email='user1@mail.com',
+            displayName='DisplayUser1'
+        )
+        self.user2 = User.objects.create_user(
+            username='testUser2',
+            password='testPassword2',
+            email='user2@mail.com',
+            displayName='DisplayUser2'
+        )
+        
+        self.friendship = Friend.objects.create(user1=self.user1, user2=self.user2)
+        
+        self.token1 = str(AccessToken.for_user(self.user1))
+        self.client = APIClient()
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token1}')
+        
+        self.url = reverse('list-friends', kwargs={'user_id': self.user1.id})
+
+    def test_list_friends(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertGreaterEqual(len(response.data), 1)
+
+class TestSendFriendRequestView(TestCase):
+    def setUp(self):
+        self.user1 = User.objects.create_user(
+            username='testUser1',
+            password='testPassword1',
+            email='user1@mail.com',
+            displayName='DisplayUser1'
+        )
+        self.user2 = User.objects.create_user(
+            username='testUser2',
+            password='testPassword2',
+            email='user2@mail.com',
+            displayName='DisplayUser2'
+        )
+        
+        self.token = str(AccessToken.for_user(self.user1))
         self.client = APIClient()
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
         
-        #set up other user to navigate to
+        self.url = reverse('send-friend-request', kwargs={'user2_id': self.user2.id})
+
+    def test_send_friend_request(self):
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(FriendRequest.objects.filter(user1=self.user1, user2=self.user2).exists())
+
+class TestAcceptFriendRequestView(TestCase):
+    def setUp(self):
+        self.user1 = User.objects.create_user(
+            username='testUser1',
+            password='testPassword1',
+            email='user1@mail.com',
+            displayName='DisplayUser1'
+        )
         self.user2 = User.objects.create_user(
-            username='testUsername2',
-            password='testPassword', 
-            email='test2@mail.com', 
-            displayName='testDisplayName2'
-            )
+            username='testUser2',
+            password='testPassword2',
+            email='user2@mail.com',
+            displayName='DisplayUser2'
+        )
         
-        self.client.force_authenticate(user=self.user)
-        self.friendship = Friend.objects.create(user1=self.user, user2=self.user2)
+        self.friend_request = FriendRequest.objects.create(user1=self.user1, user2=self.user2)
+        
+        self.token = str(AccessToken.for_user(self.user2))
+        self.client = APIClient()
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
+        
+        self.url = reverse('accept-friend-request', kwargs={'pk': self.friend_request.pk})
+
+    def test_accept_friend_request(self):
+        response = self.client.patch(self.url, {'accepted': True}, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(Friend.objects.filter(user1=self.user1, user2=self.user2).exists())
+
+class TestListFriendRequestsView(TestCase):
+    def setUp(self):
+        self.user1 = User.objects.create_user(
+            username='testUser1',
+            password='testPassword1',
+            email='user1@mail.com',
+            displayName='DisplayUser1'
+        )
+        self.user2 = User.objects.create_user(
+            username='testUser2',
+            password='testPassword2',
+            email='user2@mail.com',
+            displayName='DisplayUser2'
+        )
+        
+        FriendRequest.objects.create(user1=self.user2, user2=self.user1)
+        
+        self.token = str(AccessToken.for_user(self.user1))
+        self.client = APIClient()
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
+        
+        self.url = reverse('list-friend-requests')
+
+    def test_list_friend_requests(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertGreaterEqual(len(response.data), 1)
+        
+class TestFriendStatusView(TestCase):
+    def setUp(self):
+        self.user1 = User.objects.create_user(
+            username='testUser1',
+            password='testPassword1',
+            email='user1@mail.com',
+            displayName='DisplayUser1'
+        )
+        self.user2 = User.objects.create_user(
+            username='testUser2',
+            password='testPassword2',
+            email='user2@mail.com',
+            displayName='DisplayUser2'
+        )
+        
+        self.token = str(AccessToken.for_user(self.user1))
+        self.client = APIClient()
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
+        
+        self.url = reverse('friend-status', kwargs={'user_id': self.user2.id})
+
+    def test_friend_status(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        
+class TestRetrieveFriendshipByUsername(TestCase):
+    def setUp(self):
+        self.user1 = User.objects.create_user(
+            username='testUser1',
+            password='testPassword1',
+            email='user1@mail.com',
+            displayName='DisplayUser1'
+        )
+        self.user2 = User.objects.create_user(
+            username='testUser2',
+            password='testPassword2',
+            email='user2@mail.com',
+            displayName='DisplayUser2'
+        )
+
+        self.friendship = Friend.objects.create(user1=self.user1, user2=self.user2)
+
+        self.token = str(AccessToken.for_user(self.user1))
+        self.client = APIClient()
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
+        
+        self.url = reverse('retrieve-friendship-by-username', kwargs={
+            'username1': self.user1.username,
+            'username2': self.user2.username
+        })
+
+    def test_retrieve_friendship_by_username(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['user1']['username'], self.user1.username)
+        self.assertEqual(response.data['user2']['username'], self.user2.username)
+
+    def test_friendship_not_found(self):
+        # Test with non-existent usernames
+        url = reverse('retrieve-friendship-by-username', kwargs={
+            'username1': 'nonExistentUser',
+            'username2': self.user2.username
+        })
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+class TestDeleteFriendshipView(TestCase):
+    def setUp(self):
+        self.user1 = User.objects.create_user(
+            username='testUser1',
+            password='testPassword1',
+            email='user1@mail.com',
+            displayName='DisplayUser1'
+        )
+        self.user2 = User.objects.create_user(
+            username='testUser2',
+            password='testPassword2',
+            email='user2@mail.com',
+            displayName='DisplayUser2'
+        )
+        
+        self.friendship = Friend.objects.create(user1=self.user1, user2=self.user2)
+        
+        self.token = str(AccessToken.for_user(self.user1))
+        self.client = APIClient()
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
+        
+        self.url = reverse('delete-friendship', kwargs={'pk': self.friendship.friendShipID})
 
     def test_delete_friendship(self):
-        url = reverse('friend-delete', args=[self.friendship.friendShipID])
-        response = self.client.delete(url)
+        response = self.client.delete(self.url)
         self.assertEqual(response.status_code, 204)
+        self.assertFalse(Friend.objects.filter(user1=self.user1, user2=self.user2).exists())
+        
+class TestUnauthenticated(TestCase):
+    def setUp(self):
+        self.user1 = User.objects.create_user(
+            username='testUser1',
+            password='testPassword1',
+            email='user1@mail.com',
+            displayName='DisplayUser1'
+        )
+        self.user2 = User.objects.create_user(
+            username='testUser2',
+            password='testPassword2',
+            email='user2@mail.com',
+            displayName='DisplayUser2'
+        )
+        
+        self.friendship = Friend.objects.create(user1=self.user1, user2=self.user2)
+        
+    def test_list_friends(self):
+        url = reverse('list-friends', kwargs={'user_id': self.user1.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 401)
+
+    def test_send_friend_request(self):
+        url = reverse('send-friend-request', kwargs={'user2_id': self.user2.id})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 401)
+
+    def test_accept_friend_request(self):
+        self.friend_request = FriendRequest.objects.create(user1=self.user1, user2=self.user2)
+        url = reverse('accept-friend-request', kwargs={'pk': self.friend_request.pk})
+        response = self.client.patch(url, {'accepted': True}, format='json')
+        self.assertEqual(response.status_code, 401) 
+
+    def test_list_friend_requests(self):
+        url = reverse('list-friend-requests')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 401) 
+
+    def test_friend_status(self):
+        url = reverse('friend-status', kwargs={'user_id': self.user2.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 401)
+
+    def test_retrieve_friendship_by_username(self):
+        url = reverse('retrieve-friendship-by-username', kwargs={
+            'username1': self.user1.username,
+            'username2': self.user2.username
+        })
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 401)
+
+    def test_delete_friendship(self):
+        url = reverse('delete-friendship', kwargs={'pk': self.friendship.friendShipID})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 401) 

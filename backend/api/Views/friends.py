@@ -55,18 +55,6 @@ class AcceptFriendRequest(generics.UpdateAPIView):  # This view allows updating 
         else:
             raise ValidationError("Invalid value for 'accepted'.")
         
-class DeleteFriendship(generics.DestroyAPIView):
-    queryset = Friend.objects.all()
-    serializer_class = FriendSerializer
-    permission_classes = [IsAuthenticated]
-    
-    def get_object(self):
-        friend_ship_id = self.kwargs['pk']
-        try:
-            return Friend.objects.get(friendShipID=friend_ship_id)
-        except Friend.DoesNotExist:
-            raise Http404("Friendship not found")
-        
 # List Friend Requests for the current logged-in user
 class ListFriendRequests(generics.ListAPIView):
     serializer_class = FriendRequestSerializer
@@ -99,5 +87,17 @@ class RetrieveFriendshipByUsername(generics.RetrieveAPIView):
             Q(user1__username=username1, user2__username=username2) |
             Q(user1__username=username2, user2__username=username1)
         )
-        return friendship
+        return friendship       
+    
+class DeleteFriendship(generics.DestroyAPIView):
+    queryset = Friend.objects.all()
+    serializer_class = FriendSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self):
+        friend_ship_id = self.kwargs['pk']
+        try:
+            return Friend.objects.get(friendShipID=friend_ship_id)
+        except Friend.DoesNotExist:
+            raise Http404("Friendship not found")
         
