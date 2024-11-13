@@ -46,9 +46,31 @@ export default function PostDisplay(slug) {
                     <h1>{thisUser.displayName}  @{thisUser.username}</h1>
                 </div>
             </header>
-            <h2 className="post-title">{thisPost.title}</h2>
+            {/* <h2 className="post-title">{thisPost.title}</h2>
             <p className="post-description">{thisPost.description}</p>
-            <h5 className="post-date">{formattedDate}</h5>
+            <h5 className="post-date">{formattedDate}</h5> */}
+            {thisPost && (
+                <>
+                    <h2 className="post-title">{thisPost.title}</h2>
+                    <p className="post-description">{thisPost.description}</p>
+                    
+                    {/* Display post media */}
+                    {thisPost.media && thisPost.media.length > 0 && (
+                        <div className="post-media">
+                            {thisPost.media.map((media, index) => (
+                                <img 
+                                    key={media.mediaID}
+                                    src={media.image}
+                                    alt={`Post image ${index + 1}`}
+                                    className="post-image"
+                                />
+                            ))}
+                        </div>
+                    )}
+                    
+                    <h5 className="post-date">{formattedDate}</h5>
+                </>
+            )}
         </div>
     );
 }

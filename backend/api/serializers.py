@@ -13,10 +13,17 @@ class UserSerializer(serializers.ModelSerializer):
         user = CustomUser.objects.create_user(**validated_data)       #This data is then stored in a user and returned, this def is created in CustomUserManager
         return user
 
+class MediaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Media #check for captialization here
+        fields = ["mediaID", "post", "mediaType", "mediaURL", "image"]
+        extra_kwargs = {"mediaID": {"read_only": True}, "post": {"read_only": True}}
+
 class PostSerializer(serializers.ModelSerializer):
+    media = MediaSerializer(many=True, read_only=True) #here too
     class Meta:
         model = Post
-        fields = ["postID", "user", "community", "postDate","title","description","hasEdit","editDate"]
+        fields = ["postID", "user", "community", "postDate","title","description","hasEdit","hasMedia","editDate", "media"]
         extra_kwargs = {"postID": {"read_only": True}, "user": {"read_only": True},"postDate": {"read_only": True},"hasEdit": {"read_only": True},"editDate": {"read_only": True}}
 
 class ConvoSerializer(serializers.ModelSerializer):

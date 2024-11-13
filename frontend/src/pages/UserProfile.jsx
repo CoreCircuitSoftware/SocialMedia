@@ -10,6 +10,19 @@ import SearchBar from "../components/SearchBar";
 import Menu from "../components/Menu";
 import Footer from "../components/Footer";
 
+//Material Ui
+import Button from "../components/Button/Button";
+import { ThemeProvider } from '@mui/material/styles';
+import { Box } from "@mui/material";
+import theme from '../styles/theme';  // Import the custom theme
+import ShareIcon from "@mui/icons-material/Share";
+import CreateIcon from "@mui/icons-material/Create";
+import LogoutIcon from "@mui/icons-material/Logout";
+import EditIcon from "@mui/icons-material/Edit";
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
+
+
+
 export default function UserProfileTest() {
     const { username } = useParams();
     const navigate = useNavigate();
@@ -198,12 +211,23 @@ export default function UserProfileTest() {
                             </div>
                             <div className="buttons">
                                 {isMyProfile ? (
-                                    <div>
-                                        <button className="logout-button" onClick={handleShare} data-cy="share">Share</button>
-                                        <button className="logout-button" onClick={handlePostCreate} data-cy="create-post">Create Post</button>
+                                    <ThemeProvider theme={theme}>
+                                        <Box
+                                    sx={{
+                                        display: "flex",
+                                        gap: 1, // Space between items, equivalent to 16px (8 * 2)
+                                      }}
+                                    >
+                                        {/* <button className="logout-button" onClick={handleShare} data-cy="share">Share</button> */}
+                                        <Button variant='contained' pill startIcon={<ShareIcon />} onClick={handleShare} data-cy="share">Share</Button>
+                                        <Button variant='contained' pill startIcon={<CreateIcon />} onClick={handlePostCreate} data-cy="create-post">Create Post</Button>
+                                        <Button variant='contained' startIcon={<LogoutIcon />} onClick={handleLogout} data-cy="logout">Logout</Button>
+                                        <Button variant='contained' startIcon={<AccountBoxIcon />} onClick={handleEdit} data-cy="edit">Edit</Button>
+                                        {/* <button className="logout-button" onClick={handlePostCreate} data-cy="create-post">Create Post</button>
                                         <button className="logout-button" onClick={handleLogout} data-cy="logout">Logout</button>
-                                        <button className="edit-button" onClick={handleEdit} data-cy="edit">Edit</button>
-                                    </div>
+                                        <button className="edit-button" onClick={handleEdit} data-cy="edit">Edit</button> */}
+                                    </Box>
+                                    </ThemeProvider>
                                 ) : (
                                     <div>
                                         <button className="edit-button" onClick={handleMessage}>Message</button>
