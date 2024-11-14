@@ -97,4 +97,35 @@ describe("LoginForm", () => {
         expect(mockNavigate).toHaveBeenCalledWith('/profile');
       });
     });
+
+    it("Error given when no username is entered when user hits 'login'", () => {
+        render(<LoginForm route="/login" />);
+        fireEvent.click(screen.getByRole('button', { name: /login/i }));
+        expect(screen.getByText(/Error: Enter a username/i)).toBeInTheDocument();
+    })
+
+    it("Error given when no password is entered when user hits 'login'", () => {
+      render(<LoginForm route="/login" />);
+      fireEvent.click(screen.getByRole('button', { name: /login/i }));
+      expect(screen.getByText(/Error: Enter a password/i)).toBeInTheDocument();
+  })
+
+
+    it("Error given when incorrect login info used", async () => {
+      api.post.mockResolvedValue({ status: 401 });
+      render(<LoginForm route="/login" />);
+
+      fireEvent.change(screen.getByPlaceholderText(/username/i), { target: { value: 'testuser' } });
+      fireEvent.change(screen.getByPlaceholderText(/password/i), { target: { value: 'testpassword' } });
+      fireEvent.change(screen.getByPlaceholderText(/enter login key/i), { target: { value: 'CS4800' } });
+      fireEvent.click(screen.getByRole('button', { name: /login/i }));
+
+      await waitFor(() => {
+        expect(api.post).toHaveBeenCalledWith('/login', {
+            username: "testuser",
+            password: "testpassword"
+        });
+        expect(screen.getByText(/Error: Incorrect Account Credentials/i)).toBeInTheDocument();
+    })
+  })
 })

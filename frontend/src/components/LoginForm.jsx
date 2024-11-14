@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../api"
 import { useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
@@ -10,6 +10,9 @@ function LoginForm({ route }) {
     const [password, setPassword] = useState("");
     const [key, setKey] = useState("");
     const [loading, setLoading] = useState(false);
+    const [missingUsername, setMissingUsername] = useState(false);
+    const [missingPassword, setMissingPassword] = useState(false);
+    const [accountError, setAccountError] = useState(false);
     const navigate = useNavigate();
 
 	const sendWebhook = () => {
@@ -37,11 +40,34 @@ function LoginForm({ route }) {
         })
     }
 
+    useEffect(() => { 
+        if (username.length > 5) {
+            setMissingUsername(false);
+        }
+        if (password.length > 5) {
+            setMissingPassword(false);
+        }
+    },[username, password])
+
     const handleSubmit = async (e) => {
-        setLoading(true);       //Start loading while the form is processed
         e.preventDefault();
-        if (key == "CS4800") { 
+        if (!username) {setMissingUsername(true)}
+        if (!password) {setMissingPassword(true)}
+        if (!missingPassword || !missingUsername) {
+            if (username.length > 0 && password.length > 0) {
+                setMissingPassword(false);
+                setMissingUsername(false);
+            } else {
+                return;
+            }
+        }
+        setLoading(true);       //Start loading while the form is processed
+        if (key == "CS4800" ) {   //If the key is correct and the fields are filled out
+            setMissingPassword(false);
+            setMissingUsername(false);
             try {
+                console.log("password: ", password)
+                console.log("username: ", username)
                 const res = await api.post(route, { username, password })   //Set res variable to response from backend after sending form data
                 localStorage.setItem(ACCESS_TOKEN, res.data.access);
                 localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
@@ -49,7 +75,8 @@ function LoginForm({ route }) {
                 sendWebhook()
                 navigate("/profile");   //Should eventually just navigate to / (home) once that's set up
             } catch (error) {
-                alert(error)
+                console.log(error)
+                setAccountError(true)
             } finally { //Eventually, no matter what happens, loading must stop at the end
                 setLoading(false)
             }
@@ -66,6 +93,12 @@ function LoginForm({ route }) {
     return (
         <form onSubmit={handleSubmit} className="form-container">
             <h1>Login</h1>
+            {accountError && (
+                <h5 data-cy="acc-error">Error: Incorrect Account Credentials</h5> 
+            )}
+            {missingUsername && (
+                <h5 data-cy="username-error">Error: Enter a username</h5> 
+            )}
             <input
                 className="form-input"
                 type="text"
@@ -74,6 +107,9 @@ function LoginForm({ route }) {
                 placeholder="Username"
                 data-cy="username"
             />
+            {missingPassword && (
+                <h5 data-cy="password-error">Error: Enter a password</h5> 
+            )}
             <input
                 className="form-input"
                 type="password"

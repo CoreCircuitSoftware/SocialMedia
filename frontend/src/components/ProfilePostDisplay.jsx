@@ -6,14 +6,13 @@ import "../styles/PostProfile.css"
 
 
 export default function PostDisplay(slug) {
-    // const [user, setUser] = useState([]);
-    const [thisUser, setThisUser] = useState(slug.post.user);
+    const [thisUser, setThisUser] = useState();
     const [thisPost, setThisPost] = useState(slug.post)
     const [postVote, setPostVote] = useState(-1)
-    const [isMyPost, setIsMyPost] = useState(false);
+    const [isMyPost, setIsMyPost] = useState(slug.post.user == slug.curUser.id);
     const [votes, setVotes] = useState({upvotes: 0, downvotes: 0, total: 0})
     const [numOfComments, setNumOfComments] = useState(0)
-    // const formattedDate = new Date(thisPost.postDate).toLocaleDateString("en-US")
+    const [loading, setLoading] = useState(true)
     const formattedDate = new Date(thisPost.postDate).toLocaleString("en-US", {
         year: 'numeric',
         month: 'long',
@@ -23,7 +22,6 @@ export default function PostDisplay(slug) {
         second: '2-digit',
         hour12: true
     });
-
     const formattedEditDate = new Date(thisPost.editDate).toLocaleString("en-US", {
         year: 'numeric',
         month: 'long',
@@ -36,7 +34,7 @@ export default function PostDisplay(slug) {
 
     const getUser = async () => {
         api
-            .get(`/api/profile/getuserdata2/${thisUser}/`)
+            .get(`/api/profile/getuserdata2/${slug.post.user}/`)
             .then((res) => res.data)
             .then((data) => {
                 setThisUser(data)
@@ -76,14 +74,6 @@ export default function PostDisplay(slug) {
             .then((res) => setPostVote(res.data.vote))
             .catch((err) => setPostVote(-1))
     }
-
-    const getMyProfile = () => {
-        api
-            .get(`/api/profile/`)
-            .then((res) => {
-                setIsMyPost(res.data.id === thisUser.id)
-            }
-    )}
 
     const changeVoteCountLocally = (voteType, e) => { // 0=add, 1=remove, 2=change
         if (e == 0) {
@@ -167,7 +157,11 @@ export default function PostDisplay(slug) {
         getCommentsTotal()
     }, [])
 
-    useEffect(() => {if (thisUser.id) {getMyProfile()}}, [thisUser])
+    useEffect(() => {
+        if (thisUser && thisPost && slug.post) {
+            setLoading(false)
+        }
+    }, [thisUser])
 
     const navigate = useNavigate();
     const handleProfileClick = () => navigate(`/profile/${thisUser.username}`);
@@ -183,6 +177,7 @@ export default function PostDisplay(slug) {
 
     return (
         <div className="post-container" data-cy="post-display">
+            {loading ? <h1>Loading Post...</h1> : <div>
             <header>
                 <button onClick={handleProfileClick} data-cy="profile-picture"><img className="pfp" src={thisUser.profilePicture} /></button>
                 <div className="name-text">
@@ -193,7 +188,7 @@ export default function PostDisplay(slug) {
             <p className="post-description" data-cy="post-description">{thisPost.description}</p>
             <h5 className="post-date" data-cy="post-date">{formattedDate}</h5>
             {thisPost.hasEdit && (<h6 className="edit-date">Edited: {formattedEditDate}</h6>)}
-            <div class="dropdown-content">
+            <div className="dropdown-content">
                     {isMyPost ? 
                         (<div>
                             <button className="post-edit-button" onClick={() => navigate(`/post/edit/${thisPost.postID}`)}>edit</button>
@@ -214,6 +209,7 @@ export default function PostDisplay(slug) {
                 </button>
                 <button onClick={handlePostClick}>{numOfComments} comments</button>
             </div>
+            </div>}
         </div>
     );
 }

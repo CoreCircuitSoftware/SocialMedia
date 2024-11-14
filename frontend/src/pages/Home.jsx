@@ -69,7 +69,7 @@ export default function Home() {
             <Footer />
             <div className="feed-center">
                 <div className="post-holder">
-                    {posts.map((post) => <PostDisplay post={post} key={post.postID} />)}
+                    {posts.map((post) => <PostDisplay post={post} curUser={myProfile} key={post.postID} />)}
                 </div>
             </div>
             <div className="recs">

@@ -7,5 +7,12 @@ module.exports = {
       // Handle static assets like CSS or images
       '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     },
+    collectCoverage: true,
+    collectCoverageFrom: [
+      'src/**/*.{js,jsx}',
+      '!src/index.js',
+    ],
+    coverageDirectory: 'coverage',
+    coverageReporters: ['text', 'lcov', 'json', 'html'],
     setupFilesAfterEnv: ['@testing-library/jest-dom/'],
   };
