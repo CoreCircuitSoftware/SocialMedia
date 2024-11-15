@@ -28,7 +28,6 @@ function ProfileForm() {
             .get(`/api/profile/`)
             .then((res) => res.data)
             .then((data) => {
-                console.log(data)
                 setProfile(data)
             })
             .catch((err) => alert(err));
@@ -54,7 +53,8 @@ function ProfileForm() {
     const handleDeleteProfile = () => {
         if (window.confirm("Delete your account? This cannot be undone")) {
             api.delete(`/api/profile/delete/`)
-            navigate(`/login`).then(alert('Account deleted!'))
+            navigate("/login")
+            alert('Account deleted!')
         }
     }
 

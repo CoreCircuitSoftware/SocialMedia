@@ -121,7 +121,8 @@ export default function PostDisplay(slug) {
         }
     }
 
-    const handleVote = (voteType) => {        
+    const handleVote = (voteType) => {  
+        console.log("postVote: " + postVote)      
         if (postVote == -1) {
             changeVoteCountLocally(voteType, 0)
             api
