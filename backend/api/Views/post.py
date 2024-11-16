@@ -18,8 +18,20 @@ class PostCreate(generics.CreateAPIView):
     def perform_create(self, serializer):
             post = serializer.save(user=self.request.user, hasMedia=True)
             media_files = self.request.FILES.getlist('media')
-            for media_file in media_files:
-                Media.objects.create(post=post, image=media_file, mediaType=0)
+            try:
+                for media_file in media_files:
+                    media_instance = Media.objects.create(post=post, image=media_file, mediaType=0)
+                    media_instance.mediaURL = media_instance.image.url
+                    media_instance.save()
+            except Exception as e:
+                print(f"Error saving media file: {e}")
+
+class PostMediaListView(generics.ListAPIView):
+    serializer_class = MediaSerializer
+
+    def get_queryset(self):
+        post_id = self.kwargs['post_id']  # Extract post_id from the URL
+        return Media.objects.filter(post_id=post_id)
 
 class PostListView(generics.ListAPIView):
     serializer_class = PostSerializer

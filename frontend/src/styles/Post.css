@@ -21,21 +21,18 @@ Form {
 }
 
 .image-preview {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 16px;
-    margin-bottom: 26px;
-    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns */
+    gap: 10px; /* Space between items */
+    width: 100%; /* Ensure the container takes full width */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
 .image-preview img {
-    max-width: 100%;
-    max-height: 350px; /* Adjust the max height as needed */
-    width: auto; /* Ensure the image maintains its aspect ratio */
-    height: 400px; /* Ensure the image maintains its aspect ratio */
-    border-radius: 8px;
-    object-fit: cover;
+    width: 100%; /* Ensure images take full width of the grid cell */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 5px;
+    box-shadow: 0 0.5dvh 1dvh rgba(0, 0, 0, 0.1);
 }
 
 .main-post {

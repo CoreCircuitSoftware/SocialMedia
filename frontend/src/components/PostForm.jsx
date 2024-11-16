@@ -102,12 +102,12 @@ export default function PostForm() {
                 color="customGreen"
                 >
                 Upload Image
-                <VisuallyHiddenInput type="file" accept="image/*" onChange={handleFileChange} />
+                <VisuallyHiddenInput type="file" accept="image/*" multiple onChange={handleFileChange} />
             </Button>
             {imagePreviews.length > 0 && (
                 <div className="image-preview">
                     {imagePreviews.map((preview, index) => (
-                        <img key={index} src={preview} alt={`Image Preview ${index + 1}`} />
+                         <img key={index} src={preview} alt={`Preview ${index + 1}`} style={{ width: '90%', margin: '5px', height:'90%' }} />
                     ))}
                 </div>
             )}

@@ -23,6 +23,7 @@ urlpatterns = [
     path("profile/posts/<uuid:user_id>/", PostListView.as_view(), name="view-post-user"),
     path("posts/new/", PostListSortNew.as_view(), name="view-post-sort-new"),
     path("posts/<int:pk>/", PostDetailView.as_view(), name="view-post"),
+    path("posts/media/<int:post_id>/", PostMediaListView.as_view(), name="post-media-list"),  # New URL pattern for media
     path("posts/vote/delete/<int:pk>/", PostVoteDeleteView.as_view(), name="delete-post"),
     path("posts/vote/new/", PostVotesCreate.as_view(), name="create-vote"),
     path("posts/vote/update/<int:pk>/", PostVotesUpdate.as_view(), name="update-vote"),

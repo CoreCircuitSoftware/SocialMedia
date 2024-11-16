@@ -3,17 +3,8 @@ import api from "../api"
 import { useNavigate } from "react-router-dom";
 //import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 import "../styles/PostProfile.css"
-
-// Material-UI imports
-import {
-    Card,
-    CardHeader,
-    CardContent,
-    Avatar,
-    Typography,
-    IconButton,
-  } from "@mui/material";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 
 export default function PostDisplay(slug) {
     // const [user, setUser] = useState([]);
@@ -23,7 +14,40 @@ export default function PostDisplay(slug) {
     const [isMyPost, setIsMyPost] = useState(false);
     const [votes, setVotes] = useState({upvotes: 0, downvotes: 0, total: 0})
     const [numOfComments, setNumOfComments] = useState(0)
-    // const formattedDate = new Date(thisPost.postDate).toLocaleDateString("en-US")
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const envURL = 'https://django-s3-4800.s3.us-east-2.amazonaws.com/'
+
+    
+
+    const [media, setMedia] = useState([]);
+
+    //Media event handlers
+    const handlePrevImage = () => {
+        setCurrentImageIndex((prevIndex) => (prevIndex === 0 ? media.length - 1 : prevIndex - 1));
+      };
+    
+      const handleNextImage = () => {
+        setCurrentImageIndex((prevIndex) => (prevIndex === media.length - 1 ? 0 : prevIndex + 1));
+      };
+    
+
+    useEffect(() => {
+        // Fetch media data for the post
+        const fetchMedia = async () => {
+        api
+            .get(`/api/posts/media/${thisPost.postID}/`)
+            .then((res) => {
+                setMedia(res.data);
+                console.log("Media data fetched:" + thisPost.postID, res.data);
+                console.log("Post ID:", thisPost.postID);
+            })
+            .catch((err) => console.error("Error fetching media data:", err));
+        };
+
+        fetchMedia();
+    }, [thisPost.postID]);
+
+    // const formattedDate = new Date(thisPost.postDate).toLocaleDateString("en-US"
     const formattedDate = new Date(thisPost.postDate).toLocaleString("en-US", {
         year: 'numeric',
         month: 'long',
@@ -208,16 +232,16 @@ export default function PostDisplay(slug) {
                     <p className="post-description">{thisPost.description}</p>
                     
                     {/* Display post media */}
-                    {thisPost.media && thisPost.media.length > 0 && (
+                    {thisPost.hasMedia  && media.length > 0 &&(
                         <div className="post-media">
-                            {thisPost.media.map((media, index) => (
+                            <KeyboardArrowLeftIcon onClick={handlePrevImage} style={{ cursor: 'pointer' }} />
                                 <img 
-                                    key={media.mediaID}
-                                    src={media.image}
-                                    alt={`Post image ${index + 1}`}
+                                    key={media[currentImageIndex].mediaID}
+                                    src={media[currentImageIndex].mediaURL}
+                                    alt={`Post image ${currentImageIndex + 1}`}
                                     className="post-image"
                                 />
-                            ))}
+                            <KeyboardArrowRightIcon onClick={handleNextImage} style={{ cursor: 'pointer' }} />
                         </div>
                     )}
                     
@@ -225,7 +249,7 @@ export default function PostDisplay(slug) {
                 </>
             )}
             {thisPost.hasEdit && (<h6 className="edit-date">Edited: {formattedEditDate}</h6>)}
-            <div class="dropdown-content">
+            <div className="dropdown-content">
                     {isMyPost ? 
                         (<div>
                             <button className="post-edit-button" onClick={() => navigate(`/post/edit/${thisPost.postID}`)}>edit</button>

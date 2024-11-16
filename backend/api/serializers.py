@@ -14,13 +14,15 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 class MediaSerializer(serializers.ModelSerializer):
+    # media_url = serializers.SerializerMethodField('get_media_url')
+
     class Meta:
-        model = Media #check for captialization here
+        model = Media 
         fields = ["mediaID", "post", "mediaType", "mediaURL", "image"]
         extra_kwargs = {"mediaID": {"read_only": True}, "post": {"read_only": True}}
 
 class PostSerializer(serializers.ModelSerializer):
-    media = MediaSerializer(many=True, read_only=True) #here too
+    media = MediaSerializer(many=True, read_only=True) 
     class Meta:
         model = Post
         fields = ["postID", "user", "community", "postDate","title","description","hasEdit","hasMedia","editDate", "media"]
