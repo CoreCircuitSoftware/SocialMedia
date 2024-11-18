@@ -169,7 +169,7 @@ export default function UserProfileTest() {
     const handleShare = async () => {
         try {
             await navigator.clipboard.writeText(`http://circuitsocial.tech/profile/${profile.username}`);
-            alert("Copied");
+            // alert("Copied");
             console.log('Profile link copied')
         } catch (err) {
             console.log('Error copying profile link')
@@ -264,10 +264,10 @@ export default function UserProfileTest() {
                                 </ul>
                             </div>
                         )} */}
-                        {(posts.length > 0) ? (
-                            <div className="post-holder" data-cy="posts">
-                                {posts.map((post) => <PostDisplay post={post} key={post.postID} />)}
-                            </div>
+                    {(posts.length > 0) ? (
+                        <div className="post-holder" data-cy="posts">
+                            {posts.map((post) => <PostDisplay post={post} curUser={myProfile} key={post.postID} />)}
+                        </div>
                         ) : (
                             <h3 data-cy="user-no-posts">{username} hasn't made any posts yet</h3>
                         )}
