@@ -13,3 +13,4 @@ pymysql
 cryptography
 daphne
 channels
+coverage
