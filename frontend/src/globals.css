@@ -1,0 +1,14 @@
+.app-container {
+    display: flex;
+  }
+  
+  .leftBar {
+    flex: 1;
+    /* Add any additional styles for the LeftBar */
+  }
+  
+  .main-content {
+    flex: 3;
+    padding: 20px;
+    /* Add any additional styles for the main content */
+  }

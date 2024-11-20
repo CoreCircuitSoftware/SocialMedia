@@ -64,22 +64,6 @@ export default function Home() {
     }
 
     return (
-        // <main>
-        //     <SearchBar />
-        //     <Menu />
-        //     <Footer />
-        //     <div className="feed-center">
-        //         <div className="post-holder">
-        //             {posts.map((post) => <PostDisplay post={post} key={post.postID} />)}
-        //         </div>
-        //     </div>
-        //     <div className="recs">
-        //         <h2>Check out these accounts!</h2>
-        //         <div>
-        //             {userRec.map((rec) => <RecsDisplay rec={rec} key={rec.id} />)}
-        //         </div>
-        //     </div>
-        // </main>
         
         <Box sx={{ display: 'flex' }}>
             {/* Sidebar Menu */}

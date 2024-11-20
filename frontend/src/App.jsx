@@ -36,34 +36,42 @@ function RegisterAndLogout() {  //Clear local storage to prevent token mixup wit
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <GetMyProfile />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="login" element={<Login />} />
-        <Route path="register" element={<RegisterAndLogout />} />
-        <Route path="logout" element={<Logout />} />
-        <Route path="home" element={<Home />} />
-        <Route path="profile/:username" element={<UserProfile />} />
-        <Route path="profile/:username/message" element={<MessagePage />} />
-        <Route path="profile/" element={<GetMyProfile />} />
-        <Route path="profile/edit" element={<ProfileForm />} />
-        <Route path="notes" element={<Notes />} />
-        <Route path="post/create" element={<PostForm />} />
-        <Route path="post/edit/:postid" element={<PostEdit />} />
-        <Route path="post/view/:postid" element={<PostPage />} />
-        <Route path="comment/view/:commentID" element={<CommentPage />} />
-        <Route path="comment/edit/:commentID" element={<CommentEdit />} />
-        <Route path="message/" element={<PostForm />} />
-        <Route path="profile/:username/friends" element={<FriendsList />} />
-        <Route path="search/profile/:userchunk?" element={<ProfileSearch />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <div className="app-container" >
+      {/* <LeftBar /> */}
+      {/* <Menu /> */}
+        <div className="main-content" >
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <GetMyProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<RegisterAndLogout />} />
+          <Route path="logout" element={<Logout />} />
+          <Route path="home" element={<Home />} />
+          <Route path="profile/:username" element={<UserProfile />} />
+          <Route path="profile/:username/message" element={<MessagePage />} />
+          <Route path="profile/" element={<GetMyProfile />} />
+          <Route path="profile/edit" element={<ProfileForm />} />
+          <Route path="notes" element={<Notes />} />
+          <Route path="post/create" element={<PostForm />} />
+          <Route path="post/edit/:postid" element={<PostEdit />} />
+          <Route path="post/view/:postid" element={<PostPage />} />
+          <Route path="comment/view/:commentID" element={<CommentPage />} />
+          <Route path="comment/edit/:commentID" element={<CommentEdit />} />
+          <Route path="message/" element={<PostForm />} />
+          <Route path="profile/:username/friends" element={<FriendsList />} />
+          <Route path="search/profile/:userchunk?" element={<ProfileSearch />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+        </div>
+        
+      </div>
+      
     </BrowserRouter>
   )
 }
