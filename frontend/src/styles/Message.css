@@ -23,6 +23,7 @@ P{
     /* border-top-style: ridge;
     border-left-style: ridge; */
     max-width: 400px;
+    min-width: 300px;
     /* border-bottom-left-radius: 5px;
     border-top-left-radius: 5px; */
     border-width: 3px;

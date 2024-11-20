@@ -52,6 +52,7 @@ main {
     grid-area: content;
     border-radius: 10px;
     background-color: var(--Primary1);
+    margin-right: 5dvh;
 }
 
 footer { 
