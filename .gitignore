@@ -9,6 +9,7 @@ backend/api/tests/__pycache__/
 backend/backend/__init__.py
 backend/backend/__pycache__/
 backend/backend/settings.py
+backend/.coverage
 frontend/.nyc_output
 frontend/coverage
 frontend/package-lock.json
