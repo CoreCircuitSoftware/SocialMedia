@@ -36,7 +36,11 @@ class CustomUser(AbstractBaseUser):
     password = models.CharField(max_length=255)
     email = models.EmailField(max_length=254)
     displayName = models.CharField(max_length=20, blank=True)
-    profilePicture = models.CharField(max_length=255, blank=True)
+    profilePicture = models.CharField(
+        max_length=255,
+        blank=True,
+        default="https://django-s3-4800.s3.us-east-2.amazonaws.com/post_images/Default_pfp-removebg-preview.png"
+        )
     bio = models.CharField(max_length=255, blank=True)
     backgroundColor = models.CharField(max_length=7, blank=True) # hex color
     backgroundImage = models.CharField(max_length=255, blank=True)

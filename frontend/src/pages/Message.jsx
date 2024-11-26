@@ -4,6 +4,9 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useParams } from "react-router-dom";
 import MessageDisplay from "../components/MessageDisplay";
 import "../styles/Message.css"
+import SearchBar from "../components/SearchBar";
+import Menu from "../components/Menu";
+import Footer from "../components/Footer";
 
 export default function MessagePage() {
     const { username } = useParams();
@@ -154,45 +157,50 @@ export default function MessagePage() {
     }, [convoID])
 
     return (
-        <main className="messages-page">
-            <div className="title">
-                {/* <div> { thisConvo.convoName && (
-                    <h1>{thisConvo.convoName}</h1>)}
-                </div> 
-                <div> { !thisConvo.convoName && (
-                    <h1>Your convo with {profile.username}</h1> )}
-                </div>  */}
-                <h1>Your convo with {profile.username}</h1>
-            </div>
-            
-            <div className="message-holder" data-cy="message-holder">
-                {messages.map((messages) =>
-                <MessageDisplay message={messages} key={`${messages.messageID}`} />
+        <main>
+            <SearchBar />
+            <Menu />
+            <Footer />
+            <div className="messages-page">
+                <div className="title">
+                    {/* <div> { thisConvo.convoName && (
+                        <h1>{thisConvo.convoName}</h1>)}
+                    </div> 
+                    <div> { !thisConvo.convoName && (
+                        <h1>Your convo with {profile.username}</h1> )}
+                    </div>  */}
+                    <h1>Your convo with {profile.username}</h1>
+                </div>
+                
+                <div className="message-holder" data-cy="message-holder">
+                    {messages.map((messages) =>
+                    <MessageDisplay message={messages} key={`${messages.messageID}`} />
+                    )}
+                </div>
+                { convoExists ? (
+                <form onSubmit={handleSendMessage} className="message-input" data-cy="message-form">
+                    <input id="input-box"
+                        className="form-input"
+                        type="text"
+                        value={curMessage}
+                        onChange={(e) => setCurMessage(e.target.value)}
+                        placeholder={placeholderText}
+                        data-cy="message-input"
+                    />
+                    <button className="send-message" type="submit" data-cy="send-message">
+                        Send Message
+                    </button>
+                </form> )
+                :  (
+                    <form data-cy="no-msg-user-before">
+                        <h3>You have not messaged this user before</h3>
+                        <h4>Begin here!</h4>
+                        <button onClick={createConvo} type="submit">
+                            Start your convo with {profile.username}!
+                        </button>
+                    </form>
                 )}
             </div>
-            { convoExists ? (
-            <form onSubmit={handleSendMessage} className="message-input" data-cy="message-form">
-                <input id="input-box"
-                    className="form-input"
-                    type="text"
-                    value={curMessage}
-                    onChange={(e) => setCurMessage(e.target.value)}
-                    placeholder={placeholderText}
-                    data-cy="message-input"
-                />
-                <button className="send-message" type="submit" data-cy="send-message">
-                    Send Message
-                </button>
-            </form> )
-            :  (
-                <form data-cy="no-msg-user-before">
-                    <h3>You have not messaged this user before</h3>
-                    <h4>Begin here!</h4>
-                    <button onClick={createConvo} type="submit">
-                        Start your convo with {profile.username}!
-                    </button>
-                </form>
-            )}
         </main> 
     )
 }

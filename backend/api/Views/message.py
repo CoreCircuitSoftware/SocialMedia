@@ -78,3 +78,21 @@ class SendMessage(generics.GenericAPIView):
             self.perform_create(serializer)
             return Response(serializer.data)
         return Response(serializer.errors)
+    
+class FindConvoParticipants(generics.ListAPIView):
+    serializer_class = ConvoParticipantSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user_id = self.kwargs.get('user_id')
+        user_convos = ConvoParticipant.objects.filter(user_id=user_id).values_list('convo_id', flat=True)
+        queryset = ConvoParticipant.objects.filter(convo_id__in=user_convos).exclude(user_id=user_id)
+        return queryset
+    
+class LatestMessageView(generics.RetrieveAPIView):
+    serializer_class = MessageSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        convo_id = self.kwargs.get('convoID')
+        return Message.objects.filter(convo_id=convo_id).latest('messageDate')

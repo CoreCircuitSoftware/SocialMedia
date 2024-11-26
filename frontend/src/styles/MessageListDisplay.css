@@ -1,0 +1,41 @@
+.MessageListDisplayHolder-top {
+    min-width: 200px;
+    
+    width: fit-content;
+    display: flex;
+    gap: 1dvh;
+    align-items: center;
+    background-color: var(--Secondary1);
+    padding: 5px;
+}
+
+.MessageListDisplayHolder-bottom {
+    min-width: 200px;
+    
+    width: fit-content;
+    display: flex;
+    gap: 1dvh;
+    align-items: center;
+    background-color: var(--Secondary1);
+    padding: 5px;
+}
+
+.MessageListDisplayHolder-combined {
+    min-width: 30dvh;
+    
+    width: fit-content;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    gap: 1dvh;
+    align-items: left;
+    background-color: var(--Secondary1);
+    border-style: groove;
+    border-width: 5px;
+    padding: 5px;
+    margin-bottom: 1dvh;
+}
+
+.MessageListPage {
+    padding: 2dvh;
+}
