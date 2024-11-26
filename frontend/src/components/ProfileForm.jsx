@@ -4,6 +4,26 @@ import api from "../api"
 import { useNavigate } from "react-router-dom";
 //import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 import "../styles/Form.css"
+import { styled } from "@mui/material/styles";
+import Button from "@mui/material/Button";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import Avatar from '@mui/material/Avatar';
+import defaultProfilePic from'../assets/csbutwhiteoutlined.png'
+import defaultBackground from'../assets/background.jpg'
+import Box from '@mui/material/Box';
+
+
+const VisuallyHiddenInput = styled("input")({
+    clip: "rect(0 0 0 0)",
+    clipPath: "inset(10%)",
+    height: 1,
+    overflow: "hidden",
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    whiteSpace: "nowrap",
+    width: 1,
+  });
 
 function ProfileForm() {
     const navigate = useNavigate();
@@ -18,11 +38,15 @@ function ProfileForm() {
 
     useEffect(() => {
         getProfile();
-        setDisplayName(profile.displayName)
-        setBio(profile.bio)
-        setPfp(profile.profilePicture)
-        setBackImg(profile.backgroundImage)
     }, [])
+
+    useEffect(() => {
+        if (profile) {
+          setDisplayName(profile.displayName || "");
+          setBio(profile.bio || "");
+        }
+      }, [profile]);
+    
     const getProfile = () => {
         api
             .get(`/api/profile/`)
@@ -34,17 +58,39 @@ function ProfileForm() {
             .catch((err) => alert(err));
     }
 
+    const handleFileChange = (e) => {
+        const { name, files } = e.target;
+        if (name === 'profilePicture') {
+          setPfp(files[0]);
+        } else if (name === 'backgroundImage') {
+          setBackImg(files[0]);
+        }
+      };    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        try {
-            await api.patch("/api/profile/edit/", { displayName: displayName, bio: bio, profilePicture: pfp, backgroundImage: backImg })
-            navigate("/profile")
-        } catch (error) {
-            alert(error)
+    
+        const formData = new FormData();
+        formData.append('displayName', displayName);
+        formData.append('bio', bio);
+        if (pfp) {
+          formData.append('profilePicture', pfp);
         }
-    }
+        if (backImg) {
+          formData.append('backgroundImage', backImg);
+        }
+    
+        try {
+          await api.patch("/api/profile/edit/", formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+          navigate("/profile");
+        } catch (error) {
+          alert(error);
+        }
+      };
 
     const handleCancel = async (e) => {
         e.preventDefault();
@@ -80,24 +126,64 @@ function ProfileForm() {
                 placeholder={profile.bio}
                 data-cy="bio"
             />
+
+            {/* Profile Picture Upload */}
             <label htmlFor="pfp">Profile Picture</label>
-            <input id="pfp"
-                className="form-input"
-                type="text"
-                value={pfp}
-                onChange={(e) => setPfp(e.target.value)}
-                placeholder={profile.profilePicture}
-                data-cy="pfp"
-            />
+            <Box display="flex" alignItems="center">
+                <Avatar
+                src={pfp ? URL.createObjectURL(pfp) : profile.profilePicture || defaultProfilePic}
+                alt="Profile Picture"
+                sx={{ width: 70, height: 70 }}
+                />
+                <Button
+                component="label"
+                variant="contained"
+                startIcon={<CloudUploadIcon />}
+                sx={{ marginLeft: 9 }}
+                color="primary" // Use 'primary' or another standard color unless 'customGreen' is defined
+                >
+                Upload Image
+                <VisuallyHiddenInput
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    name="profilePicture"
+                />
+                </Button>
+            </Box>
+            
+            {/* Banner Image Upload */}
             <label htmlFor="back_img">Banner</label>
-            <input id="back_img"
-                className="form-input"
-                type="text"
-                value={backImg}
-                onChange={(e) => setBackImg(e.target.value)}
-                placeholder={profile.backgroundImage}
-                data-cy="banner"
-            />
+            <Box display="flex" alignItems="center" gap={2}>  {/* Flex container with gap between image and button */}
+                {/* Banner Image */}
+                <img
+                    src={backImg ? URL.createObjectURL(backImg) : profile.backgroundImage || defaultBackground}  // Fallback to default banner if no image is selected
+                    alt="Banner"
+                    style={{
+                        width: '70%',  // Make it responsive by taking full width
+                        maxWidth: '400px',  // Restrict the max width to 800px (adjust as needed)
+                        height: '65px',  // Set a fixed height for the banner
+                        objectFit: 'cover',  // Ensures the image covers the container without stretching
+                        borderRadius: '8px',  // Optional: rounded corners
+                    }}
+                />
+                {/* Upload Button */}
+                <Button
+                    component="label"
+                    variant="contained"
+                    startIcon={<CloudUploadIcon />}
+                    color="primary"
+                    sx={{ height: '57px', marginLeft: '15px' }}  // Align the button height with the banner
+                >
+                    Upload Image
+                    <VisuallyHiddenInput
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        name="backgroundImage"
+                    />
+                </Button>
+            </Box>
             {/* <label htmlFor="back_col">Background Color</label>
             <input id="back_col"
                 className="form-input"

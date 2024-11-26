@@ -237,7 +237,7 @@ export default function PostDisplay(slug) {
                             <KeyboardArrowLeftIcon onClick={handlePrevImage} style={{ cursor: 'pointer' }} />
                                 <img 
                                     key={media[currentImageIndex].mediaID}
-                                    src={media[currentImageIndex].mediaURL}
+                                    src={media[currentImageIndex].image}
                                     alt={`Post image ${currentImageIndex + 1}`}
                                     className="post-image"
                                 />

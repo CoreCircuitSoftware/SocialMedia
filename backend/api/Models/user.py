@@ -36,10 +36,10 @@ class CustomUser(AbstractBaseUser):
     password = models.CharField(max_length=255)
     email = models.EmailField(max_length=254)
     displayName = models.CharField(max_length=20, blank=True)
-    profilePicture = models.CharField(max_length=255, blank=True)
+    profilePicture = models.ImageField(upload_to='profile_pics', null=True, blank=True)
     bio = models.CharField(max_length=255, blank=True)
     backgroundColor = models.CharField(max_length=7, blank=True) # hex color
-    backgroundImage = models.CharField(max_length=255, blank=True)
+    backgroundImage = models.ImageField(upload_to='background_imgs', null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     
     USERNAME_FIELD = "username" # This is the field which will be used during authentication, must be set and must be unique

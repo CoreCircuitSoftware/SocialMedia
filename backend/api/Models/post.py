@@ -21,7 +21,7 @@ class Media(models.Model):
     mediaID = models.AutoField(primary_key=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     mediaType = models.IntegerField()  # 0 = image, 1 = video?
-    mediaURL = models.CharField(max_length=255)
+    mediaURL = models.CharField(max_length=255, default='')
     image = models.ImageField(upload_to='post_images/', null=True, blank=True)
 
     def get_media_url(self):

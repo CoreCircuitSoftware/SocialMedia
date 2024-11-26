@@ -9,9 +9,11 @@ import PostDisplay from "../components/ProfilePostDisplay.jsx";
 import SearchBar from "../components/SearchBar";
 import Menu from "../components/Menu";
 import Footer from "../components/Footer";
+import logo from'../assets/csbutwhiteoutlined.png'
 
 //Material Ui
-import Button from "../components/Button/Button";
+// import Button from "../components/Button/Button";
+import Button from "@mui/material/Button";
 import { ThemeProvider } from '@mui/material/styles';
 import { AppBar, Toolbar, Typography, Container, Grid2, Paper, Box } from "@mui/material";
 import theme from '../styles/theme';  // Import the custom theme
@@ -197,17 +199,35 @@ export default function UserProfileTest() {
 
     return (
         <Box sx={{ display: 'flex'}}> 
-           {/* <AppBar position="fixed">
-                    <Toolbar>
-                        <Typography variant="h6" sx={{ flexGrow: 2, marginRight: 3 }}>
+          <AppBar position="fixed">
+                <Toolbar sx={{ display: 'flex', alignItems: 'center', width: '102%' }}>
+
+                    {/* Logo - Aligned to the left */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 1}}>
+                        <img
+                            src={logo} // Path to your logo
+                            alt="Logo"
+                            style={{
+                                width: 80,  // Adjust size of the logo
+                                height: 60,
+                                marginRight: '1px'
+                            }}
+                        />
+                    </Box>
+
+                    {/* Centered Text and SearchBar */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+                        <Typography variant="h6" sx={{ textAlign: 'center', marginRight: 1 }}>
                             CircuitSocial
                         </Typography>
                         <SearchBar />
-                    </Toolbar>
-                </AppBar> */}
+                    </Box>
+                </Toolbar>
+            </AppBar>
             <Menu />
-            <Footer />
-            <Box sx={{ flexGrow: 1, marginLeft: '16px', mt: 8 }}> 
+
+            <Box sx={{ flexGrow: 1, marginLeft: '300px', mt: 8 }}> 
+               
                 <div className="content">
                     <div className="profile-top">
                         <img className="back-img" src={profile.backgroundImage} alt="background" data-cy="banner" />
@@ -227,15 +247,10 @@ export default function UserProfileTest() {
                                             gap: 1, // Space between items, equivalent to 16px (8 * 2)
                                         }}
                                         >
-
-                                            {/* <button className="edit-button" onClick={handleShare} data-cy="share">Share</button> */}
-                                            <Button variant='contained' startIcon={<ShareIcon />} onClick={handleShare} data-cy="share">Share</Button>
+                                            <Button variant='contained' color='primary' startIcon={<ShareIcon />} onClick={handleShare} data-cy="share">Share</Button>
                                             <Button variant='contained' startIcon={<CreateIcon />} onClick={handlePostCreate} data-cy="create-post">Create Post</Button>
                                             <Button variant='contained' startIcon={<LogoutIcon />} onClick={handleLogout} data-cy="logout">Logout</Button>
                                             <Button variant='contained' startIcon={<AccountBoxIcon />} onClick={handleEdit} data-cy="edit">Edit</Button>
-                                            {/* <button className="edit-button" onClick={handlePostCreate} data-cy="create-post">Create Post</button>
-                                            <button className="edit-button" onClick={handleLogout} data-cy="logout">Logout</button>
-                                            <button className="logout-button" onClick={handleEdit} data-cy="edit">Edit</button> */}
                                         </Box>
                                         </ThemeProvider>
                                     ) : (
@@ -288,6 +303,7 @@ export default function UserProfileTest() {
                             )}
                         </div>
                     </div>
+                    <Footer />
                 </div>
             </Box>
         </Box>

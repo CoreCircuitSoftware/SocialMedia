@@ -14,7 +14,6 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 class MediaSerializer(serializers.ModelSerializer):
-    # media_url = serializers.SerializerMethodField('get_media_url')
 
     class Meta:
         model = Media 

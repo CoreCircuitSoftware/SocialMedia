@@ -5,6 +5,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import HomeIcon from "@mui/icons-material/Home";
 import GroupIcon from "@mui/icons-material/Group";
 import MessageIcon from "@mui/icons-material/Message";
+import "../styles/Themes.css";
 
 export default function Menu() {
     const navigate = useNavigate();
@@ -12,7 +13,7 @@ export default function Menu() {
         { text: "Profile", icon: <PersonIcon />, action: () => navigate("/profile") },
         { text: "Home", icon: <HomeIcon />, action: () => navigate("/home") },
         { text: "Communities", icon: <GroupIcon />, action: () => navigate("/communities") },
-        // { text: "Messages", icon: <MessageIcon />, action: () => navigate("/message") },
+        { text: "Messages", icon: <MessageIcon />, action: () => navigate("/message") },
       ];
 
     return (
@@ -24,7 +25,7 @@ export default function Menu() {
             left: 0,
             height: "calc(100vh - 83px)",
             width: 250,
-            backgroundColor: "#ffff11",
+            backgroundColor: "#ffffff",
             borderRadius: 0,         // Removes border radius for a more solid look
             boxShadow: "2px 0 5px rgba(0, 0, 0, 0.1)",  // Adds a slight shadow
             display: "flex",
@@ -40,12 +41,8 @@ export default function Menu() {
                         sx={{
                             border: "none",
                             "&:not(:last-child)": {
-                                borderBottom: "0px solid #ffff00", // Add divider between items
+                                borderBottom: "0px solid #ffffff", // Add divider between items
                             },
-                            "&:focus": {
-                                outline: "2px solid #ffff00", // Yellow focus ring
-                                outlineOffset: "2px",  
-                            }
                         }}
                     >
                         <ListItemButton
@@ -56,23 +53,13 @@ export default function Menu() {
                                 // Set border color
                                 borderRadius: 0,
                                 padding: "10px 16px",
-                                backgroundColor: "#ffff00",
-                                border: "2px solid #ffff00", // Add yellow border explicitly
+                                backgroundColor: "#ffffff",
+                                border: "2px solid #ffffff", // Add yellow border explicitly
                                 "&:hover": {
-                                    backgroundColor: "#ffea00", // Slightly darker yellow on hover
-                                    border: "2px solid #ffea00", // Keep border consistent on hover
+                                    backgroundColor: "#f0f0f0", // Slightly darker yellow on hover
+                                    border: "2px solid #fffff", // Keep border consistent on hover
                                 },
-                                "&:focus": {
-                                    outline: "none", // Disable default browser outline
-                                    border: "2px solid #ffff00", // Maintain yellow border on focus
-                                    boxShadow: "0 0 0 4px rgba(255, 255, 0, 0.5)", // Optional: Add a glowing effect for focus
-                                },
-                                "&.Mui-focusVisible": {
-                                outline: "none", // Ensure no gray outline when keyboard focusing
-                                },
-                                "&::after": {
-                                content: "none", // Removes any pseudo-elements applied by default
-                                },
+                            
                             }}
                         >
                             <ListItemIcon>{item.icon}</ListItemIcon>
