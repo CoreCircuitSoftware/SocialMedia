@@ -15,7 +15,6 @@ export default function MessageListDisplay(slug) {
             .get(`/api/message/latest/${convo.convo}/`)
             .then((res) => res.data)
             .then((data) => {
-                console.log(data)
                 setLatestMessage(data)
             })
             .catch((err) => alert(err));

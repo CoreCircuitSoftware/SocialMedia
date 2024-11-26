@@ -22,7 +22,6 @@ export default function MessageListPage() {
     };
 
     const findConvos = () => {
-        console.log(typeof(myProfile.id))
         api
             .get(`/api/message/findconvos/${myProfile.id}/`)
             .then((res) => res.data)
@@ -31,7 +30,6 @@ export default function MessageListPage() {
     }
 
     useEffect(() => { 
-        console.log("yo")
         if (myProfile) {
             findConvos()
         }
