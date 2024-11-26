@@ -48,7 +48,6 @@ export default function ProfileSearch() {
     return (
         <main>
             <SearchBar />
-            <Menu />
             <Footer />
             <div className="content">
                 {userchunk !== undefined ? <h1>Results</h1> : <h1 data-cy="search-all">All Profiles</h1>}

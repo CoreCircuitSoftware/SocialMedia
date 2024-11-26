@@ -9,7 +9,7 @@ li {
     background-color: var(--Secondary1);
     border-style: groove;
     border-width: 5px;
-    padding: 5px;
+    /* padding: 5px; */
 }
 
 .friendlistimage {

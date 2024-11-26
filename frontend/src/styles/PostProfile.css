@@ -8,6 +8,7 @@
     border-radius: 2dvh;
     padding: 1dvh;
     margin: 2dvh;
+    width: 350px;
 }
 
 header {
@@ -46,4 +47,20 @@ header button {
 }
 header button:hover {
     opacity: 80%;
+}
+.post-media {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Center images horizontally */
+    align-items: center; /* Center images vertically */
+    gap: 1dvh;
+    margin-top: 1dvh;
+}
+
+.post-media img {
+    max-width: 100%;
+    width: 230px;
+    height: 280px;
+    border-radius: 1dvh;
+    box-shadow: 0 0.5dvh 1dvh rgba(0, 0, 0, 0.1);
 }

@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react"
 import React from "react"
 import api from "../api"
-import "../styles/Home.css"
+// import "../styles/Home.css"
 import { useNavigate } from "react-router-dom";
+import { AppBar, Toolbar, Typography, Container, Grid2, Paper, Box } from "@mui/material";
 import SearchBar from "../components/SearchBar";
 import Menu from "../components/Menu";
 import Footer from "../components/Footer";
@@ -134,31 +135,59 @@ export default function Home() {
     }
 
     return (
-        <main>
-            <SearchBar />
+        
+        <Box sx={{ display: 'flex' }}>
+            {/* Sidebar Menu */}
             <Menu />
-            <Footer />
-            <div className="feed-center">
-                { loading ? (<h1>Loading...</h1>) : (
-                <div>
-                    {sort == "friends" ? (<h1>Home - Friend's posts</h1>) : (<h1>Home - New posts</h1>)}
-                    <div className="sort">
-                        <button onClick={() => handleSort("friends")}>Friends</button>
-                        <button onClick={() => handleSort("new")}>New</button>
-                    </div>
-                    <div className="post-holder">
-                        {posts.map((post) => <PostDisplay post={post} key={post.postID} />)}
-                        {posts.length == 0 ? (<h1>No posts found</h1>) : null}
-                    </div>
-                </div>
-                )}
-            </div>
-            <div className="recs">
-                <h2>Check out these accounts!</h2>
-                <div>
-                    {userRec.map((rec) => <RecsDisplay rec={rec} key={rec.id} />)}
-                </div>
-            </div>
-        </main>
+
+            {/* Main Content */}
+            <Box sx={{ flexGrow: 1, marginLeft: '250px', mt: 8 }}>
+                <AppBar position="fixed">
+                    <Toolbar>
+                        <Typography variant="h6" sx={{ flexGrow: 2, marginRight: 3 }}>
+                            CircuitSocial
+                        </Typography>
+                        <SearchBar />
+                    </Toolbar>
+                </AppBar>
+
+                <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+                    <Grid2 container spacing={4}>
+                        {/* Feed */}
+                        <Grid2 item xs={12} md={8}>
+                            <div className="feed-center">
+                                { loading ? (<h1>Loading...</h1>) : (
+                                <div>
+                                    {sort == "friends" ? (<h1>Home - Friend's posts</h1>) : (<h1>Home - New posts</h1>)}
+                                    <div className="sort">
+                                        <button onClick={() => handleSort("friends")}>Friends</button>
+                                        <button onClick={() => handleSort("new")}>New</button>
+                                    </div>
+                                    <div className="post-holder">
+                                        {posts.map((post) => <PostDisplay post={post} key={post.postID} />)}
+                                        {posts.length == 0 ? (<h1>No posts found</h1>) : null}
+                                    </div>
+                                </div>
+                                )}
+                            </div>
+                        </Grid2>
+                        {/* Right Sidebar */}
+                        <Grid2 item xs={12} md={4}>
+                            <Paper elevation={3} sx={{ p: 2 }}>
+                                <Typography variant="h6" gutterBottom>
+                                    Check out these accounts!
+                                </Typography>
+                                {userRec.map((rec) => (
+                                    <RecsDisplay rec={rec} key={rec.id} />
+                                ))}
+                            </Paper>
+                        </Grid2>
+                    </Grid2>
+                </Container>
+
+                {/* Footer */}
+                <Footer />
+            </Box>
+         </Box>
     );
 }

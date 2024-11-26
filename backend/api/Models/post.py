@@ -14,13 +14,18 @@ class Post(models.Model):
     title = models.CharField(max_length=255)
     description = models.CharField(max_length=255, null=True, blank=True)
     hasEdit = models.BooleanField(default=False, blank=True)
-    editDate = models.DateTimeField(null=True, blank=True)
+    hasMedia = models.BooleanField(default=False) #boolean field to quickly know if a post has associated media without performing a database query every time
+    editDate = models.DateTimeField(null=True, blank=True) 
 
 class Media(models.Model):
     mediaID = models.AutoField(primary_key=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    mediaType = models.IntegerField() # 0 = image, 1 = video?
-    mediaURL = models.CharField(max_length=255)
+    mediaType = models.IntegerField()  # 0 = image, 1 = video?
+    mediaURL = models.CharField(max_length=255, default='')
+    image = models.ImageField(upload_to='post_images/', null=True, blank=True)
+
+    def get_media_url(self):
+        return self.image.url
 
 class PostVote(models.Model):
     voteID = models.AutoField(primary_key=True)

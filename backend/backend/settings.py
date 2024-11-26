@@ -61,9 +61,11 @@ INSTALLED_APPS = [
     'channels', #ADD THIS TO EC2
     "corsheaders",
     'django_cypress',
+    'storages',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -71,7 +73,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -107,11 +108,14 @@ CHANNEL_LAYERS = { #ADD THIS TO EC2
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'socialtest',
+        'NAME': 'social_images',
         'USER': 'root',
         'PASSWORD': 'mysqlpass',
         'HOST':'localhost',
         'PORT':'3306',
+        # 'OPTIONS': {
+        #     'auth_plugin': 'mysql_native_password',
+        # },
     }
 }
 
@@ -156,7 +160,39 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # Your React frontend
+]
 CORS_ALLOWS_CREDENTIALS = True
 
 AUTH_USER_MODEL = 'api.CustomUser'
+
+# AWS S3 settings
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME')
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com'
+
+STORAGES = {
+
+    # Media file (image) management  
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
+    },
+   
+    # CSS and JS file management
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
+    },
+}
+
+# Default file storage
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+# Optional settings
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+AWS_QUERYSTRING_AUTH = False
+AWS_S3_SIGNATURE_VERSION = 's3v4'
+AWS_S3_VERIFY = True

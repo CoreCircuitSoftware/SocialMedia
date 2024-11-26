@@ -14,6 +14,27 @@ Form {
     max-width: 400px;
 }
 
+.post-submit-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.image-preview {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns */
+    gap: 10px; /* Space between items */
+    width: 100%; /* Ensure the container takes full width */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+.image-preview img {
+    width: 100%; /* Ensure images take full width of the grid cell */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 5px;
+    box-shadow: 0 0.5dvh 1dvh rgba(0, 0, 0, 0.1);
+}
+
 .main-post {
     display: flex;
     background-color: var(--Primary1);

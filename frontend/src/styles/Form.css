@@ -23,6 +23,7 @@
   
 .form-button{
     width: 95%;
+    height: 30px;
     padding: 1px;
     margin: 20px 0;
     background-color: var(--Tertiary1);

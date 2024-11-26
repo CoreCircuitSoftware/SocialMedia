@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import api from "../api"
 import React from "react";
 import { useNavigate } from "react-router-dom";
+// Material-UI imports
+import { Card, CardHeader, Avatar, Button, CardActions } from "@mui/material";
 
 
 export default function RecsDisplay(slug) {
@@ -13,14 +15,20 @@ export default function RecsDisplay(slug) {
     }
 
     return (
-        <div className="recs-container">
-            {thisUser.profilePicture ?
-                (<img className="friendlistimage" src={thisUser.profilePicture} alt="profile" />)
-                : (<img className="friendlistimage" src={thisUser.profilePicture} alt="profile" />)}
-            <button className="user-rec" onClick={handleGoToAccount} data-cy="rec">{thisUser.username}</button>
-            <a href={`/profile/${thisUser.username}/message`}>
-                <img className="friendlistimage" src="https://icons.veryicon.com/png/o/miscellaneous/official-icon-of-flying-pig/mailbox-82.png"></img>
-            </a>
-        </div>
+        // <div className="recs-container">
+        //     <button className="user-rec" onClick={handleGoToAccount}>{thisUser.username}</button>
+        // </div>
+        <Card sx={{ mb: 2 }}>
+            <CardHeader
+                avatar={<Avatar src={thisUser.profilePicture} alt={thisUser.displayName} />}
+                title={thisUser.displayName}
+                subheader={`@${thisUser.username}`}
+            />
+            <CardActions>
+                <Button size="small" color="primary" onClick={handleGoToAccount}>
+                View Profile
+                </Button>
+            </CardActions>
+        </Card>
     );
 }

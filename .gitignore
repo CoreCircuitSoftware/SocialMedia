@@ -1,4 +1,6 @@
+#python
 env/
+
 backend/__init__.py
 backend/api/__pycache__/
 backend/api/migrations/*_initial.py
@@ -10,6 +12,12 @@ backend/backend/__init__.py
 backend/backend/__pycache__/
 backend/backend/settings.py
 backend/.coverage
+*.env
+
 frontend/.nyc_output
 frontend/coverage
 frontend/package-lock.json
+# frontend/package-lock.json
+
+#Node
+node_modules/

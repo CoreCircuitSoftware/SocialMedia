@@ -9,6 +9,21 @@ import PostDisplay from "../components/ProfilePostDisplay.jsx";
 import SearchBar from "../components/SearchBar";
 import Menu from "../components/Menu";
 import Footer from "../components/Footer";
+import logo from'../assets/csbutwhiteoutlined.png'
+
+//Material Ui
+// import Button from "../components/Button/Button";
+import Button from "@mui/material/Button";
+import { ThemeProvider } from '@mui/material/styles';
+import { AppBar, Toolbar, Typography, Container, Grid2, Paper, Box } from "@mui/material";
+import theme from '../styles/theme';  // Import the custom theme
+import ShareIcon from "@mui/icons-material/Share";
+import CreateIcon from "@mui/icons-material/Create";
+import LogoutIcon from "@mui/icons-material/Logout";
+import EditIcon from "@mui/icons-material/Edit";
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
+
+
 
 export default function UserProfileTest() {
     const { username } = useParams();
@@ -183,98 +198,115 @@ export default function UserProfileTest() {
     }
 
     return (
-        <main>
-            <SearchBar />
-            <Menu />
-            <Footer />
-            <div className="content">
-                <div className="profile-top">
-                    <img className="back-img" src={profile.backgroundImage} alt="background" data-cy="banner" />
-                    <div className="profile-card">
-                        <div className="card-upper">
-                            <img className="pfp" src={profile.profilePicture} alt="profile" data-cy="pfp" />
-                            <div className="names">
-                                <p className="display-name" data-cy="display-name">{profile.displayName} </p>
-                                <p className="username" data-cy="username">@{profile.username}</p>
-                            </div>
-                            <div className="buttons">
-                                {isMyProfile ? (
-                                    <div>
+        <Box sx={{ display: 'flex'}}> 
+          <AppBar position="fixed">
+                <Toolbar sx={{ display: 'flex', alignItems: 'center', width: '102%' }}>
 
-                                        <button className="edit-button" onClick={handleShare} data-cy="share">Share</button>
-                                        <button className="edit-button" onClick={handlePostCreate} data-cy="create-post">Create Post</button>
-                                        <button className="edit-button" onClick={handleLogout} data-cy="logout">Logout</button>
-                                        <button className="logout-button" onClick={handleEdit} data-cy="edit">Edit</button>
+                    {/* Logo - Aligned to the left */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 1}}>
+                        <img
+                            src={logo} // Path to your logo
+                            alt="Logo"
+                            style={{
+                                width: 80,  // Adjust size of the logo
+                                height: 60,
+                                marginRight: '1px'
+                            }}
+                        />
+                    </Box>
+
+                    {/* Centered Text and SearchBar */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+                        <Typography variant="h6" sx={{ textAlign: 'center', marginRight: 1 }}>
+                            CircuitSocial
+                        </Typography>
+                        <SearchBar />
+                    </Box>
+                </Toolbar>
+            </AppBar>
+            <Menu />
+
+            <Box sx={{ flexGrow: 1, marginLeft: '300px', mt: 8 }}> 
+               
+                <div className="content">
+                    <div className="profile-top">
+                        <img className="back-img" src={profile.backgroundImage} alt="background" data-cy="banner" />
+                        <div className="profile-card">
+                            <div className="card-upper">
+                                <img className="pfp" src={profile.profilePicture} alt="profile" data-cy="pfp" />
+                                <div className="names">
+                                    <p className="display-name" data-cy="display-name">{profile.displayName} </p>
+                                    <p className="username" data-cy="username">@{profile.username}</p>
+                                </div>
+                                <div className="buttons">
+                                    {isMyProfile ? (
+                                        <ThemeProvider theme={theme}>
+                                            <Box
+                                        sx={{
+                                            display: "flex",
+                                            gap: 1, // Space between items, equivalent to 16px (8 * 2)
+                                        }}
+                                        >
+                                            <Button variant='contained' color='primary' startIcon={<ShareIcon />} onClick={handleShare} data-cy="share">Share</Button>
+                                            <Button variant='contained' startIcon={<CreateIcon />} onClick={handlePostCreate} data-cy="create-post">Create Post</Button>
+                                            <Button variant='contained' startIcon={<LogoutIcon />} onClick={handleLogout} data-cy="logout">Logout</Button>
+                                            <Button variant='contained' startIcon={<AccountBoxIcon />} onClick={handleEdit} data-cy="edit">Edit</Button>
+                                        </Box>
+                                        </ThemeProvider>
+                                    ) : (
+                                        <div>
+                                            <button className="edit-button" onClick={handleMessage}>Message</button>
+                                            {friendStatus === 'none' && (
+                                                <button className="edit-button" onClick={handleAddFriend}>Add Friend</button>
+                                            )}
+                                            {friendStatus === 'pending' && (
+                                                <p>Friend Request Sent</p>
+                                            )}
+                                            {friendStatus === 'pending_received' && (
+                                                <div>
+                                                    <button onClick={() => handleAcceptFriendRequestByButton(true)}>Accept Friend Request</button>
+                                                    <button onClick={() => handleAcceptFriendRequestByButton(false)}>Decline</button>
+                                                </div>
+                                            )}
+                                            {friendStatus === 'friends' && (
+                                                <button className="logout-button" onClick={handleRemoveFriend} >Remove Friend</button>
+                                            )}
+                                        </div>
+                                    )}
+                                    <div className="friends-count">
+                                        <p onClick={handleViewFriends} data-cy="friends">Friends {friendCount}</p>
                                     </div>
-                                ) : (
-                                    <div>
-                                        <button className="edit-button" onClick={handleMessage}>Message</button>
-                                        {friendStatus === 'none' && (
-                                            <button className="edit-button" onClick={handleAddFriend}>Add Friend</button>
-                                        )}
-                                        {friendStatus === 'pending' && (
-                                            <p>Friend Request Sent</p>
-                                        )}
-                                        {friendStatus === 'pending_received' && (
-                                            <div>
-                                                <button onClick={() => handleAcceptFriendRequestByButton(true)}>Accept Friend Request</button>
-                                                <button onClick={() => handleAcceptFriendRequestByButton(false)}>Decline</button>
-                                            </div>
-                                        )}
-                                        {friendStatus === 'friends' && (
-                                            <button className="logout-button" onClick={handleRemoveFriend} >Remove Friend</button>
-                                        )}
-                                    </div>
-                                )}
-                                <div className="friends-count">
-                                    <p onClick={handleViewFriends} data-cy="friends">Friends {friendCount}</p>
                                 </div>
                             </div>
-                        </div>
 
-                        <div className="bio" data-cy="bio" >{profile.bio}</div>
+                            <div className="bio" data-cy="bio" >{profile.bio}</div>
 
-                        {/* Display Pending Friend Requests */}
-                        {isMyProfile && friendRequests.length > 0 && (
-                            <div className="friend-requests">
-                                <h3>Pending Friend Requests</h3>
-                                {friendRequests.map(request => (
-                                    <div key={request.requestID}>
-                                        <p>{request.user1.username} has sent you a friend request!</p>
-                                        <button onClick={() => handleAcceptFriendRequest(request.requestID, true)}>Accept</button>
-                                        <button onClick={() => handleAcceptFriendRequest(request.requestID, false)}>Decline</button>
-                                    </div>
-                                ))}
+                            {/* Display Pending Friend Requests */}
+                            {isMyProfile && friendRequests.length > 0 && (
+                                <div className="friend-requests">
+                                    <h3>Pending Friend Requests</h3>
+                                    {friendRequests.map(request => (
+                                        <div key={request.requestID}>
+                                            <p>{request.user1.username} has sent you a friend request!</p>
+                                            <button onClick={() => handleAcceptFriendRequest(request.requestID, true)}>Accept</button>
+                                            <button onClick={() => handleAcceptFriendRequest(request.requestID, false)}>Decline</button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        {(posts.length > 0) ? (
+                            <div className="post-holder" data-cy="posts">
+                                {posts.map((post) => <PostDisplay post={post} curUser={myProfile} key={post.postID} />)}
                             </div>
-                        )}
-
-                        {/* Display Friends List */}
-                        {/* {friends.length > 0 && (
-                            <div className="friends-list">
-                                <h3>Friends</h3>
-                                <ul>
-                                    {friends.map((friend) => {
-                                        const friendUser = friend.user1.id === profile.id ? friend.user2 : friend.user1;
-                                        return (
-                                            <li key={friend.friendShipID}>
-                                                <a href={`/profile/${friendUser.username}`}>{friendUser.username}</a>
-                                            </li>
-                                        );
-                                    })}
-                                </ul>
-                            </div>
-                        )} */}
-                    {(posts.length > 0) ? (
-                        <div className="post-holder" data-cy="posts">
-                            {posts.map((post) => <PostDisplay post={post} curUser={myProfile} key={post.postID} />)}
+                            ) : (
+                                <h3 data-cy="user-no-posts">{username} hasn't made any posts yet</h3>
+                            )}
                         </div>
-                        ) : (
-                            <h3 data-cy="user-no-posts">{username} hasn't made any posts yet</h3>
-                        )}
                     </div>
+                    <Footer />
                 </div>
-            </div>
-        </main>
+            </Box>
+        </Box>
     );
 }
 

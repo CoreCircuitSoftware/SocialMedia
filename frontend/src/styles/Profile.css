@@ -2,7 +2,8 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: var(--Primary1);
+    /* page background color */
+    background-color: var(--Primary1); 
     margin: 0px;
     padding: 0px;
 }
@@ -14,11 +15,13 @@ body {
 }
 
 .back-img{
-    width: 100%;
+    width: 102.5%;
     object-fit: cover;
     height: 15vh;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
+    margin-top: 20px;
+    margin-left: -34px;
     background-repeat: no-repeat;
 
 }
@@ -33,7 +36,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 0px;
+    margin-left: -34px;
 }
 
 .card-upper {

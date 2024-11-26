@@ -5,6 +5,8 @@ from ..serializers import *
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
+from rest_framework.decorators import api_view
+from rest_framework import status
 from rest_framework import status
 from rest_framework.exceptions import ValidationError, PermissionDenied
 from django.utils import timezone
@@ -14,10 +16,22 @@ class PostCreate(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        if serializer.is_valid():
-            serializer.save(user=self.request.user)
-        else:
-            print(serializer.errors)
+            post = serializer.save(user=self.request.user, hasMedia=True)
+            media_files = self.request.FILES.getlist('media')
+            try:
+                for media_file in media_files:
+                    media_instance = Media.objects.create(post=post, image=media_file, mediaType=0)
+                    media_instance.save()
+                    media_instance.ge
+            except Exception as e:
+                print(f"Error saving media file: {e}")
+
+class PostMediaListView(generics.ListAPIView):
+    serializer_class = MediaSerializer
+
+    def get_queryset(self):
+        post_id = self.kwargs['post_id']  # Extract post_id from the URL
+        return Media.objects.filter(post_id=post_id)
 
 class PostListView(generics.ListAPIView):
     serializer_class = PostSerializer

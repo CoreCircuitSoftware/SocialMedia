@@ -3,7 +3,8 @@ import api from "../api"
 import { useNavigate } from "react-router-dom";
 //import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 import "../styles/PostProfile.css"
-
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 
 export default function PostDisplay(slug) {
     // const [user, setUser] = useState([]);
@@ -13,7 +14,40 @@ export default function PostDisplay(slug) {
     const [isMyPost, setIsMyPost] = useState(false);
     const [votes, setVotes] = useState({upvotes: 0, downvotes: 0, total: 0})
     const [numOfComments, setNumOfComments] = useState(0)
-    // const formattedDate = new Date(thisPost.postDate).toLocaleDateString("en-US")
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const envURL = 'https://django-s3-4800.s3.us-east-2.amazonaws.com/'
+
+    
+
+    const [media, setMedia] = useState([]);
+
+    //Media event handlers
+    const handlePrevImage = () => {
+        setCurrentImageIndex((prevIndex) => (prevIndex === 0 ? media.length - 1 : prevIndex - 1));
+      };
+    
+      const handleNextImage = () => {
+        setCurrentImageIndex((prevIndex) => (prevIndex === media.length - 1 ? 0 : prevIndex + 1));
+      };
+    
+
+    useEffect(() => {
+        // Fetch media data for the post
+        const fetchMedia = async () => {
+        api
+            .get(`/api/posts/media/${thisPost.postID}/`)
+            .then((res) => {
+                setMedia(res.data);
+                console.log("Media data fetched:" + thisPost.postID, res.data);
+                console.log("Post ID:", thisPost.postID);
+            })
+            .catch((err) => console.error("Error fetching media data:", err));
+        };
+
+        fetchMedia();
+    }, [thisPost.postID]);
+
+    // const formattedDate = new Date(thisPost.postDate).toLocaleDateString("en-US"
     const formattedDate = new Date(thisPost.postDate).toLocaleString("en-US", {
         year: 'numeric',
         month: 'long',
@@ -182,18 +216,40 @@ export default function PostDisplay(slug) {
     }
 
     return (
-        <div className="post-container" data-cy="post-display">
+        <div className="post-container">
             <header>
-                <button onClick={handleProfileClick} data-cy="profile-picture"><img className="pfp" src={thisUser.profilePicture} /></button>
+                <button onClick={handleProfileClick}><img className="pfp" src={thisUser.profilePicture} /></button>
                 <div className="name-text">
                     <h1>{thisUser.displayName}  @{thisUser.username}</h1>
                 </div>
             </header>
-            <h2 className="post-title" data-cy="post-title">{thisPost.title}</h2>
-            <p className="post-description" data-cy="post-description">{thisPost.description}</p>
-            <h5 className="post-date" data-cy="post-date">{formattedDate}</h5>
+            {/* <h2 className="post-title">{thisPost.title}</h2>
+            <p className="post-description">{thisPost.description}</p>
+            <h5 className="post-date">{formattedDate}</h5> */}
+            {thisPost && (
+                <>
+                    <h2 className="post-title">{thisPost.title}</h2>
+                    <p className="post-description">{thisPost.description}</p>
+                    
+                    {/* Display post media */}
+                    {thisPost.hasMedia  && media.length > 0 &&(
+                        <div className="post-media">
+                            <KeyboardArrowLeftIcon onClick={handlePrevImage} style={{ cursor: 'pointer' }} />
+                                <img 
+                                    key={media[currentImageIndex].mediaID}
+                                    src={media[currentImageIndex].image}
+                                    alt={`Post image ${currentImageIndex + 1}`}
+                                    className="post-image"
+                                />
+                            <KeyboardArrowRightIcon onClick={handleNextImage} style={{ cursor: 'pointer' }} />
+                        </div>
+                    )}
+                    
+                    <h5 className="post-date">{formattedDate}</h5>
+                </>
+            )}
             {thisPost.hasEdit && (<h6 className="edit-date">Edited: {formattedEditDate}</h6>)}
-            <div class="dropdown-content">
+            <div className="dropdown-content">
                     {isMyPost ? 
                         (<div>
                             <button className="post-edit-button" onClick={() => navigate(`/post/edit/${thisPost.postID}`)}>edit</button>
