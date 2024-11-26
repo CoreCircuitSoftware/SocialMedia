@@ -174,13 +174,20 @@ export default function CommentDisplay(slug) {
     return (
         <div className="comment_main">
             {thisUser ? (
-                <div className="comment_container">              
+                <div className="comment_container">
+                    <div className="comment-display-top">
+                        {(thisUser.profilePicture === "") ? (
+                            <img className="friendlistimage" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" alt="profile"></img>
+                        ) : (
+                            <img className="friendlistimage" src={thisUser.profilePicture} alt="profile" />
+                        )}
+                        <h3>{thisUser.displayName} @{thisUser.username}</h3>
+                    </div>              
                     <p>{comment.commentContent}</p>
-                    <p>{thisUser.username}</p>
-                    <p>{formattedDate}</p>
-                    {comment.hasEdit && (<p>Edited: {formattedEditDate}</p>)}
+                    <h6 className="comment-date">{formattedDate}</h6>
+                    {comment.hasEdit && (<h6 className="comment-date">Edited: {formattedEditDate}</h6>)}
                     <div className="comment-stats">
-                        {votes ? <p>{votes.total} votes</p> : <p>No votes yet</p>}
+                        {votes ? <h5>{votes.total} votes</h5> : <p>No votes yet</p>}
                     </div>
                     <div className="comment-options">
                         <button onClick={() => handleVote(true)}>
@@ -191,7 +198,7 @@ export default function CommentDisplay(slug) {
                         </button>
                         {!comment.replyTo ? <button className="comment-reply-button" onClick={handleCommentClick}>{numOfReplies} replies</button> : null}
                     </div>
-                    <div class="dropdown-content">
+                    <div class="comment-dropdown-content">
                         {(isMyComment) ? 
                             (<div>
                                 <button className="comment-edit-button" onClick={() => navigate(`/comment/edit/${comment.commentID}`)}>edit</button>
