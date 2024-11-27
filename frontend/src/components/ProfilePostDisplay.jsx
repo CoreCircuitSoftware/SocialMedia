@@ -237,14 +237,14 @@ export default function PostDisplay(slug) {
                     {/* Display post media */}
                     {thisPost.hasMedia && media.length > 0 && (
                         <div className="post-media">
-                            <KeyboardArrowLeftIcon onClick={handlePrevImage} style={{ cursor: 'pointer' }} />
+                            {media.length > 1 && (<KeyboardArrowLeftIcon onClick={handlePrevImage} style={{ cursor: 'pointer' }} />)}
                             <img
                                 key={media[currentImageIndex].mediaID}
                                 src={media[currentImageIndex].image}
                                 alt={`Post image ${currentImageIndex + 1}`}
                                 className="post-image"
                             />
-                            <KeyboardArrowRightIcon onClick={handleNextImage} style={{ cursor: 'pointer' }} />
+                            {media.length > 1 && (<KeyboardArrowRightIcon onClick={handleNextImage} style={{ cursor: 'pointer' }} />)}
                         </div>
                     )}
 
