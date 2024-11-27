@@ -8,7 +8,8 @@
     border-radius: 2dvh;
     padding: 1dvh;
     margin: 2dvh;
-    width: 350px;
+    width: 50dvh;
+
 }
 
 header {
@@ -59,9 +60,14 @@ header button:hover {
 
 .post-media img {
     width: 100%;
-    
-    height: 280px;
+    max-height: 35dvh;
+    height: auto;
+    max-height: 35dvh;
     border-radius: 1dvh;
     box-shadow: 0 0.5dvh 1dvh rgba(0, 0, 0, 0.1);
     object-fit: cover;
+}
+
+.post-options{
+
 }
