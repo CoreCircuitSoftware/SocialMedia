@@ -9,6 +9,9 @@ import Menu from "../components/Menu";
 import Footer from "../components/Footer";
 import PostDisplay from "../components/ProfilePostDisplay.jsx";
 import RecsDisplay from "../components/RecsDisplay.jsx";
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import GradeIcon from '@mui/icons-material/Grade';
+import Button from '@mui/material/Button';
 
 export default function Home() {
     const [posts, setPosts] = useState([])
@@ -157,11 +160,11 @@ export default function Home() {
                         <Grid2 item xs={12} md={8}>
                             <div className="feed-center">
                                 { loading ? (<h1>Loading...</h1>) : (
-                                <div>
+                                <div> 
                                     {sort == "friends" ? (<h1>Home - Friend's posts</h1>) : (<h1>Home - New posts</h1>)}
                                     <div className="sort">
-                                        <button onClick={() => handleSort("friends")}>Friends</button>
-                                        <button onClick={() => handleSort("new")}>New</button>
+                                        <Button variant='contained' color='primary' startIcon=<PeopleAltIcon /> onClick={() => handleSort("friends")}>Friends</Button>
+                                        <Button variant='contained' color='primary' startIcon=<GradeIcon /> onClick={() => handleSort("new")}>New</Button>
                                     </div>
                                     <div className="post-holder">
                                         {posts.map((post) => <PostDisplay post={post} key={post.postID} />)}

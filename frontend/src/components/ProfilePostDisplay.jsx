@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import "../styles/PostProfile.css"
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import { ChatBubble, Share, ThumbDown, ThumbDownAltOutlined, ThumbUp, ThumbUpAltOutlined } from "@mui/icons-material";
+import Button from "@mui/material/Button";
 
 export default function PostDisplay(slug) {
     // const [user, setUser] = useState([]);
@@ -12,36 +14,36 @@ export default function PostDisplay(slug) {
     const [thisPost, setThisPost] = useState(slug.post)
     const [postVote, setPostVote] = useState(-1)
     const [isMyPost, setIsMyPost] = useState(false);
-    const [votes, setVotes] = useState({upvotes: 0, downvotes: 0, total: 0})
+    const [votes, setVotes] = useState({ upvotes: 0, downvotes: 0, total: 0 })
     const [numOfComments, setNumOfComments] = useState(0)
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const envURL = 'https://django-s3-4800.s3.us-east-2.amazonaws.com/'
 
-    
+
 
     const [media, setMedia] = useState([]);
 
     //Media event handlers
     const handlePrevImage = () => {
         setCurrentImageIndex((prevIndex) => (prevIndex === 0 ? media.length - 1 : prevIndex - 1));
-      };
-    
-      const handleNextImage = () => {
+    };
+
+    const handleNextImage = () => {
         setCurrentImageIndex((prevIndex) => (prevIndex === media.length - 1 ? 0 : prevIndex + 1));
-      };
-    
+    };
+
 
     useEffect(() => {
         // Fetch media data for the post
         const fetchMedia = async () => {
-        api
-            .get(`/api/posts/media/${thisPost.postID}/`)
-            .then((res) => {
-                setMedia(res.data);
-                console.log("Media data fetched:" + thisPost.postID, res.data);
-                console.log("Post ID:", thisPost.postID);
-            })
-            .catch((err) => console.error("Error fetching media data:", err));
+            api
+                .get(`/api/posts/media/${thisPost.postID}/`)
+                .then((res) => {
+                    setMedia(res.data);
+                    console.log("Media data fetched:" + thisPost.postID, res.data);
+                    console.log("Post ID:", thisPost.postID);
+                })
+                .catch((err) => console.error("Error fetching media data:", err));
         };
 
         fetchMedia();
@@ -117,7 +119,8 @@ export default function PostDisplay(slug) {
             .then((res) => {
                 setIsMyPost(res.data.id === thisUser.id)
             }
-    )}
+            )
+    }
 
     const changeVoteCountLocally = (voteType, e) => { // 0=add, 1=remove, 2=change
         if (e == 0) {
@@ -134,7 +137,7 @@ export default function PostDisplay(slug) {
                     total: votes.total - 1
                 })
             }
-        } else if (e == 1){
+        } else if (e == 1) {
             if (voteType) {
                 setVotes({
                     upvotes: votes.upvotes - 1,
@@ -165,25 +168,25 @@ export default function PostDisplay(slug) {
         }
     }
 
-    const handleVote = (voteType) => {        
+    const handleVote = (voteType) => {
         if (postVote == -1) {
             changeVoteCountLocally(voteType, 0)
             api
-                .post('/api/posts/vote/new/', {vote: voteType, post: thisPost.postID, user: thisUser.id})
+                .post('/api/posts/vote/new/', { vote: voteType, post: thisPost.postID, user: thisUser.id })
                 .catch((err) => console.log(err))
-                setPostVote(voteType)
+            setPostVote(voteType)
         } else if (postVote == voteType) {
             changeVoteCountLocally(voteType, 1)
             api
                 .delete(`api/posts/vote/delete/${thisPost.postID}/`)
                 .catch((err) => console.log(err))
-                setPostVote(-1)
+            setPostVote(-1)
         } else {
             changeVoteCountLocally(voteType, 2)
             api
-                .patch(`api/posts/vote/update/${thisPost.postID}/`, {vote: voteType})
+                .patch(`api/posts/vote/update/${thisPost.postID}/`, { vote: voteType })
                 .catch((err) => console.log(err))
-                setPostVote(voteType)
+            setPostVote(voteType)
         }
     }
 
@@ -201,7 +204,7 @@ export default function PostDisplay(slug) {
         getCommentsTotal()
     }, [])
 
-    useEffect(() => {if (thisUser.id) {getMyProfile()}}, [thisUser])
+    useEffect(() => { if (thisUser.id) { getMyProfile() } }, [thisUser])
 
     const navigate = useNavigate();
     const handleProfileClick = () => navigate(`/profile/${thisUser.username}`);
@@ -230,45 +233,41 @@ export default function PostDisplay(slug) {
                 <>
                     <h2 className="post-title">{thisPost.title}</h2>
                     <p className="post-description">{thisPost.description}</p>
-                    
+
                     {/* Display post media */}
-                    {thisPost.hasMedia  && media.length > 0 &&(
+                    {thisPost.hasMedia && media.length > 0 && (
                         <div className="post-media">
-                            <KeyboardArrowLeftIcon onClick={handlePrevImage} style={{ cursor: 'pointer' }} />
-                                <img 
-                                    key={media[currentImageIndex].mediaID}
-                                    src={media[currentImageIndex].image}
-                                    alt={`Post image ${currentImageIndex + 1}`}
-                                    className="post-image"
-                                />
-                            <KeyboardArrowRightIcon onClick={handleNextImage} style={{ cursor: 'pointer' }} />
+                            {media.length > 1 && (<KeyboardArrowLeftIcon onClick={handlePrevImage} style={{ cursor: 'pointer' }} />)}
+                            <img
+                                key={media[currentImageIndex].mediaID}
+                                src={media[currentImageIndex].image}
+                                alt={`Post image ${currentImageIndex + 1}`}
+                                className="post-image"
+                            />
+                            {media.length > 1 && (<KeyboardArrowRightIcon onClick={handleNextImage} style={{ cursor: 'pointer' }} />)}
                         </div>
                     )}
-                    
+
                     <h5 className="post-date">{formattedDate}</h5>
                 </>
             )}
             {thisPost.hasEdit && (<h6 className="edit-date">Edited: {formattedEditDate}</h6>)}
             <div className="dropdown-content">
-                    {isMyPost ? 
-                        (<div>
-                            <button className="post-edit-button" onClick={() => navigate(`/post/edit/${thisPost.postID}`)}>edit</button>
-                            <button className="post-delete-button" onClick={handlePostDelete}>delete</button>
-                            <button className="post-share-button" onClick={handlePostShare}>share</button>
-                        </div>
-                        ) : <button className="post-share-button" onClick={handlePostShare}>share</button>}
+                {isMyPost ?
+                    (<div>
+                        <button className="post-edit-button" onClick={() => navigate(`/post/edit/${thisPost.postID}`)}>edit</button>
+                        <button className="post-delete-button" onClick={handlePostDelete}>delete</button>
+                        <Button variant='contained' color='primary' startIcon={<Share />} onClick={() => handlePostShare} data-cy="share">Share</Button>
+                    </div>
+                    ) : <Button variant='contained' color='primary' startIcon={<Share />} onClick={() => handlePostShare} data-cy="share">Share</Button>}
             </div>
             <div className="post-stats">
                 {votes ? <p>{votes.total} votes</p> : <p>No votes yet</p>}
             </div>
             <div className="post-options">
-                <button onClick={() => handleVote(true)}>
-                    {postVote == 1 ? <b>Upvoted</b> : "Upvote"}
-                </button>
-                <button onClick={() => handleVote(false)}>
-                    {postVote == 0 ? <b>Downvoted</b> : "Downvote"}
-                </button>
-                <button onClick={handlePostClick}>{numOfComments} comments</button>
+                <Button variant='contained' color='primary' startIcon={postVote == 1 ? <ThumbUp /> : < ThumbUpAltOutlined />} onClick={() => handleVote(true)} data-cy="upvote"></Button>
+                <Button variant='contained' color='primary' startIcon={postVote == 0 ? <ThumbDown /> : < ThumbDownAltOutlined />} onClick={() => handleVote(false)} data-cy="downvote"></Button>
+                <Button variant='contained' color='primary' startIcon={<ChatBubble />} onClick={() => navigate(`/post/view/${thisPost.postID}`)} data-cy="comments">{numOfComments} comments</Button>
             </div>
         </div>
     );
