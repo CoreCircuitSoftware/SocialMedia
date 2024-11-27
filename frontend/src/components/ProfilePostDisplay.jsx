@@ -46,7 +46,9 @@ export default function PostDisplay(slug) {
                 .catch((err) => console.error("Error fetching media data:", err));
         };
 
-        fetchMedia();
+        if (thisPost.hasMedia) {
+            fetchMedia();
+        }
     }, [thisPost.postID]);
 
     // const formattedDate = new Date(thisPost.postDate).toLocaleDateString("en-US"

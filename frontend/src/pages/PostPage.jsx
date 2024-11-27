@@ -6,6 +6,10 @@ import SearchBar from '../components/SearchBar';
 import Footer from '../components/Footer';
 import CommentDisplay from "../components/CommentsDisplay";
 import "../styles/Post.css";
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import { ChatBubble, Share, ThumbDown, ThumbDownAltOutlined, ThumbUp, ThumbUpAltOutlined } from "@mui/icons-material";
+import Button from "@mui/material/Button";
 
 export default function PostPage() {
     const { postid } = useParams()
@@ -14,6 +18,9 @@ export default function PostPage() {
     const [isMyPost, setIsMyPost] = useState(false)
     const [commentContent, setcommentContent] = useState('')
     const [comments, setComments] = useState([])
+    const [media, setMedia] = useState([])
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
     // const formattedDate = new Date(post.postDate).toLocaleDateString("en-US")
     const formattedDate = new Date(post.postDate).toLocaleString("en-US", {
         year: 'numeric',
@@ -86,9 +93,23 @@ export default function PostPage() {
         }
     }
 
+    const fetchMedia = async () => {
+        console.log("Fetching media data for post:", post.postID);
+        api
+            .get(`/api/posts/media/${post.postID}/`)
+            .then((res) => {
+                setMedia(res.data);
+                console.log("Media data fetched:" + post.postID, res.data);
+                console.log("Post ID:", post.postID);
+            })
+            .catch((err) => console.error("Error fetching media data:", err));
+    };
+    
+
     useEffect(() => {
         getComments()
         getMyProfile()
+        if (post.hasMedia) {fetchMedia()}
     }, [post])
     
 
@@ -109,6 +130,14 @@ export default function PostPage() {
             return true
         }
     }
+    const handlePrevImage = () => {
+        setCurrentImageIndex((prevIndex) => (prevIndex === 0 ? media.length - 1 : prevIndex - 1));
+    };
+
+    const handleNextImage = () => {
+        setCurrentImageIndex((prevIndex) => (prevIndex === media.length - 1 ? 0 : prevIndex + 1));
+    };
+
 
     return(
         <main>
@@ -123,6 +152,20 @@ export default function PostPage() {
                 <button className="pfp-post-main-btn" onClick={handleProfileClick} data-cy="profile-picture"><img className="pfp-post-main" src={thisUser.profilePicture} /></button>
                 <h1 className="post-title" data-cy="post-title">{post.title}</h1>
                 <p className="post-description" data-cy="post-description">{post.description}</p>
+
+                {post.hasMedia && media.length > 0 && (
+                        <div className="post-media">
+                            {media.length > 1 && (<KeyboardArrowLeftIcon onClick={handlePrevImage} style={{ cursor: 'pointer' }} />)}
+                            <img
+                                key={media[currentImageIndex].mediaID}
+                                src={media[currentImageIndex].image}
+                                alt={`Post image ${currentImageIndex + 1}`}
+                                className="post-image"
+                            />
+                            {media.length > 1 && (<KeyboardArrowRightIcon onClick={handleNextImage} style={{ cursor: 'pointer' }} />)}
+                        </div>
+                    )}
+
                 <h5 className="post-date" data-cy="post-date">{formattedDate}</h5>
                 {post.hasEdit && (<h6 className="edit-date">Edited: {formattedEditDate}</h6>)}
                 </div>
