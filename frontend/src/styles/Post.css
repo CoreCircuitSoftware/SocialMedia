@@ -82,10 +82,11 @@ Form {
 }
 
 .post-page-options-buttons {
-    justify-content: right;
-    align-items: right;
     display: flex;
     margin: 1dvh;
+    align-items: center;
+    align-content: center;
+    justify-content: space-between;
 }
 
 .post-date {
