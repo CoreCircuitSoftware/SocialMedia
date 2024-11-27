@@ -5,7 +5,12 @@ import { useNavigate } from "react-router-dom";
 import "../styles/PostProfile.css"
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import { ChatBubble, Share, ThumbDown, ThumbDownAltOutlined, ThumbUp, ThumbUpAltOutlined } from "@mui/icons-material";
+import ChatBubble from "@mui/icons-material/ChatBubble";
+import Share from "@mui/icons-material/Share";
+import ThumbDown from "@mui/icons-material/ThumbDown";
+import ThumbDownAltOutlined from "@mui/icons-material/ThumbDownAltOutlined";
+import ThumbUp from "@mui/icons-material/ThumbUp";
+import ThumbUpAltOutlined from "@mui/icons-material/ThumbUpAltOutlined";
 import Button from "@mui/material/Button";
 import { ButtonGroup } from "@mui/material";
 
