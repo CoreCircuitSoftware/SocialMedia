@@ -21,3 +21,5 @@ frontend/package-lock.json
 
 #Node
 node_modules/
+.vs/slnx.sqlite
+.vs/slnx.sqlite-journal
