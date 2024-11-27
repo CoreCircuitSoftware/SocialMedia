@@ -7,6 +7,7 @@ import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { ChatBubble, Share, ThumbDown, ThumbDownAltOutlined, ThumbUp, ThumbUpAltOutlined } from "@mui/icons-material";
 import Button from "@mui/material/Button";
+import { ButtonGroup } from "@mui/material";
 
 export default function PostDisplay(slug) {
     // const [user, setUser] = useState([]);
@@ -40,8 +41,6 @@ export default function PostDisplay(slug) {
                 .get(`/api/posts/media/${thisPost.postID}/`)
                 .then((res) => {
                     setMedia(res.data);
-                    console.log("Media data fetched:" + thisPost.postID, res.data);
-                    console.log("Post ID:", thisPost.postID);
                 })
                 .catch((err) => console.error("Error fetching media data:", err));
         };
@@ -257,9 +256,11 @@ export default function PostDisplay(slug) {
             <div className="dropdown-content">
                 {isMyPost ?
                     (<div>
-                        <button className="post-edit-button" onClick={() => navigate(`/post/edit/${thisPost.postID}`)}>edit</button>
-                        <button className="post-delete-button" onClick={handlePostDelete}>delete</button>
-                        <Button variant='contained' color='primary' startIcon={<Share />} onClick={() => handlePostShare} data-cy="share">Share</Button>
+                        <ButtonGroup variant="contained">
+                            <Button onClick={() => navigate(`/post/edit/${thisPost.postID}`)}>edit</Button>
+                            <Button onClick={handlePostDelete}>delete</Button>
+                            <Button variant='contained' color='primary' startIcon={<Share />} onClick={() => handlePostShare} data-cy="share">Share</Button>
+                        </ButtonGroup>
                     </div>
                     ) : <Button variant='contained' color='primary' startIcon={<Share />} onClick={() => handlePostShare} data-cy="share">Share</Button>}
             </div>
@@ -267,9 +268,11 @@ export default function PostDisplay(slug) {
                 {votes ? <p>{votes.total} votes</p> : <p>No votes yet</p>}
             </div>
             <div className="post-options">
-                <Button variant='contained' color='primary' startIcon={postVote == 1 ? <ThumbUp /> : < ThumbUpAltOutlined />} onClick={() => handleVote(true)} data-cy="upvote"></Button>
-                <Button variant='contained' color='primary' startIcon={postVote == 0 ? <ThumbDown /> : < ThumbDownAltOutlined />} onClick={() => handleVote(false)} data-cy="downvote"></Button>
-                <Button variant='contained' color='primary' startIcon={<ChatBubble />} onClick={() => navigate(`/post/view/${thisPost.postID}`)} data-cy="comments">{numOfComments} comments</Button>
+                <ButtonGroup variant="contained" >
+                    {postVote == 1 ? <Button startIcon={<ThumbUp />} onClick={() => handleVote(true)}>Upvoted</Button> : <Button startIcon={<ThumbUpAltOutlined />} onClick={() => handleVote(true)}>Upvote</Button>}
+                    {postVote == 0 ? <Button startIcon={<ThumbDown />} onClick={() => handleVote(false)}>Downvoted</Button> : <Button startIcon={<ThumbDownAltOutlined />} onClick={() => handleVote(false)}>Downvote</Button>}
+                    <Button startIcon={<ChatBubble />} onClick={handlePostClick}>{numOfComments} comments</Button>
+                </ButtonGroup>
             </div>
         </div>
     );
