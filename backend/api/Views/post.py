@@ -21,8 +21,8 @@ class PostCreate(generics.CreateAPIView):
             try:
                 for media_file in media_files:
                     media_instance = Media.objects.create(post=post, image=media_file, mediaType=0)
+                    media_instance.mediaURL = media_instance.image.url
                     media_instance.save()
-                    media_instance.ge
             except Exception as e:
                 print(f"Error saving media file: {e}")
 
