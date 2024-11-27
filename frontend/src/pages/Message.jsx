@@ -23,7 +23,7 @@ export default function MessagePage() {
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        const newSocket = new WebSocket(`ws://localhost:8000/ws/chat/${convoID}/`);
+        const newSocket = new WebSocket(`ws://18.218.177.141:8000/ws/chat/${convoID}/`);
         //const newSocket = new WebSocket(`ws://localhost:8000/ws/chat/`);
         newSocket.onmessage = (e) => {
           const data = JSON.parse(e.data); 

