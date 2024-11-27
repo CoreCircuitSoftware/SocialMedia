@@ -2,6 +2,16 @@ import { useEffect, useState } from "react";
 import api from "../api"
 import react from "react";
 import { useNavigate } from "react-router-dom";
+import Button from '@mui/material/Button';
+import { ButtonGroup } from "@mui/material";
+import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
+import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
+import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt';
+import ShareIcon from '@mui/icons-material/Share';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 
 export default function CommentDisplay(slug) {
     const [comment, setComment] = useState(slug.comment);
@@ -190,21 +200,21 @@ export default function CommentDisplay(slug) {
                         {votes ? <h5>{votes.total} votes</h5> : <p>No votes yet</p>}
                     </div>
                     <div className="comment-options">
-                        <button onClick={() => handleVote(true)}>
-                            {commentVote == 1 ? <b>Upvoted</b> : "Upvote"}
-                        </button>
-                        <button onClick={() => handleVote(false)}>
-                            {commentVote == 0 ? <b>Downvoted</b> : "Downvote"}
-                        </button>
-                        {!comment.replyTo ? <button className="comment-reply-button" onClick={handleCommentClick}>{numOfReplies} replies</button> : null}
+                        <ButtonGroup variant="contained" >
+                            {commentVote == 1 ? <Button startIcon=<ThumbUpAltIcon/> onClick={() => handleVote(true)}>Upvoted</Button> : <Button startIcon=<ThumbUpOffAltIcon/> onClick={() => handleVote(true)}>Upvote</Button>}
+                            {commentVote == 0 ? <Button startIcon=<ThumbDownAltIcon/> onClick={() => handleVote(false)}>Downvoted</Button> : <Button startIcon=<ThumbDownOffAltIcon/> onClick={() => handleVote(false)}>Downvote</Button>}
+                            {!comment.replyTo ? <Button startIcon=<ChatBubbleIcon/> onClick={handleCommentClick}>{numOfReplies} replies</Button> : null}
+                        </ButtonGroup>
                     </div>
                     <div class="comment-dropdown-content">
                         {(isMyComment) ? 
                             (<div>
-                                <button className="comment-edit-button" onClick={() => navigate(`/comment/edit/${comment.commentID}`)}>edit</button>
-                                <button className="comment-delete-button" onClick={handleCommentDelete}>delete</button>
-                                {!comment.replyTo ? <button className="comment-share-button" onClick={handleCommentsShare}>share</button> : null}
-                            </div>) : (!comment.replyTo ? <button className="comment-share-button" onClick={handleCommentsShare}>share</button> : null)}
+                                <ButtonGroup variant="contained" >
+                                    <Button startIcon=<EditIcon/> onClick={() => navigate(`/comment/edit/${comment.commentID}`)}>Edit</Button>
+                                    <Button startIcon=<DeleteIcon/> onClick={handleCommentDelete}> Delete</Button>
+                                    {!comment.replyTo ? <Button startIcon=<ShareIcon/> onClick={handleCommentsShare}>share</Button> : null}
+                                </ButtonGroup>
+                            </div>) : (!comment.replyTo ? <Button variant="contained" startIcon=<ShareIcon/> onClick={handleCommentsShare}>share</Button> : null)}
                     </div>              
                 </div>
             ) : comment.user}
