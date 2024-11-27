@@ -18,6 +18,7 @@ import PostPage from "./pages/PostPage";
 import CommentPage from "./pages/CommentPage";
 import PostEdit from "./components/PostEdit";
 import CommentEdit from "./components/CommentEdit";
+import MessageListPage from "./pages/MessageList";
 
 
 function Logout() { //Clear local storage of any tokens and redirect to login screen
@@ -63,7 +64,7 @@ function App() {
           <Route path="post/view/:postid" element={<PostPage />} />
           <Route path="comment/view/:commentID" element={<CommentPage />} />
           <Route path="comment/edit/:commentID" element={<CommentEdit />} />
-          <Route path="message/" element={<PostForm />} />
+          <Route path="message/" element={<MessageListPage />} />
           <Route path="profile/:username/friends" element={<FriendsList />} />
           <Route path="search/profile/:userchunk?" element={<ProfileSearch />} />
           <Route path="*" element={<NotFound />} />

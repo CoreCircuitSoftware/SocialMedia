@@ -108,10 +108,10 @@ CHANNEL_LAYERS = { #ADD THIS TO EC2
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'latestClone',
-        'USER': 'admin',
-        'PASSWORD': 'socialMedia1',
-        'HOST':'social-media-db-v1.ctaoamggw23g.us-east-2.rds.amazonaws.com',
+        'NAME': 'social_images',
+        'USER': 'root',
+        'PASSWORD': 'mysqlpass',
+        'HOST':'localhost',
         'PORT':'3306',
         # 'OPTIONS': {
         #     'auth_plugin': 'mysql_native_password',
@@ -160,9 +160,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # Your React frontend
-]
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWS_CREDENTIALS = True
 
 AUTH_USER_MODEL = 'api.CustomUser'

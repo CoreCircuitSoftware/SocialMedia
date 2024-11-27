@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../api"
 import "../styles/Message.css"
 
@@ -22,7 +23,11 @@ export default function MessageDisplay(slug) {
         getProfile2()
     }, [slug.message.sender])
 
+    const navigate = useNavigate()
+
+    const navigateToProfile = () => {navigate(`/profile/${username}`)}
+
     return (
-        <p data-cy="message-display"><img className="pfp_icon" src={pfp} alt="profile"/> {username}: {message}</p>
+        <p data-cy="message-display"><img className="pfp_icon" src={pfp} onClick={navigateToProfile} alt="profile"/> {username}: {message}</p>
     )
 }

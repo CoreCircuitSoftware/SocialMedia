@@ -2,9 +2,9 @@
     display: flex;
     align-items: center;
     flex-direction: column;
-    background-color: white;
-    margin-left: 200px;
-    margin-right: 200px;
+    /* background-color: white; */
+    margin-left: 2dvh;
+    margin-right: 2dvh;
 }
 
 .messages-page img {

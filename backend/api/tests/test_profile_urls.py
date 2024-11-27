@@ -9,7 +9,7 @@ from api.Models.user import *
 from api.Views.user import *
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView    #premade views to access and refresh tokens
 
-class TestUrls(TestCase):
+class TestProfileUrls(TestCase):
     def setUp(self):
         User = get_user_model()
         

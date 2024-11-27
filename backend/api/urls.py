@@ -19,6 +19,8 @@ urlpatterns = [
     path("profile/message/createconvo/", CreateConvo.as_view(), name="create-convo"),
     path("profile/message/send/", SendMessage.as_view(), name="send-message"),
     path("profile/message/getmessages/<int:convoID>/", GetMessages.as_view(), name="get-messages"),
+    path("message/findconvos/<uuid:user_id>/", FindConvoParticipants.as_view(), name="find-convos"),
+    path("message/latest/<int:convoID>/", LatestMessageView.as_view(), name="find-latest-message"),
     path("createpost/", PostCreate.as_view(), name="create-post"),
     path("profile/posts/<uuid:user_id>/", PostListView.as_view(), name="view-post-user"),
     path("posts/new/", PostListSortNew.as_view(), name="view-post-sort-new"),
@@ -49,6 +51,6 @@ urlpatterns = [
     path('friend-request/accept/<int:pk>/', AcceptFriendRequest.as_view(), name='accept-friend-request'),
     path('friend-requests/', ListFriendRequests.as_view(), name='list-friend-requests'),
     path('friend-status/<uuid:user_id>/', FriendStatusView.as_view(), name='friend-status'),
-    path('friend/<str:username1>/<str:username2>/', RetrieveFriendshipByUsername.as_view(), name='retrieve-friendship'),
-    path('friends/remove/<int:pk>/', DeleteFriendship.as_view(), name='friend-delete'),
+    path('friend/<str:username1>/<str:username2>/', RetrieveFriendshipByUsername.as_view(), name='retrieve-friendship-by-username'),
+    path('friends/remove/<int:pk>/', DeleteFriendship.as_view(), name='delete-friendship'),
 ]

@@ -116,11 +116,11 @@ export default function PostPage() {
             <Menu />
             <div className="content">
                 <div className="main-post">
-                <button onClick={handleProfileClick} data-cy="profile-picture"><img className="pfp" src={thisUser.profilePicture} /></button>
-                <div>
-                    <button className="share-post-button" onClick={handleShare} data-cy="share-post">Share</button>
-                    {isMyPost && (<button className="post-edit-button" onClick={() => navigate(`/post/edit/${thisPost.postID}`)}>edit</button>)}
-                </div>  
+                    <div className="post-page-options-buttons">
+                        <button className="share-post-button" onClick={handleShare} data-cy="share-post">Share</button>
+                        {isMyPost && (<button className="post-edit-button" onClick={() => navigate(`/post/edit/${post.postID}`)}>edit</button>)}
+                    </div>  
+                <button className="pfp-post-main-btn" onClick={handleProfileClick} data-cy="profile-picture"><img className="pfp-post-main" src={thisUser.profilePicture} /></button>
                 <h1 className="post-title" data-cy="post-title">{post.title}</h1>
                 <p className="post-description" data-cy="post-description">{post.description}</p>
                 <h5 className="post-date" data-cy="post-date">{formattedDate}</h5>
