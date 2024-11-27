@@ -2,3 +2,11 @@
   display: flex;
   flex-direction: column;
 }
+
+
+.css-1kj2szu-MuiContainer-root{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+}

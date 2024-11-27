@@ -37,7 +37,6 @@ Form {
 
 .main-post {
     display: flex;
-    background-color: var(--Primary1);
     flex-direction: column;
     /* align-items: right; */
     justify-content: center;
@@ -46,6 +45,12 @@ Form {
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     max-width: 400px;
+    
+    border-style: solid;
+    background-color: var(--Secondary1);
+    border-color: var(--Quarternary1);
+    border-radius: 2dvh;
+
 }
 
 .pfp-post-main {
@@ -61,6 +66,19 @@ Form {
 .pfp-post-main-btn {
     max-height: fit-content;
     max-width: fit-content;
+    border-style: hidden;
+    border-bottom-style: dashed;
+    border-width: 0.2dvh;
+    border-color:  var(--Secondary1);
+}
+.pfp-post-main-btn:hover {
+    max-height: fit-content;
+    max-width: fit-content;
+    border-bottom-style: outset;
+    border-width: 0.2dvh;
+    border-radius: 1dvh;
+    border-color: blue;
+    
 }
 
 .post-page-options-buttons {
