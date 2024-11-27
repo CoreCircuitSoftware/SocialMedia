@@ -308,7 +308,7 @@ export default function MessagePage() {
                                 </button>
                             </form>
                         ) : (
-                            <form data-cy="no-msg-user-before" style={{ textAlign: 'center' }}>
+                            <form data-cy="no-msg-user-before" style={{ textAlign: 'center', width: '110%' }}>
                                 <Typography variant="h6" sx={{ mb: 1 }}>
                                     You have not messaged this user before
                                 </Typography>
