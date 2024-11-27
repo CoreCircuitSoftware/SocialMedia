@@ -13,11 +13,13 @@ li {
 }
 
 .friendlistimage {
-    max-height: 8dvh;
-    max-width: 8dvh;
-    border-radius: 4px;
+    height: 6dvh;
+    width: 6dvh;
+    object-fit: cover;
+    border-radius: 3dvh;
     border-style: solid;
     border-width: 3px;
     border-color: var(--Tertiary1);
+    
 
 }
