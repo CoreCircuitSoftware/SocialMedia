@@ -4,7 +4,7 @@ import "../styles/Profile.css";
 import "../styles/Layout.css";
 import { useState, useEffect } from "react";
 import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import PostDisplay from "../components/ProfilePostDisplay.jsx";
 import SearchBar from "../components/SearchBar";
 import Menu from "../components/Menu";
@@ -14,6 +14,7 @@ import logo from'../assets/csbutwhiteoutlined.png'
 //Material Ui
 // import Button from "../components/Button/Button";
 import Button from "@mui/material/Button";
+
 import { ThemeProvider } from '@mui/material/styles';
 import { AppBar, Toolbar, Typography, Container, Grid2, Paper, Box } from "@mui/material";
 import theme from '../styles/theme';  // Import the custom theme
@@ -22,6 +23,7 @@ import CreateIcon from "@mui/icons-material/Create";
 import LogoutIcon from "@mui/icons-material/Logout";
 import EditIcon from "@mui/icons-material/Edit";
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import Avatar from '@mui/material/Avatar';
 
 
 
@@ -204,15 +206,18 @@ export default function UserProfileTest() {
 
                     {/* Logo - Aligned to the left */}
                     <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 1}}>
-                        <img
-                            src={logo} // Path to your logo
-                            alt="Logo"
-                            style={{
-                                width: 80,  // Adjust size of the logo
-                                height: 60,
-                                marginRight: '1px'
-                            }}
-                        />
+                        <Link to="/home"> {/* Redirect to the home page */}
+                            <img
+                                src={logo} // Path to your logo
+                                alt="Logo"
+                                style={{
+                                    width: 85,  // Adjust size of the logo
+                                    height: 60,
+                                    marginRight: '1px',
+                                    cursor: 'pointer', // Make it clear that the logo is clickable
+                                }}
+                            />
+                        </Link>
                     </Box>
 
                     {/* Centered Text and SearchBar */}
@@ -221,6 +226,22 @@ export default function UserProfileTest() {
                             CircuitSocial
                         </Typography>
                         <SearchBar />
+                    </Box>
+
+                    {/* Avatar - Aligned to the right */}
+                    <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center'}}>
+                        <Link to={`/profile/${myProfile.username}`}> {/* Navigate to the user's profile */}
+                            <Avatar
+                                src={myProfile.profilePicture} // Path to the avatar image
+                                alt={`${myProfile.username}'s Avatar`}
+                                sx={{
+                                    width: 40, // Adjust avatar size
+                                    height: 40,
+                                    cursor: 'pointer', // Make it clickable
+                                    marginRight: 3, // Add space between avatar and username
+                                }}
+                            />
+                        </Link>
                     </Box>
                 </Toolbar>
             </AppBar>
@@ -309,255 +330,3 @@ export default function UserProfileTest() {
         </Box>
     );
 }
-
-
-// import api from "../api.js"
-// import "../styles/Home.css"
-// import { useState, useEffect } from "react";
-// import { useNavigate } from "react-router-dom";
-// import "../styles/Profile.css"
-// import PostDisplay from "../components/ProfilePostDisplay.jsx"
-
-// function UserProfile() {
-//     const navigate = useNavigate();
-//     const postType = 1; //post type 1=user posts
-//     const [profile, setProfile] = useState([]);
-//     const [posts, setPosts] = useState([])
-
-//     useEffect(() => {
-//         getProfile();
-//     }, [])
-
-//     const getProfile = () => {
-//         api
-//             .get(`/api/profile/`)
-//             .then((res) => res.data)
-//             .then((data) => {
-//                 //console.log(data)
-//                 setProfile(data)
-//             })
-//             .catch((err) => alert(err));
-//     }
-//     const handleEdit = () => {
-//         navigate("/edit-profile")
-//     }
-//     const handleLogout = () => {
-//         navigate("/logout")
-//     }
-//     const handlePostCreate = () => {
-//         navigate("/create-post/")
-//     }
-
-//     useEffect(() => {
-//         getPosts()
-//     }, [profile]);
-
-//     const getPosts = () => {
-//         api
-//         .get(`/api/profile/posts/${profile.id}/`)
-//         .then((res) => res.data)
-//         .then((data) => {
-//             setPosts(data.reverse());
-//             // console.log("test")
-//             // console.log(data.reverse())
-//         })
-//         .catch((err) => console.log("err"))
-//     }
-
-//     return (
-//         <main>
-//             <div className="profile-top">
-//                 <img className="back-img" src={profile.backgroundImage} />
-//                 <div className="profile-card">
-//                     <div className="card-upper">
-//                         <img className="pfp" src={profile.profilePicture} />
-//                         <div className="names">
-//                             <p className="display-name">{profile.displayName}</p>
-//                             <p className="username">{profile.username}</p>
-//                         </div>
-//                         <div className="buttons">
-//                             <button className="logout-button" type="button" onClick={handlePostCreate}>Create Post</button>
-//                             <button className="logout-button" type="button" onClick={handleLogout}>Logout</button>
-//                             <button className="edit-button" type="button" onClick={handleEdit}>Edit</button>
-//                         </div>
-//                     </div>
-//                     <div className="bio">{profile.bio}</div>
-//                     <div className="post-holder">
-//                         {posts.map((post) =>
-//                             <PostDisplay post={post} profile={profile} key={post.postID} />
-//                         )}
-//                     </div>
-//                 </div>
-//             </div>
-//             <footer>
-//                 <p>© 2024 Core Circuit Software&emsp;</p>
-//                 <br/>
-//                 <a href="https://corecircuitsoftware.github.io">About us</a>
-//             </footer>
-//         </main>
-//     );
-// }
-
-
-// export default UserProfile
-// import 'bootstrap/dist/css/bootstrap.min.css';
-// import api from "../api.js";
-// import "../styles/Home.css";
-// import "../styles/Profile.css";
-// import "../styles/Layout.css";
-// import { useState, useEffect } from "react";
-// import React from "react";
-// import { BrowserRouter, Routes, Route, Navigate, useNavigate, useParams } from "react-router-dom";
-// import PostDisplay from "../components/ProfilePostDisplay.jsx";
-// import SearchBar from "../components/SearchBar";
-// import Menu from "../components/Menu";
-// import Footer from "../components/Footer";
-
-// export default function UserProfileTest() {
-//     const { username } = useParams();
-//     const navigate = useNavigate();
-//     const [profile, setProfile] = useState([]);
-//     const [myProfile, setMyProfile] = useState([]);
-//     const [posts, setPosts] = useState([]);
-//     const [isMyProfile, setIsMyProfile] = useState(false);
-
-//     useEffect(() => {
-//         getProfile();
-//         getMyProfile();
-//     }, []);
-
-//     const getProfile = () => {
-//         api
-//             .get(`/api/profile/getuserdata/${username}/`)
-//             .then((res) => res.data)
-//             .then((data) => {
-//                 setProfile(data[0]);
-//             })
-//             .catch((err) => console.log(err));
-//     };
-
-//     const getMyProfile = () => {
-//         api
-//             .get(`/api/profile/`)
-//             .then((res) => res.data)
-//             .then((data) => {
-//                 setMyProfile(data);
-//             })
-//             .catch((err) => alert(err));
-//     };
-
-//     useEffect(() => {
-//         getPosts();
-//     }, [profile]);
-
-//     const getPosts = () => {
-//         api
-//             .get(`/api/profile/posts/${profile.id}/`)
-//             .then((res) => res.data)
-//             .then((data) => {
-//                 setPosts(data.reverse());
-//             })
-//             .catch((err) => console.log("Error getting posts"));
-//     };
-
-//     useEffect(() => {
-//         if (profile.id && profile.id === myProfile.id) {
-//             setIsMyProfile(true);
-//         }
-//     }, [profile, myProfile]);
-
-//     const handleEdit = () => {
-//         navigate("/profile/edit");
-//     };
-//     const handleLogout = () => {
-//         navigate("/logout");
-//     };
-//     const handlePostCreate = () => {
-//         navigate("/post/create");
-//     };
-//     const handleMessage = () => {
-//         navigate(`/profile/${profile.username}/message`);
-//     };
-
-//     return (
-//         <div className="container-fluid">
-//         <div className="row">
-//             {/* Sidebar */}
-//             <div className="col-md-3 sidebar d-none d-md-block">
-//                 <ul className="nav flex-column">
-//                     <li className="nav-item">
-//                         <a className="nav-link" href="#">Home</a>
-//                     </li>
-//                     <li className="nav-item">
-//                         <a className="nav-link" href="#">Explore</a>
-//                     </li>
-//                     <li className="nav-item">
-//                         <a className="nav-link" href="#">Notifications</a>
-//                     </li>
-//                     <li className="nav-item">
-//                         <a className="nav-link" href="#">Messages</a>
-//                     </li>
-//                     <li className="nav-item">
-//                         <a className="nav-link" href="#">Bookmarks</a>
-//                     </li>
-//                     <li className="nav-item">
-//                         <a className="nav-link active" href="#">Profile</a>
-//                     </li>
-//                 </ul>
-//             </div>
-
-//             {/* Main Content */}
-//             <div className="col-md-9">
-//                 {/* Profile Header */}
-//                 <div className="profile-header">
-//                     <div className="banner">
-//                         <img className="banner-img" src={profile.backgroundImage} alt="Profile Background" />
-//                     </div>
-//                     <div className="profile-info text-center">
-//                         <img className="profile-pic rounded-circle" src={profile.profilePicture} alt="Profile" />
-//                         <h5>{profile.displayName}</h5>
-//                         <p className="text-muted">@{profile.username}</p>
-//                         <p>{profile.bio}</p>
-//                         {isMyProfile ? (
-//                             <button className="btn btn-secondary" onClick={handleEdit}>
-//                                 Edit Profile
-//                             </button>
-//                         ) : (
-//                             <button className="btn btn-secondary">
-//                                 Message
-//                             </button>
-//                         )}
-//                     </div>
-//                 </div>
-
-//                 {/* Profile Details */}
-//                 <div className="profile-details mt-4">
-//                     <ul className="nav nav-tabs">
-//                         <li className="nav-item">
-//                             <a className="nav-link active" href="#">Tweets</a>
-//                         </li>
-//                         <li className="nav-item">
-//                             <a className="nav-link" href="#">Media</a>
-//                         </li>
-//                         <li className="nav-item">
-//                             <a className="nav-link" href="#">Likes</a>
-//                         </li>
-//                     </ul>
-//                     <div className="tab-content mt-3">
-//                         <div className="tab-pane fade show active">
-//                             {/* Display posts here */}
-//                             {profile.posts && profile.posts.map((post) => (
-//                                 <div className="post mb-4" key={post.postID}>
-//                                     <h5>{post.title}</h5>
-//                                     <p>{post.content}</p>
-//                                 </div>
-//                             ))}
-//                         </div>
-//                     </div>
-//                 </div>
-//             </div>
-//         </div>
-//         <Footer />
-//     </div>
-//     );
-// }

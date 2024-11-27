@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import "../styles/PostProfile.css"
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import Button from "@mui/material/Button";
+import ButtonGroup from '@mui/material/ButtonGroup';
 
 export default function PostDisplay(slug) {
     // const [user, setUser] = useState([]);
@@ -229,7 +231,6 @@ export default function PostDisplay(slug) {
             {thisPost && (
                 <>
                     <h2 className="post-title">{thisPost.title}</h2>
-                    <p className="post-description">{thisPost.description}</p>
                     
                     {/* Display post media */}
                     {thisPost.hasMedia  && media.length > 0 &&(
@@ -246,15 +247,23 @@ export default function PostDisplay(slug) {
                     )}
                     
                     <h5 className="post-date">{formattedDate}</h5>
+                    <p className="post-description">{thisPost.description}</p>
                 </>
             )}
             {thisPost.hasEdit && (<h6 className="edit-date">Edited: {formattedEditDate}</h6>)}
             <div className="dropdown-content">
                     {isMyPost ? 
                         (<div>
-                            <button className="post-edit-button" onClick={() => navigate(`/post/edit/${thisPost.postID}`)}>edit</button>
-                            <button className="post-delete-button" onClick={handlePostDelete}>delete</button>
-                            <button className="post-share-button" onClick={handlePostShare}>share</button>
+                            {/* <button className="post-edit-button" onClick={() => navigate(`/post/edit/${thisPost.postID}`)}>edit</button> */}
+                            {/* <Button variant='contained' onClick={() => navigate(`/post/edit/${thisPost.postID}`)}>Edit</Button>
+                            <Button variant='contained' onClick={handlePostDelete}>delete</Button>
+                            <button className="post-share-button" onClick={handlePostShare}>share</button> */}
+
+                            <ButtonGroup variant="contained" >
+                                <Button onClick={() => navigate(`/post/edit/${thisPost.postID}`)}>edit</Button>
+                                <Button onClick={handlePostDelete}>delete</Button>
+                                <Button onClick={handlePostShare}>share</Button>
+                            </ButtonGroup>
                         </div>
                         ) : <button className="post-share-button" onClick={handlePostShare}>share</button>}
             </div>
@@ -262,13 +271,22 @@ export default function PostDisplay(slug) {
                 {votes ? <p>{votes.total} votes</p> : <p>No votes yet</p>}
             </div>
             <div className="post-options">
-                <button onClick={() => handleVote(true)}>
+            <ButtonGroup variant="contained">
+                    <Button onClick={() => handleVote(true)}>
+                        {postVote == 1 ? "Upvoted" : "Upvote"}
+                    </Button>
+                    <Button onClick={() => handleVote(false)}>
+                        {postVote == 0 ? "Downvoted" : "Downvote"}
+                    </Button>
+                    <Button onClick={handlePostClick}>{numOfComments} comments</Button>
+            </ButtonGroup>
+                {/* <button onClick={() => handleVote(true)}>
                     {postVote == 1 ? <b>Upvoted</b> : "Upvote"}
                 </button>
                 <button onClick={() => handleVote(false)}>
                     {postVote == 0 ? <b>Downvoted</b> : "Downvote"}
                 </button>
-                <button onClick={handlePostClick}>{numOfComments} comments</button>
+                <button onClick={handlePostClick}>{numOfComments} comments</button> */}
             </div>
         </div>
     );
