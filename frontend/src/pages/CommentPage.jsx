@@ -122,6 +122,7 @@ export default function CommentPage() {
             <div className="content">
                 <div className="main-post">
                     <div className="post-page-options-buttons">
+                    <button className="pfp-post-main-btn" onClick={handleProfileClick} data-cy="profile-picture"><img className="pfp-post-main" src={thisUser.profilePicture} /></button>
                         {/* <button className="comment-share-button" onClick={handleCommentShare} data-cy="share">Share</button>
                         {isMyComment && (<button className="comment-edit-button" onClick={() => navigate(`/comment/edit/${mainComment.commentID}`)}>edit</button>)} */}
                         <ButtonGroup variant="contained" >
@@ -129,7 +130,7 @@ export default function CommentPage() {
                             {isMyComment && <Button startIcon=<EditIcon /> onClick={() => navigate(`/comment/edit/${mainComment.commentID}`)}> Edit</Button>}
                         </ButtonGroup>
                     </div>
-                    <button className="pfp-post-main-btn" onClick={handleProfileClick} data-cy="profile-picture"><img className="pfp-post-main" src={thisUser.profilePicture} /></button>
+                    
                     <h1 className="comment">{mainComment.commentContent}</h1>
                     <h5 className="comment-date">{formattedDate}</h5>
                     {mainComment.hasEdit && (<h6 className="edit-date">Edited: {formattedEditDate}</h6>)}

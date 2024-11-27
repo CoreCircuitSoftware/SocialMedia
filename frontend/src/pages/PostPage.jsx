@@ -150,13 +150,14 @@ export default function PostPage() {
             <div className="content">
                 <div className="main-post">
                     <div className="post-page-options-buttons">
+                         <button className="pfp-post-main-btn" onClick={handleProfileClick} data-cy="profile-picture"><img className="pfp-post-main" src={thisUser.profilePicture} /></button>
+
                         <ButtonGroup variant="contained" >
                             <Button startIcon=<ShareIcon /> onClick={handleShare}>share</Button>
                             {isMyPost && <Button startIcon=<EditIcon /> onClick={() => navigate(`/post/edit/${post.postID}`)}> Edit</Button>}
                         </ButtonGroup>
                     </div>
-                    <button className="pfp-post-main-btn" onClick={handleProfileClick} data-cy="profile-picture"><img className="pfp-post-main" src={thisUser.profilePicture} /></button>
-                    <h1 className="post-title" data-cy="post-title">{post.title}</h1>
+                     <h1 className="post-title" data-cy="post-title">{post.title}</h1>
                     <p className="post-description" data-cy="post-description">{post.description}</p>
 
                     {post.hasMedia && media.length > 0 && (
