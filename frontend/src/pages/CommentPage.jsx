@@ -1,11 +1,16 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import api from "../api";  
-import Menu from '../components/Menu'; 
+import api from "../api";
+import Menu from '../components/Menu';
 import SearchBar from '../components/SearchBar';
 import Footer from '../components/Footer';
 import CommentDisplay from "../components/CommentsDisplay";
 import "../styles/CommentPage.css";
+import ShareIcon from '@mui/icons-material/Share';
+import EditIcon from '@mui/icons-material/Edit';
+import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
+import Button from "@mui/material/Button";
+import { ButtonGroup } from "@mui/material";
 
 export default function CommentPage() {
     const { commentID } = useParams()
@@ -41,9 +46,10 @@ export default function CommentPage() {
             .then((res) => {
                 setIsMyComment(res.data.id === mainComment.user)
             }
-    )}
+            )
+    }
 
-    useEffect(() => { 
+    useEffect(() => {
         api.get(`/api/comment/${commentID}/`)
             .then((res) => res.data)
             .then((data) => {
@@ -67,7 +73,7 @@ export default function CommentPage() {
     const handleCommentSubmit = (e) => {
         console.log("submitting comment")
         api
-            .post('/api/comment/submit/', {commentContent: commentContent, post: mainComment.post, replyTo: mainComment.commentID})
+            .post('/api/comment/submit/', { commentContent: commentContent, post: mainComment.post, replyTo: mainComment.commentID })
             .then((res) => {
                 window.location.reload();
             })
@@ -75,21 +81,21 @@ export default function CommentPage() {
     }
 
     const getComments = () => {
-        if (typeof(mainComment.commentID) == "number") {
+        if (typeof (mainComment.commentID) == "number") {
             api
-            .get(`/api/comment/get/replies/${mainComment.commentID}/`)
-            .then((res) => res.data)
-            .then((data) => {
-                setComments(data.reverse())
-            })
-            .catch((err) => console.log(err))
+                .get(`/api/comment/get/replies/${mainComment.commentID}/`)
+                .then((res) => res.data)
+                .then((data) => {
+                    setComments(data.reverse())
+                })
+                .catch((err) => console.log(err))
         }
     }
 
     useEffect(() => {
         getComments()
         getMyProfile()
-    }, [mainComment])    
+    }, [mainComment])
 
     const navigate = useNavigate()
     const handleProfileClick = () => navigate(`/profile/${thisUser.username}`)
@@ -109,21 +115,26 @@ export default function CommentPage() {
         }
     }
 
-    return(
+    return (
         <main>
             <SearchBar />
             <Menu />
             <div className="content">
                 <div className="main-post">
-                <div className="post-page-options-buttons">
-                    <button className="comment-share-button" onClick={handleCommentShare} data-cy="share">Share</button>
-                    {isMyComment && (<button className="comment-edit-button" onClick={() => navigate(`/comment/edit/${mainComment.commentID}`)}>edit</button>)}
-                </div>
-                <button className="pfp-post-main-btn" onClick={handleProfileClick} data-cy="profile-picture"><img className="pfp-post-main" src={thisUser.profilePicture} /></button>
-                <h1 className="comment">{mainComment.commentContent}</h1>
-                <h5 className="comment-date">{formattedDate}</h5>
-                {mainComment.hasEdit && (<h6 className="edit-date">Edited: {formattedEditDate}</h6>)}
-                <button onClick={() => navigate(`/post/view/${mainComment.post}`)}>Go back</button>
+                    <div className="post-page-options-buttons">
+                        {/* <button className="comment-share-button" onClick={handleCommentShare} data-cy="share">Share</button>
+                        {isMyComment && (<button className="comment-edit-button" onClick={() => navigate(`/comment/edit/${mainComment.commentID}`)}>edit</button>)} */}
+                        <ButtonGroup variant="contained" >
+                            <Button startIcon=<ShareIcon /> onClick={handleCommentShare}>share</Button>
+                            {isMyComment && <Button startIcon=<EditIcon /> onClick={() => navigate(`/comment/edit/${mainComment.commentID}`)}> Edit</Button>}
+                        </ButtonGroup>
+                    </div>
+                    <button className="pfp-post-main-btn" onClick={handleProfileClick} data-cy="profile-picture"><img className="pfp-post-main" src={thisUser.profilePicture} /></button>
+                    <h1 className="comment">{mainComment.commentContent}</h1>
+                    <h5 className="comment-date">{formattedDate}</h5>
+                    {mainComment.hasEdit && (<h6 className="edit-date">Edited: {formattedEditDate}</h6>)}
+                    {/* <button onClick={() => navigate(`/post/view/${mainComment.post}`)}>Go back</button> */}
+                    <Button variant="contained" startIcon=<KeyboardReturnIcon /> onClick={() => navigate(`/post/view/${mainComment.post}`)}>Go Back</Button>
                 </div>
                 <div className="comments-textbox">
                     <form>
@@ -137,29 +148,30 @@ export default function CommentPage() {
                             data-cy="comment-input"
                         />
                         {(commentContent.length > 0 || commentContent.length < 255) ? (
-                            <button
-                            type="button" 
-                            className="comment-submit"
-                            disabled={submitDisable()}
-                            onClick={handleCommentSubmit}
-                            data-cy="comment-submit"
-                            >
-                                Post Comment
-                            </button>
+                            // <button
+                            //     type="button"
+                            //     className="comment-submit"
+                            //     disabled={submitDisable()}
+                            //     onClick={handleCommentSubmit}
+                            //     data-cy="comment-submit"
+                            // >
+                            //     Post Comment
+                            // </button>
+                            <Button variant="contained" onClick={handleCommentSubmit} disabled={submitDisable()} data-cy="comment-submit">Post Comment</Button>
                         ) : (
-                            <button 
-                            className="comment-submit-disabled"
-                            disabled= {true}
-                            data-cy="comment-submit-disabled"
-                            Post Comment/>
-                        )} 
+                            <button
+                                className="comment-submit-disabled"
+                                disabled={true}
+                                data-cy="comment-submit-disabled"
+                                Post Comment />
+                        )}
                     </form>
                 </div>
                 <div className="comments">
                     {comments.length > 0 ? (
-                        comments.map((comment) => (<CommentDisplay comment={comment} key={comment.commentID}/>))
+                        comments.map((comment) => (<CommentDisplay comment={comment} key={comment.commentID} />))
                     ) : (
-                        <p className="no-comments">No comments yet</p>  
+                        <p className="no-comments">No comments yet</p>
                     )}
                 </div>
             </div>
