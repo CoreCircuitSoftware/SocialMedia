@@ -108,10 +108,10 @@ CHANNEL_LAYERS = { #ADD THIS TO EC2
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'testbase',
+        'NAME': 'social_images',
         'USER': 'root',
         'PASSWORD': 'mysqlpass',
-        'HOST':'social-db.ct2qs0ymiyey.us-east-2.rds.amazonaws.com',
+        'HOST':'localhost',
         'PORT':'3306',
         # 'OPTIONS': {
         #     'auth_plugin': 'mysql_native_password',
