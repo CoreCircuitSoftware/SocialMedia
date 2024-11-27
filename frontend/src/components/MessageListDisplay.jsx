@@ -17,7 +17,9 @@ export default function MessageListDisplay(slug) {
             .then((data) => {
                 setLatestMessage(data)
             })
-            .catch((err) => alert(err));
+            .catch((err) => setLatestMessage(
+                { message: "" }
+            ));
     }
 
     const getUser = async () => {
