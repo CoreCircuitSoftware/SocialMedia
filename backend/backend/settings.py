@@ -108,10 +108,10 @@ CHANNEL_LAYERS = { #ADD THIS TO EC2
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'testbase',
-        'USER': 'root',
-        'PASSWORD': 'mysqlpass',
-        'HOST':'social-db.ct2qs0ymiyey.us-east-2.rds.amazonaws.com',
+        'NAME': os.getenv('DATABASE_NAME'),
+        'USER': os.getenv('DATABASE_USER'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD'),
+        'HOST': os.getenv('DATABASE_HOST'),
         'PORT':'3306',
         # 'OPTIONS': {
         #     'auth_plugin': 'mysql_native_password',

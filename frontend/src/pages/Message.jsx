@@ -21,10 +21,11 @@ export default function MessagePage() {
     const placeholderText = `Send a message to ${profile.displayName}`
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
     const [socket, setSocket] = useState(null);
+    const baseURL = import.meta.env.VITE_MESSAGE_URL
 
     useEffect(() => {
-        const newSocket = new WebSocket(`ws://localhost:8000/ws/chat/${convoID}/`);
-        //const newSocket = new WebSocket(`ws://localhost:8000/ws/chat/`);
+        const newSocket = new WebSocket(`ws://${baseURL}/ws/chat/${convoID}/`);
+        //const newSocket = new WebSocket(`ws://localhost:8000/ws/chat/${convoID}/`);
         newSocket.onmessage = (e) => {
           const data = JSON.parse(e.data); 
           setMessages((prev) => {//[...prev, e.data]);

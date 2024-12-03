@@ -4,8 +4,8 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
-	 server: {
-  host: true,
-  port: 80,
-},
+	// server: {
+  //   host: true,
+  //   port: 80,
+  // },
 })
