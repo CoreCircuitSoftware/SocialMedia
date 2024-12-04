@@ -19,5 +19,5 @@ You may also have to delete any "initial.py" files in "\backend\api\migrations"
 `npm run dev`
 
 ~ Backend Testing
-`coverage manage.py test`
+`coverage run manage.py test`
 `coverage report` or `coverage html` if you want and in depth html doc
