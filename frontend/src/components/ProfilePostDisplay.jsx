@@ -21,11 +21,9 @@ export default function PostDisplay(slug) {
     const [postVote, setPostVote] = useState(-1)
     const [isMyPost, setIsMyPost] = useState(false);
     const [votes, setVotes] = useState({ upvotes: 0, downvotes: 0, total: 0 })
-    const [votes, setVotes] = useState({ upvotes: 0, downvotes: 0, total: 0 })
     const [numOfComments, setNumOfComments] = useState(0)
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const envURL = 'https://django-s3-4800.s3.us-east-2.amazonaws.com/'
-
 
 
 
@@ -34,9 +32,6 @@ export default function PostDisplay(slug) {
     //Media event handlers
     const handlePrevImage = () => {
         setCurrentImageIndex((prevIndex) => (prevIndex === 0 ? media.length - 1 : prevIndex - 1));
-    };
-
-    const handleNextImage = () => {
     };
 
     const handleNextImage = () => {
@@ -132,8 +127,6 @@ export default function PostDisplay(slug) {
             }
             )
     }
-            )
-    }
 
     const changeVoteCountLocally = (voteType, e) => { // 0=add, 1=remove, 2=change
         if (e == 0) {
@@ -150,7 +143,6 @@ export default function PostDisplay(slug) {
                     total: votes.total - 1
                 })
             }
-        } else if (e == 1) {
         } else if (e == 1) {
             if (voteType) {
                 setVotes({
@@ -183,13 +175,11 @@ export default function PostDisplay(slug) {
     }
 
     const handleVote = (voteType) => {
-    const handleVote = (voteType) => {
         if (postVote == -1) {
             changeVoteCountLocally(voteType, 0)
             api
                 .post('/api/posts/vote/new/', { vote: voteType, post: thisPost.postID, user: thisUser.id })
                 .catch((err) => console.log(err))
-            setPostVote(voteType)
             setPostVote(voteType)
         } else if (postVote == voteType) {
             changeVoteCountLocally(voteType, 1)
@@ -197,14 +187,11 @@ export default function PostDisplay(slug) {
                 .delete(`api/posts/vote/delete/${thisPost.postID}/`)
                 .catch((err) => console.log(err))
             setPostVote(-1)
-            setPostVote(-1)
         } else {
             changeVoteCountLocally(voteType, 2)
             api
                 .patch(`api/posts/vote/update/${thisPost.postID}/`, { vote: voteType })
-                .patch(`api/posts/vote/update/${thisPost.postID}/`, { vote: voteType })
                 .catch((err) => console.log(err))
-            setPostVote(voteType)
             setPostVote(voteType)
         }
     }
@@ -223,7 +210,6 @@ export default function PostDisplay(slug) {
         getCommentsTotal()
     }, [])
 
-    useEffect(() => { if (thisUser.id) { getMyProfile() } }, [thisUser])
     useEffect(() => { if (thisUser.id) { getMyProfile() } }, [thisUser])
 
     const navigate = useNavigate();
@@ -256,16 +242,7 @@ export default function PostDisplay(slug) {
 
                     {/* Display post media */}
                     {thisPost.hasMedia && media.length > 0 && (
-                    {thisPost.hasMedia && media.length > 0 && (
                         <div className="post-media">
-                            {media.length > 1 && (<KeyboardArrowLeftIcon onClick={handlePrevImage} style={{ cursor: 'pointer' }} />)}
-                            <img
-                                key={media[currentImageIndex].mediaID}
-                                src={media[currentImageIndex].image}
-                                alt={`Post image ${currentImageIndex + 1}`}
-                                className="post-image"
-                            />
-                            {media.length > 1 && (<KeyboardArrowRightIcon onClick={handleNextImage} style={{ cursor: 'pointer' }} />)}
                             {media.length > 1 && (<KeyboardArrowLeftIcon onClick={handlePrevImage} style={{ cursor: 'pointer' }} />)}
                             <img
                                 key={media[currentImageIndex].mediaID}
@@ -277,9 +254,7 @@ export default function PostDisplay(slug) {
                         </div>
                     )}
 
-
                     <h5 className="post-date">{formattedDate}</h5>
-                    <p className="post-description">{thisPost.description}</p>
                 </>
             )}
             {thisPost.hasEdit && (<h6 className="edit-date">Edited: {formattedEditDate}</h6>)}

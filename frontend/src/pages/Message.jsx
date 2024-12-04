@@ -28,21 +28,38 @@ export default function MessagePage() {
     const baseURL = import.meta.env.VITE_MESSAGE_URL
 
     useEffect(() => {
+        if (!convoID || convoID.length === 0) {
+            console.warn("WebSocket connection aborted: convoID is undefined or empty.");
+            return;
+        }
+    
+        console.log("Initializing WebSocket with convoID:", convoID); // Debugging
+    
         const newSocket = new WebSocket(`ws://${baseURL}/ws/chat/${convoID}/`);
-        //const newSocket = new WebSocket(`ws://localhost:8000/ws/chat/${convoID}/`);
         newSocket.onmessage = (e) => {
-          const data = JSON.parse(e.data); 
-          setMessages((prev) => {//[...prev, e.data]);
-            if (!prev.some(messages => messages.messageID === data.messageID)) {
-                return [...prev, data];
-            }
-            return prev;
-        });
+            const data = JSON.parse(e.data);
+            setMessages((prev) => {
+                if (!prev.some((message) => message.messageID === data.messageID)) {
+                    return [...prev, data];
+                }
+                return prev;
+            });
         };
+    
+        newSocket.onerror = (error) => {
+            console.error("WebSocket error:", error);
+        };
+    
         setSocket(newSocket);
-        return () => newSocket.close();
-      }, [convoID]);
-
+    
+        return () => {
+            if (newSocket) {
+                console.log("Closing WebSocket connection.");
+                newSocket.close();
+            }
+        };
+    }, [convoID]);    
+    
     useEffect(() => {
         getProfile();
         getMyProfile()
@@ -222,6 +239,7 @@ export default function MessagePage() {
                         boxSizing: 'border-box',
                         height: 'calc(100vh - 180px)', // Full height minus AppBar
                         width: 'calc(100% - 50px)', // Full width minus Menu
+                        overflow: 'hidden,'
                         
                     }}
                 >
@@ -240,11 +258,13 @@ export default function MessagePage() {
                             style={{
                                 flex: 1, // Allow the message holder to grow and fill available space
                                 overflowY: 'auto', // Enable scrolling if messages overflow
-                                padding: '10px',
+                                padding: '50px',
                                 display: 'flex',
                                 flexDirection: 'column',
                                 gap: '10px', // Add spacing between messages
                                 wordBreak: 'break-word', // Break long words
+                                marginBottom: '0px',
+                                width: '400px'
                             }}
                         >
                             {messages.map((message) => (
@@ -252,11 +272,16 @@ export default function MessagePage() {
                                     key={`${message.messageID}`}
                                     style={{
                                         display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '10px', // Space between avatar and text
+                                        flexDirection: 'row',
+                                        justifyContent: message.sender === myProfile.id ? 'flex-end' : 'flex-start', // Align messages correctly
+                                        width: '100%', // Make sure the message takes the full width of the container
                                     }}
                                 >
-                                    <MessageDisplay message={message} />
+                                    <MessageDisplay
+                                        key={`${message.messageID}`}
+                                        message={message}
+                                        myProfileId={myProfile.id}
+                                    />
                                 </div>
                             ))}
                         </div>
@@ -334,10 +359,8 @@ export default function MessagePage() {
                         )}
                     </div>
                 </Box>
-
-
             {/* Footer */}
-            <Footer />
+            {/* <Footer /> */}
         </main> 
     )
 }

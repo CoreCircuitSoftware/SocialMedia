@@ -1,34 +1,123 @@
+/* Existing Styles */
 .messages-page {
     display: flex;
     align-items: center;
     flex-direction: column;
-    /* background-color: white; */
     margin-left: 2dvh;
     margin-right: 2dvh;
+}
+
+.message-bubble-page .msgs {
+    margin-left: 15px; /* Move the bubble further to the right */
 }
 
 .messages-page img {
     max-height: 5dvh;
     max-width: 5dvh;
-    border: solid;
-    border-width: 2px;
-    border-color: var(--Tertiary1);
-    border-radius:1cm;
+    border: solid 2px var(--Tertiary1);
+    border-radius: 1cm;
+}
+
+/* Scoped Styles for Modern Message Bubbles */
+.message-bubble-page section {
+    margin: 0 auto;
+    max-width: 420px;
+    position: relative;
+    /* Remove display: block; */
+}
+
+.message-holder {
+    display: flex;
+    flex-direction: column;
+    /* Remove align-items: flex-start; */
+    padding-right: 20px;
+    width: 100%;
+    gap: 10px;
 }
 
 
+.message-bubble-page section img {
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    position: absolute;
+    bottom: -6px;
+}
 
-P{
+.message-bubble-page .them img {
+    border: 4px solid #e5e5ea;
+    width: 42px;
+    height: 42px;
+    left: -42px;
+   
+}
+
+.message-bubble-page p {
+    margin: 0 0 2px;
+    padding: 0.5em 1em 0.65em;
+    border-radius: 4px;
+    background: #e5e5ea;
+    max-width: 65%;
+    position: relative;
+    word-wrap: break-word;
+    hyphens: auto;
+}
+
+.message-bubble-page .them p {
+    border-top-right-radius: 1em;
+    border-bottom-right-radius: 1em;
+}
+
+.message-bubble-page .them p:last-child::after {
+    content: "";
+    position: absolute;
+    left: -0.5em;
+    bottom: 0;
+    width: 0.5em;
+    height: 1em;
+    border-right: 0.5em solid #e5e5ea;
+    border-bottom-right-radius: 1em 0.5em;
+}
+
+.message-bubble-page .me p {
+    background-color: #1289fe;
+    color: white;
+    border-top-left-radius: 1em;
+    border-bottom-left-radius: 1em;
+}
+
+.message-bubble-page .me p:last-child::after {
+    content: "";
+    position: absolute;
+    right: -0.5em;
+    bottom: 0;
+    width: 0.5em;
+    height: 1em;
+    border-left: 0.5em solid #1289fe;
+    border-bottom-left-radius: 1em 0.5em;
+}
+
+.message-bubble-page p:first-child {
+    border-top-right-radius: 1em;
+    border-top-left-radius: 1em;
+}
+
+.message-bubble-page p:last-child {
+    border-bottom-left-radius: 1em;
+    margin-bottom: 8px;
+}
+
+.message-bubble-page .me p:last-child {
+    border-bottom-left-radius: 1em;
+    border-bottom-right-radius: 1em;
+    margin-bottom: 8px;
+}
+
+/* Updated Existing Styles */
+.messages-page p {
     color: black;
-    /* border-top-style: ridge;
-    border-left-style: ridge; */
     max-width: 400px;
-    /* border-bottom-left-radius: 5px;
-    border-top-left-radius: 5px; */
-    border-width: 3px;
     margin-top: 5px;
-    padding: 5px;
-
-    word-wrap: break-word; /* Ensures long words break */
-    hyphens: auto; /* this doesnt work so sad*/
+    word-wrap: break-word;
+    hyphens: auto;
 }

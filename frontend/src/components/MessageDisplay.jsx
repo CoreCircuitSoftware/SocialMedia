@@ -1,33 +1,50 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api"
-import "../styles/Message.css"
+import api from "../api";
+import "../styles/Message.css"; // Add the provided CSS here.
 
-export default function MessageDisplay(slug) {
-    const [username, setUsername] = useState([]);
-    const [message, setMessage] = useState(slug.message.message)
-    const [pfp, setPfp] = useState([]);
+export default function MessageDisplay({ message, myProfileId}) {
+    const [username, setUsername] = useState("");
+    const [pfp, setPfp] = useState("");
+    const navigate = useNavigate();
 
-    const getProfile2 = () => {
+    const getProfile = () => {
         api
-            .get(`/api/profile/getuserdata2/${slug.message.sender}/`)
+            .get(`/api/profile/getuserdata2/${message.sender}/`)
             .then((res) => res.data)
             .then((data) => {
-                setUsername(data.username)
-                setPfp(data.profilePicture)
+                setUsername(data.username);
+                setPfp(data.profilePicture);
             })
-            .catch((err) => console.log('h'));
-    }
+            .catch((err) => console.log(err));
+    };
 
     useEffect(() => {
-        getProfile2()
-    }, [slug.message.sender])
+        getProfile();
+    }, [message.sender]);
 
-    const navigate = useNavigate()
+    const navigateToProfile = () => {
+        navigate(`/profile/${username}`);
+    };
 
-    const navigateToProfile = () => {navigate(`/profile/${username}`)}
+    // Determine if the message is from "me" or "them"
+    const isMe = message.sender === myProfileId;
 
     return (
-        <p data-cy="message-display"><img className="pfp_icon" src={pfp} onClick={navigateToProfile} alt="profile"/> {username}: {message}</p>
-    )
+        <section className="message-bubble-page">
+            <section className={isMe ? "me" : "them"}>
+                {!isMe && (
+                    <img
+                        src={pfp}
+                        alt={`${username}'s Avatar`}
+                        className="pfp_icon"
+                        onClick={navigateToProfile}
+                    />
+                )}
+                <section className="msgs">
+                    <p>{message.message}</p>
+                </section>
+        </section>
+    </section>
+    );
 }
