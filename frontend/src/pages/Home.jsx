@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react"
 import React from "react"
 import api from "../api"
+import logo from'../assets/csbutwhiteoutlined.png'
 // import "../styles/Home.css"
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { AppBar, Toolbar, Typography, Container, Grid2, Paper, Box } from "@mui/material";
 import SearchBar from "../components/SearchBar";
 import Menu from "../components/Menu";
@@ -140,19 +141,56 @@ export default function Home() {
     return (
         
         <Box sx={{ display: 'flex' }}>
-            {/* Sidebar Menu */}
-            <Menu />
-
+        
             {/* Main Content */}
             <Box sx={{ flexGrow: 1, marginLeft: '250px', mt: 8 }}>
                 <AppBar position="fixed">
-                    <Toolbar>
-                        <Typography variant="h6" sx={{ flexGrow: 2, marginRight: 3 }}>
-                            CircuitSocial
-                        </Typography>
-                        <SearchBar />
+                    <Toolbar sx={{ display: 'flex', alignItems: 'center', width: '102%' }}>
+
+                        {/* Logo - Aligned to the left */}
+                        <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 1}}>
+                            <Link to="/home"> {/* Redirect to the home page */}
+                                <img
+                                    src={logo} // Path to your logo
+                                    alt="Logo"
+                                    style={{
+                                        width: 85,  // Adjust size of the logo
+                                        height: 60,
+                                        marginRight: '1px',
+                                        cursor: 'pointer', // Make it clear that the logo is clickable
+                                    }}
+                                />
+                            </Link>
+                        </Box>
+
+                        {/* Centered Text and SearchBar */}
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+                            <Typography variant="h6" sx={{ textAlign: 'center', marginRight: 1 }}>
+                                CircuitSocial
+                            </Typography>
+                            <SearchBar />
+                        </Box>
+
+                        {/* Avatar - Aligned to the right */}
+                        <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center'}}>
+                            <Link to={`/profile/${myProfile.username}`}> {/* Navigate to the user's profile */}
+                                <Avatar
+                                    src={myProfile.profilePicture} // Path to the avatar image
+                                    alt={`${myProfile.username}'s Avatar`}
+                                    sx={{
+                                        width: 55, // Adjust avatar size
+                                        height: 55,
+                                        cursor: 'pointer', // Make it clickable
+                                        marginRight: 3, // Add space between avatar and username
+                                    }}
+                                />
+                            </Link>
+                        </Box>
                     </Toolbar>
                 </AppBar>
+                {/* Sidebar Menu */}
+                <Menu />
+
 
                 <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
                     <Grid2 container spacing={4}>
@@ -160,6 +198,7 @@ export default function Home() {
                         <Grid2 item xs={12} md={8}>
                             <div className="feed-center">
                                 { loading ? (<h1>Loading...</h1>) : (
+                                <div> 
                                 <div> 
                                     {sort == "friends" ? (<h1>Home - Friend's posts</h1>) : (<h1>Home - New posts</h1>)}
                                     <div className="sort">
@@ -175,10 +214,10 @@ export default function Home() {
                             </div>
                         </Grid2>
                         {/* Right Sidebar */}
-                        <Grid2 item xs={12} md={4}>
-                            <Paper elevation={3} sx={{ p: 2 }}>
+                        <Grid2 item xs={12} md={4} sx={{ paddingLeft: 20 }}>
+                            <Paper elevation={3} sx={{ p: 3}}>
                                 <Typography variant="h6" gutterBottom>
-                                    Check out these accounts!
+                                    Accounts suggested for you!
                                 </Typography>
                                 {userRec.map((rec) => (
                                     <RecsDisplay rec={rec} key={rec.id} />

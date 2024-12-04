@@ -56,7 +56,7 @@ export default function Menu() {
                                 backgroundColor: "#ffffff",
                                 border: "2px solid #ffffff", // Add yellow border explicitly
                                 "&:hover": {
-                                    backgroundColor: "#f0f0f0", // Slightly darker yellow on hover
+                                    backgroundColor: "#f0f0f0f0", // Slightly darker yellow on hover
                                     border: "2px solid #fffff", // Keep border consistent on hover
                                 },
                             
