@@ -19,6 +19,8 @@ import CommentPage from "./pages/CommentPage";
 import PostEdit from "./components/PostEdit";
 import CommentEdit from "./components/CommentEdit";
 import MessageListPage from "./pages/MessageList";
+import Community from "./pages/Community";
+import CommunitySearch from "./pages/CommunitySearch"
 
 
 function Logout() { //Clear local storage of any tokens and redirect to login screen
@@ -67,6 +69,8 @@ function App() {
           <Route path="message/" element={<MessageListPage />} />
           <Route path="profile/:username/friends" element={<FriendsList />} />
           <Route path="search/profile/:userchunk?" element={<ProfileSearch />} />
+          <Route path="community/view/" element={<Community/>} />
+          <Route path="community/home/" element={<CommunitySearch/>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         </div>
