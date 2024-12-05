@@ -234,11 +234,11 @@ export default function Home() {
                 <Menu />
 
 
-                <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                    <Grid2 container spacing={4}>
+                <Container maxWidth='lg' sx={{ mt: 4, mb: 4, px: 2, mx: 'auto', width: '100%' }}>
+                    <Grid2 container spacing={12} flexWrap="wrap" style={{ width: '120dvh' }}>
                         {/* Feed */}
                         <Grid2 item xs={12} md={8}>
-                            <div className="feed-center">
+                            <div className="feed-center" style={{ width: '70dvh' }}>
                                 {loading ? (<h1>Loading...</h1>) : (
                                     <div>
                                         {sort == "friends" ? (<h1>Home - Friend's posts</h1>) : (<h1>Home - New posts</h1>)}
@@ -255,7 +255,7 @@ export default function Home() {
                             </div>
                         </Grid2>
                         {/* Right Sidebar */}
-                        <Grid2 item xs={12} md={4} sx={{ paddingLeft: 20 }}>
+                        <Grid2 item xs={12} md={4} >
                             <Paper elevation={3} sx={{ p: 3 }}>
                                 <Typography variant="h6" gutterBottom>
                                     Accounts suggested for you!
