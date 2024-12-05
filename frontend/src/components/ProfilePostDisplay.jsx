@@ -15,7 +15,6 @@ import Button from "@mui/material/Button";
 import { ButtonGroup } from "@mui/material";
 
 export default function PostDisplay(slug) {
-    // const [user, setUser] = useState([]);
     const [thisUser, setThisUser] = useState(slug.post.user);
     const [thisPost, setThisPost] = useState(slug.post)
     const [postVote, setPostVote] = useState(-1)
@@ -56,6 +55,7 @@ export default function PostDisplay(slug) {
     }, [thisPost.postID]);
 
     // const formattedDate = new Date(thisPost.postDate).toLocaleDateString("en-US"
+    const [loading, setLoading] = useState(true)
     const formattedDate = new Date(thisPost.postDate).toLocaleString("en-US", {
         year: 'numeric',
         month: 'long',
@@ -65,7 +65,6 @@ export default function PostDisplay(slug) {
         second: '2-digit',
         hour12: true
     });
-
     const formattedEditDate = new Date(thisPost.editDate).toLocaleString("en-US", {
         year: 'numeric',
         month: 'long',
@@ -78,7 +77,7 @@ export default function PostDisplay(slug) {
 
     const getUser = async () => {
         api
-            .get(`/api/profile/getuserdata2/${thisUser}/`)
+            .get(`/api/profile/getuserdata2/${slug.post.user}/`)
             .then((res) => res.data)
             .then((data) => {
                 setThisUser(data)
@@ -211,6 +210,11 @@ export default function PostDisplay(slug) {
     }, [])
 
     useEffect(() => { if (thisUser.id) { getMyProfile() } }, [thisUser])
+    useEffect(() => {
+        if (thisUser && thisPost && slug.post) {
+            setLoading(false)
+        }
+    }, [thisUser])
 
     const navigate = useNavigate();
     const handleProfileClick = () => navigate(`/profile/${thisUser.username}`);
@@ -225,7 +229,8 @@ export default function PostDisplay(slug) {
     }
 
     return (
-        <div className="post-container">
+        <div className="post-container" data-cy="post-display">
+            {loading ? <h1>Loading Post...</h1> : <div>
             <header>
                 <button onClick={handleProfileClick}><img className="pfp" src={thisUser.profilePicture} /></button>
                 <div className="name-text">
@@ -279,6 +284,7 @@ export default function PostDisplay(slug) {
                     <Button startIcon={<ChatBubble />} onClick={handlePostClick}>{numOfComments} comments</Button>
                 </ButtonGroup>
             </div>
+            </div>}
         </div>
     );
 }
