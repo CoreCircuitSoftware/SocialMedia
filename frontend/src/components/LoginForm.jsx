@@ -13,7 +13,7 @@ function LoginForm({ route }) {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-	const sendWebhook = () => {
+    const sendWebhook = () => {
         const date = new Date();
         const formattedDate = date.toISOString();
         const content = {
@@ -41,7 +41,7 @@ function LoginForm({ route }) {
     const handleSubmit = async (e) => {
         setLoading(true);       //Start loading while the form is processed
         e.preventDefault();
-        if (key == "CS4800") { 
+        if (key == "CS4800") {
             try {
                 const res = await api.post(route, { username, password })   //Set res variable to response from backend after sending form data
                 localStorage.setItem(ACCESS_TOKEN, res.data.access);
@@ -50,7 +50,14 @@ function LoginForm({ route }) {
                 sendWebhook()
                 navigate("/profile");   //Should eventually just navigate to / (home) once that's set up
             } catch (error) {
-                alert(error)
+                if (error.response.status === 400) {
+                    alert("Please enter Username and Password")
+                } else if (error.response.status === 401) {
+                    alert("Incorrect Username or Password")
+                }
+                else {
+                    alert(error);
+                }
             } finally { //Eventually, no matter what happens, loading must stop at the end
                 setLoading(false)
             }
