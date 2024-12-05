@@ -1,11 +1,11 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import api from "../api";  
-import Menu from '../components/Menu'; 
+import api from "../api";
+import Menu from '../components/Menu';
 import SearchBar from '../components/SearchBar';
-import Footer from '../components/Footer'; 
+import Footer from '../components/Footer';
 import '../styles/FriendsList.css'
-import logo from'../assets/csbutwhiteoutlined.png'
+import logo from '../assets/csbutwhiteoutlined.png'
 import Avatar from '@mui/material/Avatar';
 import { AppBar, Toolbar, Typography, Container, Grid2, Paper, Box } from "@mui/material";
 
@@ -14,6 +14,8 @@ export default function FriendsList() {
     const [friends, setFriends] = useState([]);
     const [userId, setUserId] = useState(null);
     const [myProfile, setMyProfile] = useState([]);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         // Fetch profile ID based on username
@@ -26,7 +28,15 @@ export default function FriendsList() {
                     console.error("No profile data found.");
                 }
             })
-            .catch((err) => console.log(err));
+            .catch((err) => {
+                if (err.response && err.response.status === 404) {
+                    navigate("/404");
+                } else if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
     }, [username]);
 
     useEffect(() => {
@@ -34,10 +44,18 @@ export default function FriendsList() {
         if (userId) {
             api.get(`/api/friends/${userId}/`)
                 .then((res) => {
-                    console.log(res.data); 
+                    console.log(res.data);
                     setFriends(res.data)
                 })
-                .catch((err) => console.log(err));
+                .catch((err) => {
+                    if (err.response && err.response.status === 404) {
+                        navigate("/404");
+                    } else if (err.response && err.response.status === 401) {
+                        navigate("/login");
+                    } else {
+                        alert(err);
+                    }
+                })
         }
     }, [userId]);
     useEffect(() => {
@@ -51,16 +69,24 @@ export default function FriendsList() {
             .then((data) => {
                 setMyProfile(data)
             })
-            .catch((err) => alert(err));
+            .catch((err) => {
+                if (err.response && err.response.status === 404) {
+                    navigate("/404");
+                } else if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
     }
-    
+
     return (
         <main>
-           <AppBar position="fixed">
+            <AppBar position="fixed">
                 <Toolbar sx={{ display: 'flex', alignItems: 'center', width: '102%' }}>
 
                     {/* Logo - Aligned to the left */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 1}}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 1 }}>
                         <Link to="/home"> {/* Redirect to the home page */}
                             <img
                                 src={logo} // Path to your logo
@@ -84,7 +110,7 @@ export default function FriendsList() {
                     </Box>
 
                     {/* Avatar - Aligned to the right */}
-                    <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center'}}>
+                    <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center' }}>
                         <Link to={`/profile/${myProfile.username}`}> {/* Navigate to the user's profile */}
                             <Avatar
                                 src={myProfile.profilePicture} // Path to the avatar image
@@ -101,7 +127,7 @@ export default function FriendsList() {
                 </Toolbar>
             </AppBar>
             <Menu />
-            
+
             <div className="content">
                 <h1>{username}'s Friends</h1>
                 <ul>
@@ -124,6 +150,6 @@ export default function FriendsList() {
             </div>
             <Footer />
         </main>
-    );    
+    );
 }
 

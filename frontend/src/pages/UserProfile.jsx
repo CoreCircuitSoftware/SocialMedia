@@ -9,7 +9,7 @@ import PostDisplay from "../components/ProfilePostDisplay.jsx";
 import SearchBar from "../components/SearchBar";
 import Menu from "../components/Menu";
 import Footer from "../components/Footer";
-import logo from'../assets/csbutwhiteoutlined.png'
+import logo from '../assets/csbutwhiteoutlined.png'
 
 //Material Ui
 // import Button from "../components/Button/Button";
@@ -70,7 +70,15 @@ export default function UserProfileTest() {
                     console.error("No profile data found.");
                 }
             })
-            .catch((err) => console.log(err));
+            .catch((err) => {
+                if (err.response && err.response.status === 404) {
+                    navigate("/404");
+                } else if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
     };
 
     const getMyProfile = () => {
@@ -78,7 +86,15 @@ export default function UserProfileTest() {
             .get(`/api/profile/`)
             .then((res) => res.data)
             .then((data) => setMyProfile(data))
-            .catch((err) => alert(err));
+            .catch((err) => {
+                if (err.response && err.response.status === 404) {
+                    navigate("/404");
+                } else if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
     };
 
     const getFriends = () => {
@@ -89,7 +105,15 @@ export default function UserProfileTest() {
                 setFriends(data);
                 setFriendCount(data.length); // Update the friend count
             })
-            .catch((err) => console.log(err));
+            .catch((err) => {
+                if (err.response && err.response.status === 404) {
+                    navigate("/404");
+                } else if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
     };
 
     const handleAddFriend = () => {
@@ -148,7 +172,15 @@ export default function UserProfileTest() {
                 if (data.status === 'friends')
                     getFriendship();
             })
-            .catch((err) => console.log(err));
+            .catch((err) => {
+                if (err.response && err.response.status === 404) {
+                    navigate("/404");
+                } else if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
     };
 
     const getFriendship = () => {
@@ -158,7 +190,15 @@ export default function UserProfileTest() {
                 console.log('FriendshipID: ', data.friendShipID)
                 setFriendshipID(data.friendShipID)
             })
-            .catch((err) => console.log(err));
+            .catch((err) => {
+                if (err.response && err.response.status === 404) {
+                    navigate("/404");
+                } else if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
     };
 
 
@@ -200,12 +240,12 @@ export default function UserProfileTest() {
     }
 
     return (
-        <Box sx={{ display: 'flex'}}> 
-          <AppBar position="fixed">
+        <Box sx={{ display: 'flex' }}>
+            <AppBar position="fixed">
                 <Toolbar sx={{ display: 'flex', alignItems: 'center', width: '102%' }}>
 
                     {/* Logo - Aligned to the left */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 1}}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 1 }}>
                         <Link to="/home"> {/* Redirect to the home page */}
                             <img
                                 src={logo} // Path to your logo
@@ -229,7 +269,7 @@ export default function UserProfileTest() {
                     </Box>
 
                     {/* Avatar - Aligned to the right */}
-                    <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center'}}>
+                    <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center' }}>
                         <Link to={`/profile/${myProfile.username}`}> {/* Navigate to the user's profile */}
                             <Avatar
                                 src={myProfile.profilePicture} // Path to the avatar image
@@ -247,8 +287,8 @@ export default function UserProfileTest() {
             </AppBar>
             <Menu />
 
-            <Box sx={{ flexGrow: 1, marginLeft: '300px', mt: 8 }}> 
-               
+            <Box sx={{ flexGrow: 1, marginLeft: '300px', mt: 8 }}>
+
                 <div className="content">
                     <div className="profile-top">
                         <img className="back-img" src={profile.backgroundImage} alt="background" data-cy="banner" />
@@ -263,16 +303,16 @@ export default function UserProfileTest() {
                                     {isMyProfile ? (
                                         <ThemeProvider theme={theme}>
                                             <Box
-                                        sx={{
-                                            display: "flex",
-                                            gap: 1, // Space between items, equivalent to 16px (8 * 2)
-                                        }}
-                                        >
-                                            <Button variant='contained' color='primary' startIcon={<ShareIcon />} onClick={handleShare} data-cy="share">Share</Button>
-                                            <Button variant='contained' startIcon={<CreateIcon />} onClick={handlePostCreate} data-cy="create-post">Create Post</Button>
-                                            <Button variant='contained' startIcon={<LogoutIcon />} onClick={handleLogout} data-cy="logout">Logout</Button>
-                                            <Button variant='contained' startIcon={<AccountBoxIcon />} onClick={handleEdit} data-cy="edit">Edit</Button>
-                                        </Box>
+                                                sx={{
+                                                    display: "flex",
+                                                    gap: 1, // Space between items, equivalent to 16px (8 * 2)
+                                                }}
+                                            >
+                                                <Button variant='contained' color='primary' startIcon={<ShareIcon />} onClick={handleShare} data-cy="share">Share</Button>
+                                                <Button variant='contained' startIcon={<CreateIcon />} onClick={handlePostCreate} data-cy="create-post">Create Post</Button>
+                                                <Button variant='contained' startIcon={<LogoutIcon />} onClick={handleLogout} data-cy="logout">Logout</Button>
+                                                <Button variant='contained' startIcon={<AccountBoxIcon />} onClick={handleEdit} data-cy="edit">Edit</Button>
+                                            </Box>
                                         </ThemeProvider>
                                     ) : (
                                         <div>
@@ -315,10 +355,10 @@ export default function UserProfileTest() {
                                     ))}
                                 </div>
                             )}
-                        {(posts.length > 0) ? (
-                            <div className="post-holder" data-cy="posts">
-                                {posts.map((post) => <PostDisplay post={post} curUser={myProfile} key={post.postID} />)}
-                            </div>
+                            {(posts.length > 0) ? (
+                                <div className="post-holder" data-cy="posts">
+                                    {posts.map((post) => <PostDisplay post={post} curUser={myProfile} key={post.postID} />)}
+                                </div>
                             ) : (
                                 <h3 data-cy="user-no-posts">{username} hasn't made any posts yet</h3>
                             )}

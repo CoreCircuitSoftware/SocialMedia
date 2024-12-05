@@ -17,7 +17,7 @@ const VisuallyHiddenInput = styled("input")({
     left: 0,
     whiteSpace: "nowrap",
     width: 1,
-  });
+});
 
 export default function PostForm() {
     const navigate = useNavigate();
@@ -29,6 +29,21 @@ export default function PostForm() {
     const [description, setDescription] = useState("");
     const [images, setImages] = useState([]);
     const [imagePreviews, setImagePreviews] = useState([]);
+
+    //Here to check the user is signed in, returns them to login if not
+    useEffect(() => {
+        api
+            .get(`/api/profile/`)
+            .catch((err) => {
+                if (err.response && err.response.status === 404) {
+                    navigate("/404");
+                } else if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
+    })
 
     const handleFileChange = (event) => {
         const files = Array.from(event.target.files); // Set selected image files
@@ -59,7 +74,8 @@ export default function PostForm() {
             });
             navigate("/profile");
         } catch (error) {
-            console.error("There was an error creating the post!", error);
+            if (error.response.status === 401)
+                navigate("/login");
         }
     };
 
@@ -74,7 +90,7 @@ export default function PostForm() {
             <h2>Create Post</h2>
             <label htmlFor="title">Title:</label>
             {titleError && (
-                <h5 data-cy="title-error">Error: Title required for post</h5> 
+                <h5 data-cy="title-error">Error: Title required for post</h5>
             )}
             <input id="post_title"
                 className="form-input"
@@ -83,7 +99,7 @@ export default function PostForm() {
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Enter Post Title"
                 data-cy="post-title"
-                />
+            />
             <label htmlFor="description">Description:</label>
             <input id="post_description"
                 className="form-input"
@@ -92,7 +108,7 @@ export default function PostForm() {
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Enter Post Description"
                 data-cy="post-description"
-                />
+            />
             <Button
                 component="label"
                 variant="contained"
@@ -100,36 +116,36 @@ export default function PostForm() {
                 fullWidth
                 style={{ width: '360px', marginBottom: '16px' }}  // Set width here
                 color="customGreen"
-                >
+            >
                 Upload Image
                 <VisuallyHiddenInput type="file" accept="image/*" multiple onChange={handleFileChange} />
             </Button>
             {imagePreviews.length > 0 && (
                 <div className="image-preview">
                     {imagePreviews.map((preview, index) => (
-                         <img key={index} src={preview} alt={`Preview ${index + 1}`} style={{ width: '90%', margin: '5px', height:'90%' }} />
+                        <img key={index} src={preview} alt={`Preview ${index + 1}`} style={{ width: '90%', margin: '5px', height: '90%' }} />
                     ))}
                 </div>
             )}
-            <Button 
-                variant="contained" 
-                type="submit" 
+            <Button
+                variant="contained"
+                type="submit"
                 data-cy="submit-post"
-                style={{ width: '360px', marginBottom: '16px'}}
+                style={{ width: '360px', marginBottom: '16px' }}
                 color="customGreen"
-                >
+            >
                 Submit Post
             </Button>
-                <Button 
-                    //className="form-button" 
-                    type="button" 
-                    variant="contained"
-                    onClick={handleReturn} 
-                    data-cy="go-back"
-                    style={{ width: '360px'}}
-                    color="customGreen"
-                    >
-                    Go Back
+            <Button
+                //className="form-button" 
+                type="button"
+                variant="contained"
+                onClick={handleReturn}
+                data-cy="go-back"
+                style={{ width: '360px' }}
+                color="customGreen"
+            >
+                Go Back
             </Button>
         </form>
     );

@@ -47,6 +47,15 @@ export default function CommentPage() {
                 setIsMyComment(res.data.id === mainComment.user)
             }
             )
+            .catch((err) => {
+                if (err.response && err.response.status === 404) {
+                    navigate("/404");
+                } else if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
     }
 
     useEffect(() => {
@@ -55,7 +64,15 @@ export default function CommentPage() {
             .then((data) => {
                 setMainComment(data)
             })
-            .catch((err) => console.log("Error LOL"))
+            .catch((err) => {
+                if (err.response && err.response.status === 404) {
+                    navigate("/404");
+                } else if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
     }, [commentID])
 
     useEffect(() => {
@@ -67,7 +84,15 @@ export default function CommentPage() {
                 setThisUser(data)
                 setcommentContent('')
             })
-            .catch((err) => alert("error"));
+            .catch((err) => {
+                if (err.response && err.response.status === 404) {
+                    navigate("/404");
+                } else if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
     }, [mainComment])
 
     const handleCommentSubmit = (e) => {
@@ -77,7 +102,15 @@ export default function CommentPage() {
             .then((res) => {
                 window.location.reload();
             })
-            .catch((err) => console.log(err))
+            .catch((err) => {
+                if (err.response && err.response.status === 404) {
+                    navigate("/404");
+                } else if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
     }
 
     const getComments = () => {
@@ -88,7 +121,15 @@ export default function CommentPage() {
                 .then((data) => {
                     setComments(data.reverse())
                 })
-                .catch((err) => console.log(err))
+                .catch((err) => {
+                    if (err.response && err.response.status === 404) {
+                        navigate("/404");
+                    } else if (err.response && err.response.status === 401) {
+                        navigate("/login");
+                    } else {
+                        alert(err);
+                    }
+                })
         }
     }
 
@@ -122,7 +163,7 @@ export default function CommentPage() {
             <div className="content">
                 <div className="main-post">
                     <div className="post-page-options-buttons">
-                    <button className="pfp-post-main-btn" onClick={handleProfileClick} data-cy="profile-picture"><img className="pfp-post-main" src={thisUser.profilePicture} /></button>
+                        <button className="pfp-post-main-btn" onClick={handleProfileClick} data-cy="profile-picture"><img className="pfp-post-main" src={thisUser.profilePicture} /></button>
                         {/* <button className="comment-share-button" onClick={handleCommentShare} data-cy="share">Share</button>
                         {isMyComment && (<button className="comment-edit-button" onClick={() => navigate(`/comment/edit/${mainComment.commentID}`)}>edit</button>)} */}
                         <ButtonGroup variant="contained" >
@@ -130,7 +171,7 @@ export default function CommentPage() {
                             {isMyComment && <Button startIcon=<EditIcon /> onClick={() => navigate(`/comment/edit/${mainComment.commentID}`)}> Edit</Button>}
                         </ButtonGroup>
                     </div>
-                    
+
                     <h1 className="comment">{mainComment.commentContent}</h1>
                     <h5 className="comment-date">{formattedDate}</h5>
                     {mainComment.hasEdit && (<h6 className="edit-date">Edited: {formattedEditDate}</h6>)}
