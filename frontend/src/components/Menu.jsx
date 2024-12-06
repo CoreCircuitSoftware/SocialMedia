@@ -13,7 +13,7 @@ export default function Menu() {
     const menuItems = [
         { text: "Profile", icon: <PersonIcon />, action: () => navigate("/profile") },
         { text: "Home", icon: <HomeIcon />, action: () => navigate("/home") },
-        // { text: "Communities", icon: <GroupIcon />, action: () => navigate("/communities") },
+        { text: "Communities", icon: <GroupIcon />, action: () => navigate("/communities") },
         { text: "Messages", icon: <MessageIcon />, action: () => navigate("/message") },
       ];
 

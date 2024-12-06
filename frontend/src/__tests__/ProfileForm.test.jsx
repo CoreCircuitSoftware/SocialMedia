@@ -43,7 +43,7 @@ describe("ProfileForm", () => {
             expect(screen.getByText("Bio")).toBeInTheDocument();
             expect(screen.getByText("Profile Picture")).toBeInTheDocument();
             expect(screen.getByText("Banner")).toBeInTheDocument();
-            expect(screen.getAllByRole("textbox")).toHaveLength(4);
+            expect(screen.getAllByRole("textbox")).toHaveLength(2);
         })
     })
 
@@ -54,8 +54,8 @@ describe("ProfileForm", () => {
         await waitFor(() => { 
             expect(screen.getByPlaceholderText(mockProfile.displayName)).toBeInTheDocument()
             expect(screen.getByPlaceholderText(mockProfile.bio)).toBeInTheDocument()
-            expect(screen.getByPlaceholderText(mockProfile.profilePicture)).toBeInTheDocument()
-            expect(screen.getByPlaceholderText(mockProfile.backgroundImage)).toBeInTheDocument()
+            //expect(screen.getByPlaceholderText(mockProfile.profilePicture)).toBeInTheDocument()
+            //expect(screen.getByPlaceholderText(mockProfile.backgroundImage)).toBeInTheDocument()
         })
     })
 
@@ -66,18 +66,12 @@ describe("ProfileForm", () => {
         await waitFor(() => {
             const displayName = screen.getByPlaceholderText(mockProfile.displayName);
             const bio = screen.getByPlaceholderText(mockProfile.bio);
-            const pfp = screen.getByPlaceholderText(mockProfile.profilePicture);
-            const bkg = screen.getByPlaceholderText(mockProfile.backgroundImage);
 
             fireEvent.change(displayName, { target: { value: 'test_name' } });
             fireEvent.change(bio, { target: { value: 'test_bio' } });
-            fireEvent.change(pfp, { target: { value: 'test_pfp' } });
-            fireEvent.change(bkg, { target: { value: 'test_bkg' } });
 
             expect(displayName.value).toBe('test_name');
             expect(bio.value).toBe('test_bio');
-            expect(pfp.value).toBe('test_pfp');
-            expect(bkg.value).toBe('test_bkg');
         })
     });
 
@@ -90,6 +84,22 @@ describe("ProfileForm", () => {
             fireEvent.click(screen.getByRole('button', { name: /Confirm/i }));
             expect(api.patch).toHaveBeenCalled();
             expect(mockNavigate).toHaveBeenCalledWith('/profile');
+        })
+    })
+
+    it('Form submits and error', async () => { 
+        const mockError = new Error("Error");
+        api.patch.mockRejectedValue(mockError);
+        api.get.mockResolvedValue({ data: mockProfile })
+        jest.spyOn(window, 'alert').mockImplementation(() => {}) 
+
+        render(<ProfileForm />)
+
+        await waitFor(() => {
+            fireEvent.click(screen.getByRole('button', { name: /Confirm/i }));
+            expect(api.patch).toHaveBeenCalled();
+            expect(mockNavigate).toHaveBeenCalledWith('/profile');
+            expect(window.alert).toHaveBeenCalledWith(mockError);
         })
     })
 

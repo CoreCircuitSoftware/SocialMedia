@@ -8,12 +8,19 @@ jest.mock('react-router-dom', () => ({ //mock useNavigate
     useNavigate: jest.fn(),
   }));
 
+  const mockNavigate = require('react-router-dom').useNavigate;
+
 describe("SearchBar", () => { 
     global.React = React; //This line fixes the error: "ReferenceError: React is not defined"
 
-    it('Search Menu loads', () => {
-      const mockNavigate = jest.fn();
+    beforeEach(() => {
+      //const mockNavigate = jest.fn();
       useNavigate.mockImplementation(() => mockNavigate);
+    })
+
+    it('Search Menu loads', () => {
+      // const mockNavigate = jest.fn();
+      // useNavigate.mockImplementation(() => mockNavigate);
 
       render(<SearchBar />);
 
@@ -21,30 +28,31 @@ describe("SearchBar", () => {
       expect(searchButton).toBeInTheDocument();
   });
 
-    // it("Press Search button with no text entered into search field", () => {
-    //     const mockNavigate = jest.fn()
-    //     useNavigate.mockImplementation(() => mockNavigate)
+    it('should update text field when typing', () => {
+      render(<SearchBar />);
 
-    //     render(<SearchBar />)
-    //     const searchButton = screen.getByRole("button", {name: /Search/i})
-    //     fireEvent.click(searchButton)
+      const textField = screen.getByPlaceholderText('Find users');
+      fireEvent.change(textField, { target: { value: 'testUser' } });
+      expect(textField.value).toBe('testUser');
+  });
 
-    //     expect(mockNavigate).toHaveBeenCalledWith("/search/profile")
-    // })
+    it('should call navigate with correct path when enter is pressed', () => {
+      render(<SearchBar />);
 
-    // it('navigates to the correct path when a user types a name and clicks search', () => {
-    //     const mockNavigate = jest.fn();
-    //     useNavigate.mockImplementation(() => mockNavigate);
-    
-    //     render(<SearchBar />);
-    
-    //     const searchInput = screen.getByPlaceholderText(/find users/i);
-    //     fireEvent.change(searchInput, { target: { value: 'test_user' } });
-    
-    //     const searchButton = screen.getByRole('button', { name: /search/i });
-    //     fireEvent.click(searchButton);
-    
-    //     expect(mockNavigate).toHaveBeenCalledWith('/search/profile/test_user');
-    //   });
+      const textField = screen.getByPlaceholderText('Find users');
+      fireEvent.change(textField, { target: { value: 'testUser' } });
+      fireEvent.keyDown(textField, { key: 'Enter', code: 'Enter' });
 
+      expect(mockNavigate).toHaveBeenCalledWith('/search/profile/testUser');
+  });
+
+    it('should call navigate to load all users when enter is pressed with empty field', () => {
+      render(<SearchBar />);
+
+      const textField = screen.getByPlaceholderText('Find users');
+      fireEvent.change(textField, { target: { value: '' } });
+      fireEvent.keyDown(textField, { key: 'Enter', code: 'Enter' });
+
+      expect(mockNavigate).toHaveBeenCalledWith('/search/profile');
+  });
 })

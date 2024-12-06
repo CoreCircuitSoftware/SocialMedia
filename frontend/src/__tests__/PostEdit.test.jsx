@@ -78,5 +78,22 @@ describe("PostEdit", () => {
         });
     })
 
+    it('getting post but error', async () => {
+        api.get.mockRejectedValue({ response: { status: 401 } });
+        render(<PostEdit />);
+        await waitFor(() => {
+            expect(api.get).toHaveBeenCalledWith(`/api/posts/${mockPost.postID}/`);
+        });
+    })
 
+    it('submitting form but error', async () => {
+        api.get.mockResolvedValue({ data: mockPost });
+        api.patch.mockRejectedValue({ response: { status: 401 } });
+
+        render(<PostEdit />);
+        await waitFor(() => {
+            fireEvent.click(screen.getByRole('button', { name: /confirm/i }));
+            expect(api.patch).toHaveBeenCalledWith(`/api/posts/edit/${mockPost.postID}/`, { title: mockPost.title, description: mockPost.description });
+        })
+    })
 })

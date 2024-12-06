@@ -20,7 +20,6 @@ export default function GetMyProfile() {
             .get(`/api/profile/`)
             .then((res) => res.data)
             .then((data) => {
-                //console.log(data)
                 setProfile(data)
             })
             .catch((err) => alert(err));

@@ -1,118 +1,205 @@
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { MemoryRouter } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 import PostForm from '../components/PostForm';
 import React from 'react';
 import api from '../api';
 
-jest.mock('react-router-dom', () => ({ //mock useNavigate
+const mockNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
     ...jest.requireActual('react-router-dom'),
-    useNavigate: jest.fn(),
+    useNavigate: () => mockNavigate,
 }));
 
 jest.mock('../api');
 
+beforeAll(() => {
+  global.URL.createObjectURL = jest.fn(() => "mockedURL");
+});
+
 describe("PostForm", () => {
     global.React = React; //This line fixes the error: "ReferenceError: React is not defined"
 
-    const mockNavigate = jest.fn();
-    const mockPost = jest.fn();
-
     beforeEach(() => {
-        useNavigate.mockImplementation(() => mockNavigate);
-        api.createPost = mockPost;
-    });
+        jest.clearAllMocks();
+      })
 
-    it("Form renders properly", () => {
-        const mockNavigate = jest.fn()
-        useNavigate.mockImplementation(() => mockNavigate)
-
-        render(<PostForm />)
-
-        const titleInput = screen.getByPlaceholderText(/Enter Post Title/i);
-        const descriptionInput = screen.getByPlaceholderText(/Enter Post Description/i);
-        const createButton = screen.getByRole("button", {name: /Submit Post/i});
-        const returnButton = screen.getByRole("button", {name: /Go Back/i});
-        expect(titleInput).toBeInTheDocument();
-        expect(descriptionInput).toBeInTheDocument();
-        expect(createButton).toBeInTheDocument();
-        expect(returnButton).toBeInTheDocument();
-    })
-
-    it("Post created when title and/or description is entered which navigates user to /profile", async () => {
-        api.post.mockResolvedValue({ status: 201 });
-
-        render(<PostForm />)
-
-        fireEvent.change(screen.getByPlaceholderText(/Enter Post Title/i), {target: {value: "Test Title"}})
-        fireEvent.change(screen.getByPlaceholderText(/Enter Post Description/i), {target: {value: "Test Description"}})
-        fireEvent.click(screen.getByRole("button", {name: /Submit Post/i}))
+    it("Form renders correctly", async () => {
+        const mockData = { "profile": { "username": "example_user" } };
+        api.get.mockResolvedValue({ data: mockData });
+        render(
+        <MemoryRouter>
+            <PostForm />
+        </MemoryRouter>
+        );
 
         await waitFor(() => {
-            expect(api.post).toHaveBeenCalledWith('/api/createpost/', {
-                title: "Test Title",
-                description: "Test Description"
-            });
-            expect(mockNavigate).toHaveBeenCalledWith('/profile');
+            expect(api.get).toHaveBeenCalledWith('/api/profile/');
         })
 
-    })
+        expect(screen.getByPlaceholderText("Enter Post Title")).toBeInTheDocument();
+        expect(screen.getByPlaceholderText("Enter Post Description")).toBeInTheDocument();
+        expect(screen.getByText("Upload Image")).toBeInTheDocument();
+        expect(screen.getByText("Submit Post")).toBeInTheDocument();
+        expect(screen.getByText("Go Back")).toBeInTheDocument();
+    });
 
-    it("Go back button nagivates to home", () => {
-        const mockNavigate = jest.fn()
-        useNavigate.mockImplementation(() => mockNavigate)
+    it("should navigate to login if user is not authenticated", async () => {
+        api.get.mockRejectedValue({ response: { status: 401 } });
+    
+        render(
+          <MemoryRouter>
+            <PostForm />
+          </MemoryRouter>
+        );
+    
+        await waitFor(() => {
+          expect(api.get).toHaveBeenCalledWith("/api/profile/");
+          expect(mockNavigate).toHaveBeenCalledWith("/login");
+        });
+      });
 
-        render(<PostForm />)
+      it("should navigate to 404 if 404", async () => {
+        api.get.mockRejectedValue({ response: { status: 404 } });
+    
+        render(
+          <MemoryRouter>
+            <PostForm />
+          </MemoryRouter>
+        );
+    
+        await waitFor(() => {
+          expect(api.get).toHaveBeenCalledWith("/api/profile/");
+          expect(mockNavigate).toHaveBeenCalledWith("/404");
+        });
+      });
 
-        const returnButton = screen.getByRole("button", {name: /Go Back/i});
-        fireEvent.click(returnButton);
+      it("Window alert error", async () => {
+        jest.spyOn(window, 'alert').mockImplementation(() => {}) 
+        api.get.mockRejectedValue({ response: { status: 500 } });
+        render(
+          <MemoryRouter>
+            <PostForm />
+          </MemoryRouter>
+        );
+    
+        await waitFor(() => {
+          expect(api.get).toHaveBeenCalledWith("/api/profile/");
+          expect(window.alert).toHaveBeenCalled();
+        });
+      });
 
+      it("Post Success -> navigate to profile", async () => {
+        api.post.mockResolvedValue({});
+
+        render(
+        <MemoryRouter>
+            <PostForm />
+        </MemoryRouter>
+        );
+
+        fireEvent.change(screen.getByPlaceholderText("Enter Post Title"), {
+            target: { value: "Test Post" },
+        });
+        fireEvent.change(screen.getByPlaceholderText("Enter Post Description"), {
+            target: { value: "This is a test description." },
+        });
+
+        fireEvent.click(screen.getByText("Submit Post"));
+
+        await waitFor(() => {
+        expect(api.post).toHaveBeenCalledWith(
+            "/api/createpost/",
+            expect.any(FormData),
+            expect.objectContaining({
+            headers: { "Content-Type": "multipart/form-data" },
+            })
+        );
         expect(mockNavigate).toHaveBeenCalledWith("/profile");
-    })
+        });
+      });
 
-    it("Error given when no title and description is entered", () => {
-        const mockNavigate = jest.fn()
-        useNavigate.mockImplementation(() => mockNavigate)
+      it("Post error", async () => {
+        api.post.mockRejectedValue({ response: { status: 401 } });
 
-        render(<PostForm />)
+        render(
+          <MemoryRouter>
+            <PostForm />
+          </MemoryRouter>
+        );
 
-        const createButton = screen.getByRole("button", {name: /Submit Post/i});
-        fireEvent.click(createButton);
+        fireEvent.change(screen.getByPlaceholderText("Enter Post Title"), {
+          target: { value: "Test Post" },
+        });
+        fireEvent.change(screen.getByPlaceholderText("Enter Post Description"), {
+          target: { value: "This is a test description." },
+        });
 
-        const titleError = screen.getByText(/Error: Title required for post/i);
-        expect(titleError).toBeInTheDocument();
-    })
+        fireEvent.click(screen.getByText("Submit Post"));
 
-    it("Error given when no title is entered", () => {
-        const mockNavigate = jest.fn()
-        useNavigate.mockImplementation(() => mockNavigate)
+        await waitFor(() => {
+          expect(api.post).toHaveBeenCalledWith(
+            "/api/createpost/",
+            expect.any(FormData),
+            expect.objectContaining({
+              headers: { "Content-Type": "multipart/form-data" },
+            })
+          );
+          expect(mockNavigate).toHaveBeenCalledWith("/login");
+        });
+      })
 
-        render(<PostForm />)
+      it("should show title error when title is not provided", async () => {
+        render(
+          <MemoryRouter>
+            <PostForm />
+          </MemoryRouter>
+        );
+    
+        fireEvent.click(screen.getByText("Submit Post"));
+    
+        expect(await screen.findByText("Error: Title required for post")).toBeInTheDocument();
+      });
 
-        const descriptionInput = screen.getByPlaceholderText(/Enter Post Description/i);
-        fireEvent.change(descriptionInput, {target: {value: "Test Description"}})
-        const createButton = screen.getByRole("button", {name: /Submit Post/i});
-        fireEvent.click(createButton);
+      it("should navigate back to profile when 'Go Back' is clicked", () => {
+        render(
+          <MemoryRouter>
+            <PostForm />
+          </MemoryRouter>
+        );
+    
+        fireEvent.click(screen.getByText("Go Back"));
+    
+        expect(mockNavigate).toHaveBeenCalledWith("/profile");
+      });
 
-        const titleError = screen.getByText(/Error: Title required for post/i);
-        expect(titleError).toBeInTheDocument();
-    })
+      it("should handle file uploads and display image previews", async () => {
+        render(
+            <MemoryRouter>
+                <PostForm />
+            </MemoryRouter>
+        );
 
-    it("Descripton updated when text is entered", () => {
-        const mockNavigate = jest.fn()
-        useNavigate.mockImplementation(() => mockNavigate)
-        render(<PostForm />)
-        const descriptionInput = screen.getByPlaceholderText(/Enter Post Description/i);
-        fireEvent.change(descriptionInput, {target: {value: "Test Description"}})
-        expect(descriptionInput.value).toBe("Test Description");
-    })
+        // Create mock files for file input
+        const file1 = new File(["file1"], "file1.png", { type: "image/png" });
+        const file2 = new File(["file2"], "file2.jpg", { type: "image/jpeg" });
 
-    it("Title updated when text is entered", () => {
-        const mockNavigate = jest.fn()
-        useNavigate.mockImplementation(() => mockNavigate)
-        render(<PostForm />)
-        const titleInput = screen.getByPlaceholderText(/Enter Post Title/i);
-        fireEvent.change(titleInput, {target: {value: "Test Title"}})
-        expect(titleInput.value).toBe("Test Title");
-    })
+        // Find the hidden input element by its label text
+        const fileInput = screen.getByLabelText("Upload Image");
 
+        // Fire the change event with the mock files
+        fireEvent.change(fileInput, {
+            target: { files: [file1, file2] }
+        });
+
+        // Wait for image previews to be displayed
+        await waitFor(() => {
+            expect(screen.getAllByRole("img")).toHaveLength(2);
+        });
+
+        // Check if image previews are displayed with the correct src
+        const previews = screen.getAllByRole("img");
+        expect(previews[0]).toHaveAttribute("src", "mockedURL");
+        expect(previews[1]).toHaveAttribute("src", "mockedURL");
+    });
 })

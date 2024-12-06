@@ -21,9 +21,6 @@ const VisuallyHiddenInput = styled("input")({
 
 export default function PostForm() {
     const navigate = useNavigate();
-
-    const [profile, setProfile] = useState([]);
-    const [user, setUser] = useState([])
     const [title, setTitle] = useState("");
     const [titleError, setTitleError] = useState(false);
     const [description, setDescription] = useState("");
@@ -52,6 +49,11 @@ export default function PostForm() {
         setImagePreviews(previews);
     };
 
+    const handleReturn = async (e) => {
+        e.preventDefault();
+        navigate("/profile")
+    }
+
     const createPost = async (e) => {
         e.preventDefault();
         if (!title) {
@@ -79,18 +81,12 @@ export default function PostForm() {
         }
     };
 
-
-    const handleReturn = async (e) => {
-        e.preventDefault();
-        navigate("/profile")
-    }
-
     return (
         <form onSubmit={createPost} className="post-submit-container">
             <h2>Create Post</h2>
             <label htmlFor="title">Title:</label>
             {titleError && (
-                <h5 data-cy="title-error">Error: Title required for post</h5>
+                <h5>Error: Title required for post</h5>
             )}
             <input id="post_title"
                 className="form-input"
