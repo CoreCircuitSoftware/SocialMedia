@@ -30,7 +30,12 @@ class TestCreatePostView(APITestCase):
             'description': 'Test description',
         }
         files = {"media": [self.media_file1, self.media_file2]}
-        response = self.client.post(self.url, data=data, files=files, format='json')
+        #response = self.client.post(self.url, data=data, media=files, format='json')
+        response = self.client.post(
+            self.url, 
+            data={**data, 'media': [self.media_file1, self.media_file2]}, 
+            format='multipart'
+        )
         self.assertEqual(response.status_code, 201)
         self.assertTrue(Post.objects.filter(user=self.user, title='Test Post').exists())
         
@@ -40,7 +45,12 @@ class TestCreatePostView(APITestCase):
     #         'description': 'Test description',
     #     }
     #     files = {"media": [self.media_file3]}
-    #     response = self.client.post(self.url, data=data, files=files, format='json')
+    #     # response = self.client.post(self.url, data=data, files=files, format='json')
+    #     response = self.client.post(
+    #         self.url, 
+    #         data={**data, 'media': [self.media_file3]}, 
+    #         format='multipart'
+    #     )
     #     # self.assertEqual(response.status_code, 400)
     #     self.assertFalse(Post.objects.filter(user=self.user, title='Test Post 2').exists())
 
