@@ -24,7 +24,7 @@ class PostCreate(generics.CreateAPIView):
                     media_instance.mediaURL = media_instance.image.url
                     media_instance.save()
             except Exception as e:
-                print(f"Error saving media file: {e}")
+                raise (f"Error saving media file: {e}")
 
 class PostMediaListView(generics.ListAPIView):
     serializer_class = MediaSerializer

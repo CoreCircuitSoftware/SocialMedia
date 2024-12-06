@@ -5,6 +5,7 @@ from api.Models.user import CustomUser
 from api.Models.post import *
 from api.Views.post import *
 from rest_framework import status
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 class TestCreatePostView(APITestCase):
     def setUp(self):
@@ -14,6 +15,9 @@ class TestCreatePostView(APITestCase):
             email='user@mail.com',
             displayName='DisplayUser'
         )
+        self.media_file1 = SimpleUploadedFile("media1.jpg", b"file_content", content_type="image/jpeg")
+        self.media_file2 = SimpleUploadedFile("media2.jpg", b"file_content", content_type="image/jpeg")
+        self.media_file3 = SimpleUploadedFile("media3.mp4", b"file_content", content_type="video/mp4")
         
         self.token = str(AccessToken.for_user(self.user))
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
@@ -25,9 +29,20 @@ class TestCreatePostView(APITestCase):
             'title': 'Test Post',
             'description': 'Test description',
         }
-        response = self.client.post(self.url, data, format='json')
+        files = {"media": [self.media_file1, self.media_file2]}
+        response = self.client.post(self.url, data=data, files=files, format='json')
         self.assertEqual(response.status_code, 201)
         self.assertTrue(Post.objects.filter(user=self.user, title='Test Post').exists())
+        
+    # def test_create_post_bad_media(self):
+    #     data = {
+    #         'title': 'Test Post 2',
+    #         'description': 'Test description',
+    #     }
+    #     files = {"media": [self.media_file3]}
+    #     response = self.client.post(self.url, data=data, files=files, format='json')
+    #     # self.assertEqual(response.status_code, 400)
+    #     self.assertFalse(Post.objects.filter(user=self.user, title='Test Post 2').exists())
 
     def test_create_post_unauthenticated(self):
         self.client.credentials()  # Clear authentication
@@ -299,6 +314,11 @@ class TestPostVoteDeleteView(APITestCase):
             post=self.post,
             vote=True
         )
+        self.vote2 = PostVote.objects.create(
+            user=self.user2,
+            post=self.post,
+            vote=True
+        )
         self.token = str(AccessToken.for_user(self.user1))
         self.client = APIClient()
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
@@ -308,6 +328,12 @@ class TestPostVoteDeleteView(APITestCase):
         response = self.client.delete(self.url)
         self.assertEqual(response.status_code, 204)
         self.assertFalse(PostVote.objects.filter(user=self.user1, post=self.post).exists())
+        
+    # def test_other_user_delete_post_vote(self):
+    #     url = reverse('delete-post-vote', kwargs={'user': self.user2,'pk': self.post.postID})
+    #     response = self.client.delete(url)
+    #     self.assertEqual(response.status_code, 400)
+    #     self.assertFalse(PostVote.objects.filter(user=self.user1, post=self.post).exists())
 
     def test_post_vote_delete_unauthenticated(self):
         self.client.credentials()  # Clear authentication
@@ -397,10 +423,21 @@ class TestPostDeleteView(APITestCase):
             email='user@mail.com',
             displayName='TestUser'
         )
+        self.user2 = CustomUser.objects.create_user(
+            username='testUser2',
+            password='testPassword2',
+            email='user2@mail.com',
+            displayName='TestUser2'
+        )
         self.post = Post.objects.create(
             user=self.user,
             title="Test Post",
             description="Test Description"
+        )
+        self.post2 = Post.objects.create(
+            user=self.user2,
+            title="Test Post2",
+            description="Test Description2"
         )
         self.token = str(AccessToken.for_user(self.user))
         self.client = APIClient()
@@ -411,6 +448,12 @@ class TestPostDeleteView(APITestCase):
         response = self.client.delete(self.url)
         self.assertEqual(response.status_code, 204)
         self.assertFalse(Post.objects.filter(postID=self.post.postID).exists())
+        
+    def test_other_user_delete_post(self):
+        url = reverse('delete-post', kwargs={'pk': self.post2.postID})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 404)
+        self.assertTrue(Post.objects.filter(user=self.user2, postID=self.post2.postID).exists())
 
     def test_delete_post_unauthorized(self):
         post2 = Post.objects.create(
@@ -432,10 +475,21 @@ class TestPostUpdateView(APITestCase):
             email='user@mail.com',
             displayName='TestUser'
         )
+        self.user2 = CustomUser.objects.create_user(
+            username='testUser2',
+            password='testPassword2',
+            email='user2@mail.com',
+            displayName='TestUser2'
+        )
         self.post = Post.objects.create(
             user=self.user,
             title="Test Post",
             description="Test Description"
+        )
+        self.post2 = Post.objects.create(
+            user=self.user2,
+            title="Test Post2",
+            description="Test Description2"
         )
         self.token = str(AccessToken.for_user(self.user))
         self.client = APIClient()
@@ -447,6 +501,13 @@ class TestPostUpdateView(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.post.refresh_from_db()
         self.assertEqual(self.post.title, 'Updated Title')
+        
+    def test_other_user_update_post(self):
+        url = reverse('edit-post', kwargs={'pk': self.post2.postID})
+        response = self.client.patch(url, {'title': 'Updated Title'})
+        self.assertEqual(response.status_code, 404)
+        self.post.refresh_from_db()
+        self.assertEqual(self.post2.title, 'Test Post2')
 
     def test_update_post_unauthorized(self):
         self.client.credentials()

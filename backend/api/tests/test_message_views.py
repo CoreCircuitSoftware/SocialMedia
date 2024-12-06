@@ -60,12 +60,17 @@ class TestCreateConvoView(TestCase):
         self.token = str(AccessToken.for_user(self.user1))
         self.client = APIClient()
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
-        self.url = reverse('create-convo')
 
     def test_create_convo(self):
-        response = self.client.post(self.url, {})
+        url = reverse('create-convo')
+        response = self.client.post(url, {})
         self.assertEqual(response.status_code, 200)
         self.assertTrue(Convo.objects.exists())
+        
+    def test_create_convo_invalid_data(self):
+        invalid_data = {"convoName": "ThisNameIsWayTooLongForTheField"}
+        serializer = ConvoSerializer(data=invalid_data)
+        assert not serializer.is_valid()
 
 class TestAddConvoParticipantView(TestCase):
     def setUp(self):
@@ -86,6 +91,11 @@ class TestAddConvoParticipantView(TestCase):
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, 200)
         self.assertTrue(ConvoParticipant.objects.filter(user=self.user1.pk, convo=self.convo.convoID).exists())
+        
+    def test_add_convo_participant_invalid_data(self):
+        invalid_data = {"participantID": "bad", "user": "bad", "convo": "bad"}
+        serializer = ConvoParticipantSerializer(data=invalid_data)
+        assert not serializer.is_valid()
 
 class TestGetMessagesView(TestCase):
     def setUp(self):
@@ -126,10 +136,13 @@ class TestSendMessageView(TestCase):
         data = {'convo': self.convo.convoID, 'sender': self.user1.pk, 'message': 'Hello!'}
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, 200)
-        # self.assertTrue(Message.objects.filter(convo_id=self.convo.convoID).exists())
-        # self.assertTrue(Message.objects.filter(convo_id=self.convo.convoID).exists())
-        # self.assertEqual(Message.objects.filter(convo=self.convo, sender=self.user1).data['message'], 'Hello!')
         self.assertTrue(Message.objects.filter(convo=self.convo, sender=self.user1, message='Hello!').exists())
+        
+    def test_send_message_invalid_data(self):
+        invalid_data = {'messageID': "bad", 'convo': "bad", 'sender': "bad", 'messageDate': "bad",
+                        'message': "bad", 'hasEdit': "bad", 'editDate': "bad"}
+        serializer = MessageSerializer(data=invalid_data)
+        assert not serializer.is_valid()
 
 class TestFindConvoParticipantsView(TestCase):
     def setUp(self):
