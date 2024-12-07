@@ -20,7 +20,7 @@ export default function MessagePage() {
     const [myProfile, setMyProfile] = useState([]);
     const [convoExists, setConvoExists] = useState([]);
     const [convoID, setConvoID] = useState([]);
-    const [thisConvo, setThisConvo] = useState([]);
+    const [selected, setSelected] = useState(false);
     const [curMessage, setCurMessage] = useState([]);
     const [messages, setMessages] = useState([]);
     const placeholderText = `Send a message to ${profile.displayName}`
@@ -62,7 +62,12 @@ export default function MessagePage() {
     }, [convoID]);
 
     useEffect(() => {
-        getProfile();
+        if (username) {
+            setSelected(true)
+            getProfile();
+        } else {
+            setSelected(false)
+        }
         getMyProfile()
     }, [])
 
@@ -201,6 +206,7 @@ export default function MessagePage() {
 
     const handleConvoSelection = (chosenConvo) => {
         setConvoID(chosenConvo)
+        setSelected(true)
     }
 
     useEffect(() => { //check if both user's have been found yet
@@ -280,6 +286,7 @@ export default function MessagePage() {
 
                 }}
             >
+                {selected ? (
                 <div className="messages-page" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <div className="title">
                         {/* Show conversation title */}
@@ -395,6 +402,16 @@ export default function MessagePage() {
                         </form>
                     )}
                 </div>
+                ) : (
+                    <div className="messages-page" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <div className="title">
+                            {/* Show conversation title */}
+                            <Typography variant="h5" sx={{ mb: 2, textAlign: 'center', display: 'block', whiteSpace: 'normal', wordBreak: 'normal' }}>
+                                Select a conversation to start chatting!
+                            </Typography>
+                        </div>
+                    </div>
+                )}
             </Box>
             {/* Footer */}
             {/* <Footer /> */}
