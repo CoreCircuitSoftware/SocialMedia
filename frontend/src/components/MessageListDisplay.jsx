@@ -43,7 +43,7 @@ export default function MessageListDisplay(slug) {
         <div className="MessageListDisplayHolder-combined" 
              onClick={() => {
                 slug.onConvoSelect(convo.convo)
-                navigate(`/profile/${otherUser.username}/message/`)
+                navigate(`/messages`)
             }}>
             <div className="MessageListDisplayHolder-top">
                 {(otherUser.profilePicture === "") ? (

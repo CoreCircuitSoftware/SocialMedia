@@ -64,7 +64,7 @@ function App() {
           <Route path="post/view/:postid" element={<PostPage />} />
           <Route path="comment/view/:commentID" element={<CommentPage />} />
           <Route path="comment/edit/:commentID" element={<CommentEdit />} />
-          <Route path="message/" element={<MessagePage />} />
+          <Route path="messages/" element={<MessagePage />} />
           <Route path="profile/:username/friends" element={<FriendsList />} />
           <Route path="search/profile/:userchunk?" element={<ProfileSearch />} />
           <Route path="*" element={<NotFound />} />
