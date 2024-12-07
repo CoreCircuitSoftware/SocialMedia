@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useParams, Link } from "react-router-dom";
 import MessageDisplay from "../components/MessageDisplay";
+import MessageListPage from "./MessageList";
 import "../styles/Message.css"
 import SearchBar from "../components/SearchBar";
 import Menu from "../components/Menu";
@@ -198,6 +199,10 @@ export default function MessagePage() {
         setCurMessage("")
     }
 
+    const handleConvoSelection = (chosenConvo) => {
+        setConvoID(chosenConvo)
+    }
+
     useEffect(() => { //check if both user's have been found yet
         if (profile.id && myProfile.id) {
             checkIfConvo()
@@ -259,7 +264,7 @@ export default function MessagePage() {
 
             {/* Side Menu */}
             <Menu />
-
+            <MessageListPage onConvoSelect={handleConvoSelection}/>
             {/* Main Content */}
             <Box
                 sx={{

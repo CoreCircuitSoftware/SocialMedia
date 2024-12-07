@@ -40,7 +40,11 @@ export default function MessageListDisplay(slug) {
     const navigate = useNavigate()
 
     return (
-        <div className="MessageListDisplayHolder-combined" onClick={() => navigate(`/profile/${otherUser.username}/message/`)}>
+        <div className="MessageListDisplayHolder-combined" 
+             onClick={() => {
+                slug.onConvoSelect(convo.convo)
+                navigate(`/profile/${otherUser.username}/message/`)
+            }}>
             <div className="MessageListDisplayHolder-top">
                 {(otherUser.profilePicture === "") ? (
                     <img className="friendlistimage" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" alt="profile"></img>
