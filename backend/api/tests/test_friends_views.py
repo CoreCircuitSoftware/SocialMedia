@@ -94,22 +94,25 @@ class TestAcceptFriendRequestView(TestCase):
             displayName='DisplayUser3'
         )
         
-        self.token = str(AccessToken.for_user(self.user2))
+        self.token = str(AccessToken.for_user(self.user1))
         self.client = APIClient()
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
 
     def test_accept_friend_request(self):
-        friend_request = FriendRequest.objects.create(user1=self.user1, user2=self.user2)
+        friend_request = FriendRequest.objects.create(user1=self.user2, user2=self.user1)
         url = reverse('accept-friend-request', kwargs={'pk': friend_request.pk})
         response = self.client.patch(url, {'accepted': True}, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(Friend.objects.filter(user1=self.user1, user2=self.user2).exists())
+        self.assertEqual(response.status_code, 204)
+        self.assertTrue(Friend.objects.filter(user1=self.user2, user2=self.user1).exists())
+        self.assertFalse(FriendRequest.objects.filter(user1=self.user2, user2=self.user1).exists())
         
     def test_decline_friend_request(self):
-        friend_request = FriendRequest.objects.create(user1=self.user1, user2=self.user3)
+        friend_request = FriendRequest.objects.create(user1=self.user3, user2=self.user1)
         url = reverse('accept-friend-request', kwargs={'pk': friend_request.pk})
         response = self.client.patch(url, {'accepted': False}, format='json')
-        self.assertFalse(Friend.objects.filter(user1=self.user1, user2=self.user3).exists())
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(Friend.objects.filter(user1=self.user3, user2=self.user1).exists())
+        self.assertFalse(FriendRequest.objects.filter(user1=self.user3, user2=self.user1).exists())
         
     def test_accept_friend_request_not_allowed(self):
         friend_request = FriendRequest.objects.create(user1=self.user2, user2=self.user3)

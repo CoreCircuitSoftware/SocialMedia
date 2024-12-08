@@ -46,14 +46,22 @@ class AcceptFriendRequest(generics.UpdateAPIView):  # This view allows updating 
         if friend_request.user2 != self.request.user:
             raise ValidationError("You cannot respond to this friend request.")
         accepted = self.request.data.get('accepted')
-        if accepted is True:
-            friend_request.accepted = True
-            friend_request.save()
-            # Create Friend instance
+        # if accepted is True:
+        #     friend_request.accepted = True
+        #     friend_request.save()
+        #     # Create Friend instance
+        #     Friend.objects.create(user1=friend_request.user1, user2=friend_request.user2)
+        # elif accepted is False:
+        #     friend_request.accepted = False
+        #     friend_request.save()
+        if accepted:
             Friend.objects.create(user1=friend_request.user1, user2=friend_request.user2)
-        elif accepted is False:
-            friend_request.accepted = False
-            friend_request.save()
+        friend_request.delete()
+        
+    def update(self, request, *args, **kwargs):
+        # Override update to return a custom response or handle success
+        self.perform_update(None)
+        return Response(status=status.HTTP_204_NO_CONTENT)
         
 # List Friend Requests for the current logged-in user
 class ListFriendRequests(generics.ListAPIView):

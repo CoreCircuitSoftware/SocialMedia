@@ -24,7 +24,7 @@ class PostCreate(generics.CreateAPIView):
                     media_instance.mediaURL = media_instance.image.url
                     media_instance.save()
             except Exception as e:
-                raise (f"Error saving media file: {e}")
+                raise ValidationError(f"Error saving media file: {e}")
 
 class PostMediaListView(generics.ListAPIView):
     serializer_class = MediaSerializer
@@ -61,9 +61,8 @@ class PostVotesCreate(generics.CreateAPIView):
     def perform_create(self, serializer):
         try:
             serializer.save(user=self.request.user)
-        except ValidationError as e:
-            print("Validation error:", e.detail)
-            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            raise ValidationError(f"Error creating vote: {str(e)}")
     
 class PostVotesReturnView(generics.ListAPIView):
     serializer_class = PostVoteSerializer
@@ -90,8 +89,8 @@ class PostVoteDeleteView(generics.DestroyAPIView):
         user = self.request.user
         post_id = self.kwargs['pk']
         vote = get_object_or_404(PostVote, user=user, post_id=post_id)
-        if vote.user != self.request.user:
-            raise PermissionDenied("You cannot delete another user's vote")
+        # if vote.user != self.request.user:
+        #     raise PermissionDenied("You cannot delete another user's vote")
         return vote
 
     def perform_destroy(self, instance):
@@ -108,8 +107,8 @@ class PostVotesUpdate(generics.UpdateAPIView):
         user = self.request.user
         post_id = self.kwargs['pk']
         vote = get_object_or_404(PostVote, user=user, post_id=post_id)
-        if vote.user != self.request.user:
-            raise PermissionDenied("You cannot update another user's vote")
+        # if vote.user != self.request.user:
+        #     raise PermissionDenied("You cannot update another user's vote")
         return vote
 
     def perform_update(self, serializer):
@@ -134,8 +133,8 @@ class PostDeleteView(generics.DestroyAPIView):
         user = self.request.user
         post_id = self.kwargs['pk']
         post = get_object_or_404(Post, user=user, postID=post_id)
-        if post.user != self.request.user:
-            raise PermissionDenied("You cannot delete another user's post")
+        # if post.user != self.request.user:    #This is redundant after previous line
+        #     raise PermissionDenied("You cannot delete another user's post")
         return post
 
     def perform_destroy(self, instance):
@@ -152,8 +151,8 @@ class PostUpdate(generics.UpdateAPIView):
         user = self.request.user
         post_id = self.kwargs['pk']
         post = get_object_or_404(Post, user=user, postID=post_id)
-        if post.user != self.request.user:
-            raise PermissionDenied("You cannot update another user's post")
+        # if post.user != self.request.user:    #This is redundant after the previous line
+        #     raise PermissionDenied("You cannot update another user's post")
         return post
 
     def perform_update(self, serializer):
