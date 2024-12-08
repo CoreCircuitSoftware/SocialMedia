@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import React from "react"
 import api from "../api"
 import logo from'../assets/csbutwhiteoutlined.png'
-// import "../styles/Home.css"
+import "../styles/Home_Community.css"
 import { useNavigate, Link } from "react-router-dom";
 import { AppBar, Toolbar, Typography, Container, Grid2, Paper, Box } from "@mui/material";
 import SearchBar from "../components/SearchBar";
@@ -66,7 +66,7 @@ export default function Home() {
 
     const getPostsSortByNew = () => {
         api
-            .get("/api/posts/new/")
+            .get("/api/posts/community/new/")
             .then((res) => res.data)
             .then((data) => {
                 setPosts(data.reverse())
@@ -200,12 +200,13 @@ export default function Home() {
                             <div className="feed-center">
                                 { loading ? (<h1>Loading...</h1>) : (
                                 <div> 
-                                    {sort == "friends" ? (<h1>Home - Friend's posts</h1>) : (<h1>Home - New posts</h1>)}
+                                    {sort == "friends" ? (<h1>Home - My Communities</h1>) : (<h1>Home - New Community Posts</h1>)}
                                     <div className="sort">
-                                        <Button variant='contained' color='primary' startIcon=<PeopleAltIcon /> onClick={() => handleSort("friends")}>Friends</Button>
+                                        <Button variant='contained' color='primary' startIcon=<PeopleAltIcon /> onClick={() => handleSort("friends")}>Followed</Button>
                                         <Button variant='contained' color='primary' startIcon=<GradeIcon /> onClick={() => handleSort("new")}>New</Button>
                                     </div>
                                     <div className="post-holder">
+                                        
                                         {posts.map((post) => <PostDisplay post={post} key={post.postID} />)}
                                         {posts.length == 0 ? (<h1>No posts found</h1>) : null}
                                     </div>

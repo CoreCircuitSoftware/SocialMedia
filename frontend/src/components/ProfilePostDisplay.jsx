@@ -14,10 +14,12 @@ import ThumbUpAltOutlined from "@mui/icons-material/ThumbUpAltOutlined";
 import Button from "@mui/material/Button";
 import { ButtonGroup } from "@mui/material";
 
+
 export default function PostDisplay(slug) {
     // const [user, setUser] = useState([]);
     const [thisUser, setThisUser] = useState(slug.post.user);
     const [thisPost, setThisPost] = useState(slug.post)
+    //const [thisComm, setThisCommunity] = useState(slug)
     const [postVote, setPostVote] = useState(-1)
     const [isMyPost, setIsMyPost] = useState(false);
     const [votes, setVotes] = useState({ upvotes: 0, downvotes: 0, total: 0 })
@@ -28,6 +30,7 @@ export default function PostDisplay(slug) {
 
 
     const [media, setMedia] = useState([]);
+    const [community, setCommunity] = useState([]);
 
     //Media event handlers
     const handlePrevImage = () => {
@@ -49,10 +52,24 @@ export default function PostDisplay(slug) {
                 })
                 .catch((err) => console.error("Error fetching media data:", err));
         };
+        const fetchCommunity = async () => {
+            api
+                .get(`/api/community/getdataid/${thisPost.community}/`)
+                .then((res) => {
+                    setCommunity(res.data);
+                })  
+                .catch((err) => console.error("Error fetching community data:", err));
+
+        }
 
         if (thisPost.hasMedia) {
             fetchMedia();
         }
+        if (thisPost.community != null){
+            fetchCommunity();
+        }
+        console.log(community.name);
+        
     }, [thisPost.postID]);
 
     // const formattedDate = new Date(thisPost.postDate).toLocaleDateString("en-US"
@@ -229,7 +246,9 @@ export default function PostDisplay(slug) {
             <header>
                 <button onClick={handleProfileClick}><img className="pfp" src={thisUser.profilePicture} /></button>
                 <div className="name-text">
-                    <h1>{thisUser.displayName}  @{thisUser.username}</h1>
+                    {(thisPost.community != null) ? (<h1>{community.name}  @{thisUser.username}</h1>): (<h1>{thisUser.displayName}  @{thisUser.username}</h1>)}
+
+                    
                 </div>
             </header>
             {/* <h2 className="post-title">{thisPost.title}</h2>

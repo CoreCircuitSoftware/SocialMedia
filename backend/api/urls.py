@@ -29,7 +29,8 @@ urlpatterns = [
     path("posts/new/", PostListSortNew.as_view(), name="post-list-sort-new"),
 
     path("posts/community/<int:community_id>/", PostListCommView.as_view(), name="post-list-by-community"),
-    
+    path("posts/community/new/", PostListSortNewComm.as_view(), name="post-list-by-any-community"),
+
     path("posts/vote/new/", PostVotesCreate.as_view(), name="create-post-vote"),
     path("posts/vote/gettotal/<int:pk>/", PostVotesReturnView.as_view(), name="get-total-post-votes"),
     path("posts/vote/get/<int:pk>/", PostVotesGetView.as_view(), name="get-post-vote"),
@@ -58,6 +59,8 @@ urlpatterns = [
     path('friend/<str:username1>/<str:username2>/', RetrieveFriendshipByUsername.as_view(), name='retrieve-friendship-by-username'),
     path('friends/remove/<int:pk>/', DeleteFriendship.as_view(), name='delete-friendship'), 
     path('community/', CommunityView.as_view(), name='community-View' ),
-    path('community/getdata/<str:name>/', CommunityReadByNameView.as_view(), name='Community-ReadBy-Name' )
+    path('community/getdata/<str:name>/', CommunityReadByNameView.as_view(), name='Community-ReadBy-Name' ),
+    path('community/getdataid/<int:communityID>/', CommunityReadByID.as_view(), name='Community-ReadBy-Name' )
+
         
 ]
