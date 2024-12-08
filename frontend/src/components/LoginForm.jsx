@@ -81,10 +81,8 @@ function LoginForm({ route }) {
             } finally { //Eventually, no matter what happens, loading must stop at the end
                 setLoading(false)
             }
-        } else {
-            alert("Invalid Key")
-            setLoading(false)
         }
+        setLoading(false)
     }
     const handleRegister = () => {   //Will send user to alternate form (logout->register and vice versa)
         navigate("/register");
