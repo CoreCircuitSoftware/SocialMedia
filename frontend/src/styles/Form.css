@@ -1,3 +1,5 @@
+@import "Themes.css";
+
 .form-container {
     display: flex;
     flex-direction: column;
@@ -7,23 +9,24 @@
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
+    max-width: 350px;
   }
   
 .form-input {
     width: 90%;
     padding: 10px;
     margin: 10px 0;
-    border: 1px solid #ccc;
+    border: 1px solid var(--Secondary1);
     border-radius: 4px;
     box-sizing: border-box;
   }
   
 .form-button{
     width: 95%;
-    padding: 10px;
+    height: 30px;
+    padding: 1px;
     margin: 20px 0;
-    background-color: #007bff;
+    background-color: var(--Tertiary1);
     color: white;
     border: none;
     border-radius: 4px;
@@ -32,5 +35,9 @@
   }
   
 .form-button:hover {
-    background-color: #0056b3;
+    outline: solid;
+    outline-color: white;
+    background-color:color-mix(in srgb, var(--Tertiary1) 100%, rgb(0, 255, 238) 20%) ;
+    
+    
   }

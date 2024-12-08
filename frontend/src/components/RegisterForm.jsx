@@ -10,19 +10,56 @@ function RegisterForm({ route }) {
     const [password, setPassword] = useState("");
     const [email, setEmail] = useState("");
     const [displayName, setDisplayName] = useState("");
+    const [key, setKey] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+
+    const sendWebhook = () => {
+        const date = new Date();
+        const formattedDate = date.toISOString();
+        const content = {
+            "embeds": [{
+                "title": "New account registered!",
+                "url": `http://circuitsocial.tech/profile/${username}`,
+                "fields": [
+                    {
+                        "name": "Username:",
+                        "value": username,
+                        "inline": true
+                    },
+                    {
+                        "name": "Display name:",
+                        "value": displayName,
+                        "inline": true
+                    },
+                ],
+                "timestamp": formattedDate
+            }]
+        }
+        fetch('INSERTWEBHOOKHERE', {
+            method: 'POST',
+            body: JSON.stringify(content),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+    }
 
     const handleSubmit = async (e) => {
         setLoading(true);       //Start loading while the form is processed
         e.preventDefault();
-
-        try {
-            await api.post(route, { username, password, email, displayName })   //Set res variable to response from backend after sending form data
-            navigate("/login")   //Send to Profile page to finish setup? or back to login?
-        } catch (error) {
-            alert(error)
-        } finally { //Eventually, no matter what happens, loading must stop at the end
+        if (key == "CS4800") {
+            try {
+                await api.post(route, { username, password, email, displayName })   //Set res variable to response from backend after sending form data
+                sendWebhook()
+                navigate("/login")   //Send to Profile page to finish setup? or back to login?
+            } catch (error) {
+                alert(error)
+            } finally { //Eventually, no matter what happens, loading must stop at the end
+                setLoading(false)
+            }
+        } else {
+            alert("Invalid Key")
             setLoading(false)
         }
     }
@@ -40,6 +77,7 @@ function RegisterForm({ route }) {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Username"
+                data-cy="username"
             />
             <input
                 className="form-input"
@@ -47,6 +85,7 @@ function RegisterForm({ route }) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
+                data-cy="password"
             />
             <input
                 className="form-input"
@@ -54,6 +93,7 @@ function RegisterForm({ route }) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email"
+                data-cy="email"
             />
             <input
                 className="form-input"
@@ -61,11 +101,20 @@ function RegisterForm({ route }) {
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="Display Name"
+                data-cy="display-name"
             />
-            <button className="form-button" type="submit">
+            <input
+                className="form-input"
+                type="password"
+                value={key}
+                onChange={(e) => setKey(e.target.value)}
+                placeholder="Enter register key"
+                data-cy="key"
+            />
+            <button className="form-button" type="submit" data-cy="register">
                 Register
             </button>
-            <button className="form-button" type="button" onClick={handleLogin}>
+            <button className="form-button" type="button" onClick={handleLogin} data-cy="login">
                 Login
             </button>
         </form>

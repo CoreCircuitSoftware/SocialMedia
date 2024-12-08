@@ -1,0 +1,70 @@
+@import "Themes.css";
+
+main {
+    display: grid;
+    grid-template-areas:
+        'menu content'
+        'menu content';
+    grid-template-columns: 250px auto; /* Sidebar width and content */
+    height: 100vh;
+    justify-content: center;
+}
+
+.search-bar {
+    grid-area: search-bar;
+    height: 4dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--Quarternary1);
+}
+
+.search-bar input{
+    width: 60%;
+    height: 3dvh;
+    border-radius: 10px;
+}
+.search-bar button{
+    height: 3dvh;
+    width: 10%;
+}
+
+.menu { 
+    grid-area: menu;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    background-color: var(--Quarternary1);
+    border-radius: 10px;
+}
+.menu-button {
+    border: none;
+    color: var(--menutextcolor);
+    background: none;
+    font-size: 2.5dvh;
+    padding-top: 3.5dvh;
+    /* font-weight: bold; */
+}
+.menu-button:hover {
+    opacity: 60%;
+}
+
+.content { 
+    grid-area: content;
+    border-radius: 10px;
+    background-color: var(--Primary1);
+}
+
+footer { 
+    grid-area: footer;
+    height: 10dvh;
+    display: flex;
+    margin-top: 1dvh;
+    padding-top: 1dvh;
+    padding-bottom: 1dvh;
+    justify-content: center;
+    align-items: center;
+    background-color:var(--Primary1)
+}
+

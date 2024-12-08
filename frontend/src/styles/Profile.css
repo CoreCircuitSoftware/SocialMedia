@@ -1,9 +1,11 @@
-/* General Styles */
+@import "Themes.css";
+
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
-    margin: 0;
-    padding: 0;
+    /* page background color */
+    background-color: var(--Primary1); 
+    margin: 0px;
+    padding: 0px;
 }
 
 .container {
@@ -13,21 +15,29 @@ body {
 }
 
 .back-img{
-    width: 100vw;
+    width: 102.5%;
+    object-fit: cover;
     height: 15vh;
-}
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    margin-top: 20px;
+    margin-left: -34px;
+    background-repeat: no-repeat;
 
+}
 
 .profile-card {
     position: relative;
-    background-color: #fff;
-    border-radius: 10px;
+    background-color: var(--Secondary1);
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 40px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 0px;
+    margin-left: -34px;
 }
 
 .card-upper {
@@ -41,7 +51,7 @@ body {
     width: 150px;
     height: 150px;
     object-fit: cover;
-    border: 5px solid #eaeaea;
+    border: 5px solid var(--Tertiary1);
     margin-bottom: 20px;
 }
 
@@ -60,13 +70,13 @@ body {
 .username {
     font-size: 20px;
     font-weight: bold;
-    color: #777777;
+    color: var(--Quarternary1);
     margin-bottom: 10px;
 }
 
 .bio {
     font-size: 16px;
-    color: #777;
+    color: var(--Quarternary1);
     margin-top: 20px;
     width: 100%;
     display: block;
@@ -80,23 +90,117 @@ body {
     right: 10px;
 }
 .profile-card .edit-button {
+    background-color: var(--ButtonColorBase);
+    margin: 4px;
     padding: 10px 20px;
-    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-style: solid;
+    border-color: var(--Tertiary1);
+    
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
+}
+
+.profile-card .edit-button:hover {
+    border-style: outset;
+    border-radius: 2px;    
+    background-color:color-mix(in srgb, var(--ButtonColorBase) 100%, white 50%) ;
+
+
+}
+
+.profile-card .post-holder {
+    width: 50%;
 }
 
 .profile-card .logout-button {
-    background-color: #dc3545;
-    color: white;
+    background-color: var(--ButtonColorOtherSoft);
+    border-style: solid;
+    border-color: var(--ButtonColorOther);
+    border-width: -2px;
+    
+    color: var(--ButtonColorOther);
+    margin: 4px;
     padding: 10px 20px;
-    border: none;
+    
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
 }
 
-.profile-card .btn:hover {
-    opacity: 0.8;
+.profile-card .logout-button:hover {
+    border-style: outset;
+    border-radius: 3px;
+    background-color:color-mix(in srgb, var(--ButtonColorOtherSoft) 100%, white 50%) ;
 }
+.friend-requests{
+    color: black;
+    padding: 8px;
+    background-color: var(--Secondary1);
+    border-style: outset;
+    border-width: 5px;
+    border-color: var(--Tertiary1);
+    border-radius: 8px;
+    
+
+}
+.friend-requests .b{
+
+    background-color: var(--Quarternary1);
+}
+/* footer {
+    display: flex;
+    margin-top: 1dvh;
+    padding-top: 1dvh;
+    padding-bottom: 1dvh;
+    border-top: .3dvh solid darkgray;
+    justify-content: center;
+    align-items: center;
+} */
+/* .sidebar {
+    height: 100vh;
+    background-color: #f8f9fa;
+    padding-top: 20px;
+}
+
+.nav-link {
+    color: #333;
+    font-size: 1.2rem;
+    padding: 10px 20px;
+}
+
+.nav-link.active {
+    color: #1da1f2;
+    font-weight: bold;
+}
+
+.profile-header {
+    position: relative;
+}
+
+.banner-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.profile-info {
+    margin-top: -5px;
+}
+
+.profile-pic {
+    width: 350px;
+    height: 250px;
+    border: 5px solid #fff;
+}
+
+.nav-tabs {
+    margin-top: 20px;
+}
+
+.post {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 20px;
+} */

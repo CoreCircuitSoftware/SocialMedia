@@ -1,4 +1,4 @@
-import react from "react"
+import react from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
@@ -8,6 +8,18 @@ import Notes from "./pages/Notes"
 import NotFound from "./pages/NotFound"
 import ProtectedRoute from "./components/ProtectedRoute"
 import ProfileForm from "./components/ProfileForm"
+import PostForm from "./components/PostForm"
+import GetMyProfile from "./components/GetMyProfile"
+import MessagePage from "./pages/Message"
+import FriendsList from "./pages/FriendsList"; // Adjust path if necessary
+import ProfileSearch from "./pages/ProfileSearch";
+import './globals.css'
+import PostPage from "./pages/PostPage";
+import CommentPage from "./pages/CommentPage";
+import PostEdit from "./components/PostEdit";
+import CommentEdit from "./components/CommentEdit";
+import MessageListPage from "./pages/MessageList";
+
 
 function Logout() { //Clear local storage of any tokens and redirect to login screen
   localStorage.clear()
@@ -25,23 +37,42 @@ function RegisterAndLogout() {  //Clear local storage to prevent token mixup wit
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="login" element={<Login />} />
-        <Route path="logout" element={<Logout />} />
-        <Route path="register" element={<RegisterAndLogout />} />
-        <Route path="profile" element={<UserProfile />} />
-        <Route path="edit-profile" element={<ProfileForm />} />
-        <Route path="notes" element={<Notes />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <div className="app-container" >
+      {/* <LeftBar /> */}
+      {/* <Menu /> */}
+        <div className="main-content" >
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <GetMyProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<RegisterAndLogout />} />
+          <Route path="logout" element={<Logout />} />
+          <Route path="home" element={<Home />} />
+          <Route path="profile/:username" element={<UserProfile />} />
+          <Route path="profile/:username/message" element={<MessagePage />} />
+          <Route path="profile/" element={<GetMyProfile />} />
+          <Route path="profile/edit" element={<ProfileForm />} />
+          <Route path="notes" element={<Notes />} />
+          <Route path="post/create" element={<PostForm />} />
+          <Route path="post/edit/:postid" element={<PostEdit />} />
+          <Route path="post/view/:postid" element={<PostPage />} />
+          <Route path="comment/view/:commentID" element={<CommentPage />} />
+          <Route path="comment/edit/:commentID" element={<CommentEdit />} />
+          <Route path="messages/" element={<MessagePage />} />
+          <Route path="profile/:username/friends" element={<FriendsList />} />
+          <Route path="search/profile/:userchunk?" element={<ProfileSearch />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+        </div>
+        
+      </div>
+      
     </BrowserRouter>
   )
 }

@@ -1,0 +1,25 @@
+#python
+env/
+
+backend/__init__.py
+backend/api/__pycache__/
+backend/api/migrations/*_initial.py
+backend/api/migrations/__pycache__/
+backend/api/Models/__pycache__/
+backend/api/Views/__pycache__/
+backend/api/tests/__pycache__/
+backend/backend/__init__.py
+backend/backend/__pycache__/
+backend/backend/settings.py
+backend/.coverage
+*.env
+
+frontend/.nyc_output
+frontend/coverage
+frontend/package-lock.json
+# frontend/package-lock.json
+
+#Node
+node_modules/
+.vs/slnx.sqlite
+.vs/slnx.sqlite-journal
