@@ -21,6 +21,11 @@ export default function CommentEdit() {
 
     const handleCancel = async (e) => {
         e.preventDefault();
+
+        if (!commentData) {
+            return;
+        }
+
         if (commentData.replyTo) {
             navigate(`/comment/view/${commentData.replyTo}`)
         } else {
@@ -30,7 +35,6 @@ export default function CommentEdit() {
 
     const handleSubmit = () => {
         event.preventDefault()
-        console.log("submitting edit")
         api
             .patch(`/api/comment/edit/${commentData.commentID}/`, {commentContent: comment})
             .then((res) => {
