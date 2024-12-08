@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useParams, Link } from "react-router-dom";
 import MessageDisplay from "../components/MessageDisplay";
+import MessageListPage from "./MessageList";
 import "../styles/Message.css"
 import SearchBar from "../components/SearchBar";
 import Menu from "../components/Menu";
@@ -19,7 +20,7 @@ export default function MessagePage() {
     const [myProfile, setMyProfile] = useState([]);
     const [convoExists, setConvoExists] = useState([]);
     const [convoID, setConvoID] = useState([]);
-    const [thisConvo, setThisConvo] = useState([]);
+    const [selected, setSelected] = useState(false);
     const [curMessage, setCurMessage] = useState([]);
     const [messages, setMessages] = useState([]);
     const placeholderText = `Send a message to ${profile.displayName}`
@@ -61,7 +62,12 @@ export default function MessagePage() {
     }, [convoID]);
 
     useEffect(() => {
-        getProfile();
+        if (username) {
+            setSelected(true)
+            getProfile();
+        } else {
+            setSelected(false)
+        }
         getMyProfile()
     }, [])
 
@@ -198,6 +204,11 @@ export default function MessagePage() {
         setCurMessage("")
     }
 
+    const handleConvoSelection = (chosenConvo) => {
+        setConvoID(chosenConvo)
+        setSelected(true)
+    }
+
     useEffect(() => { //check if both user's have been found yet
         if (profile.id && myProfile.id) {
             checkIfConvo()
@@ -259,7 +270,7 @@ export default function MessagePage() {
 
             {/* Side Menu */}
             <Menu />
-
+            <MessageListPage onConvoSelect={handleConvoSelection}/>
             {/* Main Content */}
             <Box
                 sx={{
@@ -275,6 +286,7 @@ export default function MessagePage() {
 
                 }}
             >
+                {selected ? (
                 <div className="messages-page" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <div className="title">
                         {/* Show conversation title */}
@@ -390,6 +402,16 @@ export default function MessagePage() {
                         </form>
                     )}
                 </div>
+                ) : (
+                    <div className="messages-page" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <div className="title">
+                            {/* Show conversation title */}
+                            <Typography variant="h5" sx={{ mb: 2, textAlign: 'center', display: 'block', whiteSpace: 'normal', wordBreak: 'normal' }}>
+                                Select a conversation to start chatting!
+                            </Typography>
+                        </div>
+                    </div>
+                )}
             </Box>
             {/* Footer */}
             {/* <Footer /> */}
