@@ -19,7 +19,7 @@ import CommentPage from "./pages/CommentPage";
 import PostEdit from "./components/PostEdit";
 import CommentEdit from "./components/CommentEdit";
 import MessageListPage from "./pages/MessageList";
-import Community from "./pages/Community";
+import CommunityTest from "./pages/Community";
 import CommunitySearch from "./pages/CommunitySearch"
 
 
@@ -69,8 +69,8 @@ function App() {
           <Route path="message/" element={<MessageListPage />} />
           <Route path="profile/:username/friends" element={<FriendsList />} />
           <Route path="search/profile/:userchunk?" element={<ProfileSearch />} />
-          <Route path="community/view/:communityname" element={<Community/>} />
-          <Route path="community/home/" element={<CommunitySearch/>} />
+          <Route path="community/view/:communityname" element={<CommunityTest />} />
+          <Route path="community/home/" element={<CommunitySearch   />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         </div>

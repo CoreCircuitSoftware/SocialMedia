@@ -1,6 +1,7 @@
 from rest_framework import generics
 from rest_framework.response import Response
 from ..Models.user import *
+from ..Models.community import *
 from ..serializers import *
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
@@ -40,6 +41,13 @@ class PostListView(generics.ListAPIView):
         user_id = self.kwargs['user_id']
         return Post.objects.filter(user__id=user_id)
     
+class PostListCommView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [AllowAny]
+    def get_queryset(self):
+        communityID = self.kwargs['community_id']
+        return Post.objects.filter(community_id=communityID)
+        
 class PostDetailView(generics.RetrieveAPIView):
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated]

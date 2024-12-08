@@ -11,7 +11,7 @@ from rest_framework import status
 from rest_framework.exceptions import ValidationError, PermissionDenied
 from django.utils import timezone
 
-class communityView(generics.CreateAPIView):
+class CommunityView(generics.CreateAPIView):
     serializer_class = CommunitySerializer
     permission_classes = [AllowAny]
 
@@ -20,7 +20,14 @@ class CommunityReadByID(generics.RetrieveAPIView):
     permission_classes = [AllowAny]
     def get_object(self):
         community_id = self.kwargs['communityID']
-        return Community.objects.get(communityID=community_id)    
+        return Community.objects.get(communityID=community_id)  
+
+class CommunityReadByNameView(generics.RetrieveAPIView):
+    serializer_class = CommunitySerializer
+    permission_classes = [AllowAny]
+    def get_object(self):
+        community_name = self.kwargs['name']
+        return Community.objects.get(name=community_name)     
     
 """ 
 

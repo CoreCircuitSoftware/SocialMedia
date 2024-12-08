@@ -1,5 +1,5 @@
 import api from "../api.js";
-import "../styles/Home.css";
+import "../styles/community.css";
 import "../styles/Profile.css";
 import "../styles/Layout.css";
 import { useState, useEffect } from "react";
@@ -33,44 +33,33 @@ export default function CommunityTest() {
     const navigate = useNavigate();
     const [profile, setProfile] = useState([]);
     const [community, setCommunity] = useState([]);
+    const { communityname } = useParams();
+    console.log("Community Name:", communityname);
     const [myProfile, setMyProfile] = useState([]);
     const [posts, setPosts] = useState([]);
     const [isMyProfile, setIsMyProfile] = useState(false);
 
 
     useEffect(() => {
-        getProfile(); // Fetch profile of the user being viewed
         getCommunity();
         getMyProfile(); // Fetch current logged-in user's profile
-    }, [username]);
+        
+
+    }, [communityname, username]);
 
     useEffect(() => {
+        getPosts();
         if (profile.id && myProfile.id) {
             if (profile.id === myProfile.id) {
                 setIsMyProfile(true);
-                getPendingFriendRequests();
             } else {
                 setIsMyProfile(false);
             }
-            getFriends();
             getPosts();
-            checkFriendStatus();
+
         }
     }, [profile, myProfile]);
 
-    const getProfile = () => {
-        api
-            .get(`/api/profile/getuserdata/${username}/`)
-            .then((res) => res.data)
-            .then((data) => {
-                if (data && data.length > 0) {
-                    setProfile(data[0]);
-                } else {
-                    console.error("No profile data found.");
-                }
-            })
-            .catch((err) => console.log(err));
-    };
 
     const getMyProfile = () => {
         api
@@ -82,20 +71,21 @@ export default function CommunityTest() {
     
     const getCommunity = () => {
         api
-            .get(`api/community/${community}/`)
-            .then((res )=> res.data)
+            .get(`api/community/getdata/${communityname}/`)
+
+            .then((res) => res.data)
             .then((data) => setCommunity(data))
             .catch((err) => alert(err));
-    }
-
-
+            
+    };
 
     const getPosts = () => {
         api
-            .get(`/api/profile/posts/${community.id}/`)
+            .get(`/api/posts/community/${community.communityID}/`)
             .then((res) => res.data)
             .then((data) => setPosts(data.reverse())) // Display posts in reverse order
             .catch((err) => console.log("Error getting posts"));
+            console.log("getting posts")
     };
 
     const handleEdit = () => navigate("/profile/edit");
@@ -118,7 +108,7 @@ export default function CommunityTest() {
             api.delete(`/api/friends/remove/${friendShipID}/`).then(getProfile())
         }
     }
-
+    console.log("community id: ", community.communityID)
     return (
         <Box sx={{ display: 'flex'}}> 
           <AppBar position="fixed">
@@ -171,13 +161,13 @@ export default function CommunityTest() {
                
                 <div className="content">
                     <div className="profile-top">
-                        <img className="back-img" src={profile.backgroundImage} alt="background" data-cy="banner" />
+                        <img className="back-img" src= "https://django-s3-4800.s3.us-east-2.amazonaws.com/post_images/background_pG2GYnu.jpg" alt="background" data-cy="banner" />
                         <div className="profile-card">
                             <div className="card-upper">
-                                <img className="pfp" src={profile.profilePicture} alt="profile" data-cy="pfp" />
+                                <img className="pfp" src={community.iconURL} alt="profile" data-cy="pfp" />
                                 <div className="names">
-                                    <p className="display-name" data-cy="display-name">{profile.displayName} </p>
-                                    <p className="username" data-cy="username">@{profile.username}</p>
+                                    <p className="display-name" data-cy="display-name">{community.name} </p>
+                                   
                                 </div>
                                 <div className="buttons">
                                     {isMyProfile ? (
@@ -196,51 +186,22 @@ export default function CommunityTest() {
                                         </ThemeProvider>
                                     ) : (
                                         <div>
-                                            <button className="edit-button" onClick={handleMessage}>Message</button>
-                                            {friendStatus === 'none' && (
-                                                <button className="edit-button" onClick={handleAddFriend}>Add Friend</button>
-                                            )}
-                                            {friendStatus === 'pending' && (
-                                                <p>Friend Request Sent</p>
-                                            )}
-                                            {friendStatus === 'pending_received' && (
-                                                <div>
-                                                    <button onClick={() => handleAcceptFriendRequestByButton(true)}>Accept Friend Request</button>
-                                                    <button onClick={() => handleAcceptFriendRequestByButton(false)}>Decline</button>
-                                                </div>
-                                            )}
-                                            {friendStatus === 'friends' && (
-                                                <button className="logout-button" onClick={handleRemoveFriend} >Remove Friend</button>
-                                            )}
+                                            
                                         </div>
                                     )}
                                     <div className="friends-count">
-                                        <p onClick={handleViewFriends} data-cy="friends">Friends {friendCount}</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="bio" data-cy="bio" >{profile.bio}</div>
-
-                            {/* Display Pending Friend Requests */}
-                            {isMyProfile && friendRequests.length > 0 && (
-                                <div className="friend-requests">
-                                    <h3>Pending Friend Requests</h3>
-                                    {friendRequests.map(request => (
-                                        <div key={request.requestID}>
-                                            <p>{request.user1.username} has sent you a friend request!</p>
-                                            <button onClick={() => handleAcceptFriendRequest(request.requestID, true)}>Accept</button>
-                                            <button onClick={() => handleAcceptFriendRequest(request.requestID, false)}>Decline</button>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        {(posts.length > 0) ? (
+                            <div className="bio" data-cy="bio" >{community.description}</div>
+                        
+                        {(true) ? (
                             <div className="post-holder" data-cy="posts">
                                 {posts.map((post) => <PostDisplay post={post} curUser={myProfile} key={post.postID} />)}
                             </div>
                             ) : (
-                                <h3 data-cy="user-no-posts">{username} hasn't made any posts yet</h3>
+                                <h3 data-cy="user-no-posts">{communityname} is empty, be the first to post!?</h3>
                             )}
                         </div>
                     </div>

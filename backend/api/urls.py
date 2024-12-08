@@ -5,6 +5,7 @@ from .Views.friends import *
 from .Views.message import *
 from .Views.post import *
 from .Views.comment import *
+from .Views.community import *
 
 urlpatterns = [
     path("profile/", UserProfileRead.as_view(), name="user-profile-read"),
@@ -26,6 +27,9 @@ urlpatterns = [
     path("profile/posts/<uuid:user_id>/", PostListView.as_view(), name="post-list"),
     path("posts/<int:pk>/", PostDetailView.as_view(), name="view-post"),  # New URL pattern for media
     path("posts/new/", PostListSortNew.as_view(), name="post-list-sort-new"),
+
+    path("posts/community/<int:community_id>/", PostListCommView.as_view(), name="post-list-by-community"),
+    
     path("posts/vote/new/", PostVotesCreate.as_view(), name="create-post-vote"),
     path("posts/vote/gettotal/<int:pk>/", PostVotesReturnView.as_view(), name="get-total-post-votes"),
     path("posts/vote/get/<int:pk>/", PostVotesGetView.as_view(), name="get-post-vote"),
@@ -52,5 +56,8 @@ urlpatterns = [
     path('friend-requests/', ListFriendRequests.as_view(), name='list-friend-requests'),
     path('friend-status/<uuid:user_id>/', FriendStatusView.as_view(), name='friend-status'),
     path('friend/<str:username1>/<str:username2>/', RetrieveFriendshipByUsername.as_view(), name='retrieve-friendship-by-username'),
-    path('friends/remove/<int:pk>/', DeleteFriendship.as_view(), name='delete-friendship'),
+    path('friends/remove/<int:pk>/', DeleteFriendship.as_view(), name='delete-friendship'), 
+    path('community/', CommunityView.as_view(), name='community-View' ),
+    path('community/getdata/<str:name>/', CommunityReadByNameView.as_view(), name='Community-ReadBy-Name' )
+        
 ]
