@@ -6,10 +6,11 @@ import { useState, useEffect } from "react";
 import React from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import PostDisplay from "../components/ProfilePostDisplay.jsx";
-import SearchBar from "../components/SearchBar";
-import Menu from "../components/Menu";
-import Footer from "../components/Footer";
+import SearchBar from "../components/SearchBar.jsx";
+import Menu from "../components/Menu.jsx";
+import Footer from "../components/Footer.jsx";
 import logo from'../assets/csbutwhiteoutlined.png'
+
 
 //Material Ui
 // import Button from "../components/Button/Button";
@@ -17,7 +18,7 @@ import Button from "@mui/material/Button";
 
 import { ThemeProvider } from '@mui/material/styles';
 import { AppBar, Toolbar, Typography, Container, Grid2, Paper, Box } from "@mui/material";
-import theme from '../styles/theme';  // Import the custom theme
+import theme from '../styles/theme.js';  // Import the custom theme
 import ShareIcon from "@mui/icons-material/Share";
 import CreateIcon from "@mui/icons-material/Create";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -27,21 +28,19 @@ import Avatar from '@mui/material/Avatar';
 
 
 
-export default function UserProfileTest() {
+export default function CommunityTest() {
     const { username } = useParams();
     const navigate = useNavigate();
     const [profile, setProfile] = useState([]);
+    const [community, setCommunity] = useState([]);
     const [myProfile, setMyProfile] = useState([]);
     const [posts, setPosts] = useState([]);
     const [isMyProfile, setIsMyProfile] = useState(false);
-    const [friendCount, setFriendCount] = useState(0);
-    const [friendStatus, setFriendStatus] = useState('');
-    const [friendRequests, setFriendRequests] = useState([]);
-    const [friends, setFriends] = useState([]);
-    const [friendShipID, setFriendshipID] = useState();
+
 
     useEffect(() => {
         getProfile(); // Fetch profile of the user being viewed
+        getCommunity();
         getMyProfile(); // Fetch current logged-in user's profile
     }, [username]);
 
@@ -80,99 +79,20 @@ export default function UserProfileTest() {
             .then((data) => setMyProfile(data))
             .catch((err) => alert(err));
     };
-
-    const getFriends = () => {
+    
+    const getCommunity = () => {
         api
-            .get(`/api/friends/${profile.id}/`)
-            .then((res) => res.data)
-            .then((data) => {
-                setFriends(data);
-                setFriendCount(data.length); // Update the friend count
-            })
-            .catch((err) => console.log(err));
-    };
-
-    const handleAddFriend = () => {
-        if (!profile.id || !myProfile.id) {
-            console.error("Profile ID or MyProfile ID is not defined.");
-            return;
-        }
-        api
-            .post(`/api/friend-request/${profile.id}/`, {})
-            .then(() => {
-                alert(`Friend request sent to ${profile.username}!`);
-                setFriendStatus('pending');
-            })
-            .catch((err) => {
-                console.error("Error sending friend request:", err);
-            });
-    };
-
-    const handleAcceptFriendRequest = (requestID, accepted) => {
-        api.put(`/api/friend-request/accept/${requestID}/`, { accepted })
-            .then(() => {
-                alert(`Friend request ${accepted ? 'accepted' : 'declined'}!`);
-                // Remove the processed request
-                setFriendRequests((prevRequests) =>
-                    prevRequests.filter((request) => request.requestID !== requestID)
-                );
-                if (accepted) {
-                    getFriends(); // Update friends list
-                    setFriendStatus('friends');
-                } else {
-                    setFriendStatus('none');
-                }
-            })
-            .catch((err) => console.log("Error responding to friend request:", err));
-    };
-
-    const handleAcceptFriendRequestByButton = (accepted) => {
-        // Find the friend request where user1 is the profile user and user2 is the current user
-        const request = friendRequests.find(
-            (req) => req.user1.id === profile.id && req.user2.id === myProfile.id
-        );
-        if (request) {
-            handleAcceptFriendRequest(request.requestID, accepted);
-        } else {
-            alert('No friend request found.');
-        }
-    };
-
-    const checkFriendStatus = () => {
-        console.log(`Profile ID: ${profile.id}`);  // Ensure this is a valid ID without extra characters
-        api.get(`/api/friend-status/${profile.id}/`)
-            .then((res) => res.data)
-            .then((data) => {
-                console.log('Friend status:', data.status); // Debugging log
-                setFriendStatus(data.status);
-                if (data.status === 'friends')
-                    getFriendship();
-            })
-            .catch((err) => console.log(err));
-    };
-
-    const getFriendship = () => {
-        api.get(`/api/friend/${myProfile.username}/${profile.username}/`)
-            .then((res) => res.data)
-            .then((data) => {
-                console.log('FriendshipID: ', data.friendShipID)
-                setFriendshipID(data.friendShipID)
-            })
-            .catch((err) => console.log(err));
-    };
+            .get(`api/community/${community}/`)
+            .then((res )=> res.data)
+            .then((data) => setCommunity(data))
+            .catch((err) => alert(err));
+    }
 
 
-    const getPendingFriendRequests = () => {
-        api.get(`/api/friend-requests/`)
-            .then((res) => {
-                setFriendRequests(res.data);
-            })
-            .catch((err) => console.log("Error fetching friend requests:", err));
-    };
 
     const getPosts = () => {
         api
-            .get(`/api/profile/posts/${profile.id}/`)
+            .get(`/api/profile/posts/${community.id}/`)
             .then((res) => res.data)
             .then((data) => setPosts(data.reverse())) // Display posts in reverse order
             .catch((err) => console.log("Error getting posts"));

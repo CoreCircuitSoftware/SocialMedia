@@ -89,3 +89,8 @@ class FriendRequestSerializer(serializers.ModelSerializer):
 
 class FriendStatusSerializer(serializers.Serializer):
     status = serializers.CharField()
+
+class CommunitySerializer(serializers.ModelSerializer):
+    class meta:
+        model = Community
+        fields = ['communityID', 'name', 'description', 'iconURL', 'created' ]

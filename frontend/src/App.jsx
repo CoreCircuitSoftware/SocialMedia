@@ -69,7 +69,7 @@ function App() {
           <Route path="message/" element={<MessageListPage />} />
           <Route path="profile/:username/friends" element={<FriendsList />} />
           <Route path="search/profile/:userchunk?" element={<ProfileSearch />} />
-          <Route path="community/view/" element={<Community/>} />
+          <Route path="community/view/:communityname" element={<Community/>} />
           <Route path="community/home/" element={<CommunitySearch/>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
