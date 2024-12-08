@@ -29,6 +29,14 @@ class CommunityReadByNameView(generics.RetrieveAPIView):
         community_name = self.kwargs['name']
         return Community.objects.get(name=community_name)     
     
+class CommunityMemberByUser(generics.RetrieveAPIView):
+    serializer_class = CommunityMembershipSerializer
+    permission_classes = [AllowAny]
+    def get_object(self):
+        userid = self.kwargs['user_id']
+        return CommunityMembership.objects.get(user_id=userid)
+
+    
 """ 
 
 class PostCreate(generics.CreateAPIView):

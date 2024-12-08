@@ -60,7 +60,8 @@ class PostListSortNew(generics.ListAPIView):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
-        return Post.objects.all()
+        #return Post.objects.all()
+        return Post.objects.filter(community_id__isnull=True)
 
 class PostListSortNewComm(generics.ListAPIView):
     serializer_class = PostSerializer

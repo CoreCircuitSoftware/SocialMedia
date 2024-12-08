@@ -14,6 +14,7 @@ import Avatar from '@mui/material/Avatar';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import GradeIcon from '@mui/icons-material/Grade';
 import Button from '@mui/material/Button';
+import CommunityTest from "./Community"
 
 export default function Home() {
     const [posts, setPosts] = useState([])
@@ -21,7 +22,9 @@ export default function Home() {
     const [myProfile, setMyProfile] = useState([]);
     const [sort, setSort] = useState("friends")
     const [friends, setFriends] = useState([])
+    const [CommMember, setMembership] = useState([])
     const [loading, setLoading] = useState(true)
+    const {Communty, setCommunity} = useState([])
     const delay = ms => new Promise(res => setTimeout(res, ms))
 
     useEffect(() => {
@@ -33,8 +36,11 @@ export default function Home() {
     }, [myProfile])
 
     useEffect(() => {
+        
         if (sort == "friends" && myProfile.id) {
             fetchFriends()
+            fetchMyCommunities()
+            getCommunities()
         } else if (sort == "new") {
             getPostsSortByNew()
         }
@@ -77,10 +83,31 @@ export default function Home() {
 
     const fetchFriends = () => { 
         api.get(`/api/friends/${myProfile.id}/`)
-        .then((res) => {
+            .then((res) => {
             setFriends(res.data)
         })
         .catch((err) => console.log(err));
+    }
+
+    const fetchMyCommunities = () => { 
+        api
+            .get(`/api/communitymember/${myProfile.id}/`)
+            .then((res) => {
+            setMembership(res.data)
+        })
+        .catch((err) => console.log(err));
+
+        console.log(myProfile.id)
+    }
+    const getCommunities = () => {
+        api 
+            .get(`/api/community/getdataid/${CommMember.community_id}/`)
+            .then((res) => {
+            setCommunity(res.data)
+            
+        })
+
+
     }
 
     const getPostFromUser = (friendID) => {

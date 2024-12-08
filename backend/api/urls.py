@@ -60,7 +60,8 @@ urlpatterns = [
     path('friends/remove/<int:pk>/', DeleteFriendship.as_view(), name='delete-friendship'), 
     path('community/', CommunityView.as_view(), name='community-View' ),
     path('community/getdata/<str:name>/', CommunityReadByNameView.as_view(), name='Community-ReadBy-Name' ),
-    path('community/getdataid/<int:communityID>/', CommunityReadByID.as_view(), name='Community-ReadBy-Name' )
+    path('community/getdataid/<int:communityID>/', CommunityReadByID.as_view(), name='Community-ReadBy-Name' ),
+    path('communitymember/<str:user_id>/', CommunityMemberByUser.as_view(), name='Communitymember-ReadBy-userid' )
 
         
 ]
