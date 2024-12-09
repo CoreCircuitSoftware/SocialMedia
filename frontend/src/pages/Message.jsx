@@ -36,7 +36,7 @@ export default function MessagePage() {
 
         console.log("Initializing WebSocket with convoID:", convoID); // Debugging
 
-        const newSocket = new WebSocket(`ws://${baseURL}/ws/chat/${convoID}/`);
+        const newSocket = new WebSocket(`wss://${baseURL}/ws/chat/${convoID}/`);
         newSocket.onmessage = (e) => {
             const data = JSON.parse(e.data);
             setMessages((prev) => {

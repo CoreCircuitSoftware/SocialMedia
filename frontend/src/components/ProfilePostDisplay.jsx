@@ -269,10 +269,10 @@ export default function PostDisplay(slug) {
                         <ButtonGroup variant="contained">
                             <Button onClick={() => navigate(`/post/edit/${thisPost.postID}`)}>edit</Button>
                             <Button onClick={handlePostDelete}>delete</Button>
-                            <Button variant='contained' color='primary' startIcon={<Share />} onClick={() => handlePostShare} data-cy="share">Share</Button>
+                            <Button variant='contained' color='primary' startIcon={<Share />} onClick={handlePostShare} data-cy="share">Share</Button>
                         </ButtonGroup>
                     </div>
-                    ) : <Button variant='contained' color='primary' startIcon={<Share />} onClick={() => handlePostShare} data-cy="share">Share</Button>}
+                    ) : <Button variant='contained' color='primary' startIcon={<Share />} onClick={handlePostShare} data-cy="share">Share</Button>}
             </div>
             <div className="post-stats">
                 {votes ? <p>{votes.total} votes</p> : <p>No votes yet</p>}
