@@ -4,7 +4,6 @@ import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Home from "./pages/Home"
 import UserProfile from "./pages/UserProfile"
-import Notes from "./pages/Notes"
 import NotFound from "./pages/NotFound"
 import ProtectedRoute from "./components/ProtectedRoute"
 import ProfileForm from "./components/ProfileForm"
@@ -58,7 +57,6 @@ function App() {
           <Route path="profile/:username/message" element={<MessagePage />} />
           <Route path="profile/" element={<GetMyProfile />} />
           <Route path="profile/edit" element={<ProfileForm />} />
-          <Route path="notes" element={<Notes />} />
           <Route path="post/create" element={<PostForm />} />
           <Route path="post/edit/:postid" element={<PostEdit />} />
           <Route path="post/view/:postid" element={<PostPage />} />

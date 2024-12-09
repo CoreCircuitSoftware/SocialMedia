@@ -29,10 +29,9 @@ export default function MessageDisplay({ message, myProfileId}) {
 
     // Determine if the message is from "me" or "them"
     const isMe = message.sender === myProfileId;
-
     return (
-        <section className="message-bubble-page">
-            <section className={isMe ? "me" : "them"}>
+        <section className="message-bubble-page" >
+            <section className={isMe ? "me" : "them"} data-testid="message-bubble">
                 {!isMe && (
                     <img
                         src={pfp}
