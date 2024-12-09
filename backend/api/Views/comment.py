@@ -16,9 +16,8 @@ class CommentCreate(generics.CreateAPIView):
     def perform_create(self, serializer):
         try:
             serializer.save(user=self.request.user)
-        except ValidationError as e:
-            print("Validation error:", e.detail)
-            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            raise ValidationError(f"Error creating comment: {str(e)}")
         
 class PostCommentsView(generics.ListAPIView):
     serializer_class = CommentSerializer
@@ -35,9 +34,8 @@ class HandleCommentsVoteCreate(generics.CreateAPIView):
     def perform_create(self,serializer):
         try:
             serializer.save(user=self.request.user)
-        except ValidationError as e:
-            print("Validation error:", e.detail)
-            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            raise ValidationError(f"Error creating comment vote: {str(e)}")
 
 class HandleCommentVoteGet(generics.RetrieveAPIView):
     serializer_class = CommentVoteSerializer
@@ -56,15 +54,15 @@ class HandleCommentVoteDelete(generics.DestroyAPIView):
         user = self.request.user
         comment_id = self.kwargs['pk']
         vote = get_object_or_404(CommentVote, user=user, comment_id=comment_id)
-        if vote.user != self.request.user:
-            raise PermissionDenied("You cannot delete another user's vote")
+        # if vote.user != self.request.user:    #Redundant after previous line
+        #     raise PermissionDenied("You cannot delete another user's vote")
         return vote
         
     def perform_destroy(self, instance):
         try:
             instance.delete()
         except Exception as e:
-            raise ValidationError(f"Error deleting vote: {str(e)}")
+            raise ValidationError(f"Error deleting comment vote: {str(e)}")
         
 class HandleCommentVoteUpdate(generics.UpdateAPIView):
     serializer_class = CommentVoteSerializer
@@ -78,9 +76,8 @@ class HandleCommentVoteUpdate(generics.UpdateAPIView):
     def perform_update(self, serializer):
         try:
             serializer.save(user=self.request.user)
-        except ValidationError as e:
-            print("Validation error:", e.detail)
-            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            raise ValidationError(f"Error updating comment vote: {str(e)}")
         
 class CommentDetailView(generics.RetrieveAPIView):
     serializer_class = CommentSerializer
@@ -106,8 +103,8 @@ class CommentDeleteView(generics.DestroyAPIView):
         user = self.request.user
         comment_id = self.kwargs['pk']
         comment = get_object_or_404(Comment, user=user, commentID=comment_id)
-        if comment.user != self.request.user:
-            raise PermissionDenied("You cannot delete another user's comment")
+        # if comment.user != self.request.user: #Redundant after previous line
+        #     raise PermissionDenied("You cannot delete another user's comment")
         return comment
     
     def perform_destroy(self, instance):
@@ -132,16 +129,15 @@ class CommentUpdate(generics.UpdateAPIView):
         user = self.request.user
         comment_id = self.kwargs['pk']
         comment = get_object_or_404(Comment, user=user, commentID=comment_id)
-        if comment.user != self.request.user:
-            raise PermissionDenied("You cannot update another user's comment")
+        # if comment.user != self.request.user:
+        #     raise PermissionDenied("You cannot update another user's comment")
         return comment
     
     def perform_update(self, serializer):
         try:
             serializer.save(hasEdit=True,editDate=timezone.now())
-        except ValidationError as e:
-            print("Validation error:", e.detail)
-            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            raise ValidationError(f"Error Updating comment: {str(e)}")
         
 class CommentRepliesReturnView(generics.ListAPIView):
     serializer_class = CommentSerializer

@@ -6,6 +6,8 @@ from rest_framework_simplejwt.tokens import AccessToken
 from api.Models.user import *
 from api.serializers import *
 from api.Models.message import *
+from unittest.mock import patch
+from django.core.exceptions import ValidationError
 
 User = get_user_model()
 
@@ -66,6 +68,12 @@ class TestCreateConvoView(TestCase):
         response = self.client.post(self.url, {})
         self.assertEqual(response.status_code, 200)
         self.assertTrue(Convo.objects.exists())
+        
+    def test_create_convo_invalid_data(self):
+        invalid_data = {"convoName": "ThisNameIsWayTooLongForTheField"}
+        response = self.client.post(self.url, invalid_data)
+        self.assertIn('convoName', response.data)
+        self.assertEqual(response.data['convoName'][0], 'Ensure this field has no more than 20 characters.')
 
 class TestAddConvoParticipantView(TestCase):
     def setUp(self):
@@ -86,6 +94,12 @@ class TestAddConvoParticipantView(TestCase):
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, 200)
         self.assertTrue(ConvoParticipant.objects.filter(user=self.user1.pk, convo=self.convo.convoID).exists())
+        
+    def test_add_convo_participant_invalid_data(self):
+        invalid_data = {"user": "bad", "convo": self.convo.convoID}
+        response = self.client.post(self.url, invalid_data)
+        self.assertIn('user', response.data)
+        self.assertEqual(response.data['user'][0], '“bad” is not a valid UUID.')
 
 class TestGetMessagesView(TestCase):
     def setUp(self):
@@ -126,10 +140,13 @@ class TestSendMessageView(TestCase):
         data = {'convo': self.convo.convoID, 'sender': self.user1.pk, 'message': 'Hello!'}
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, 200)
-        # self.assertTrue(Message.objects.filter(convo_id=self.convo.convoID).exists())
-        # self.assertTrue(Message.objects.filter(convo_id=self.convo.convoID).exists())
-        # self.assertEqual(Message.objects.filter(convo=self.convo, sender=self.user1).data['message'], 'Hello!')
         self.assertTrue(Message.objects.filter(convo=self.convo, sender=self.user1, message='Hello!').exists())
+        
+    def test_send_message_invalid_data(self):
+        invalid_data = {'convo': "bad", 'sender': self.user1.pk,'message': "Hello!"}
+        response = self.client.post(self.url, invalid_data)
+        self.assertIn('convo', response.data)
+        self.assertEqual(response.data['convo'][0], 'Incorrect type. Expected pk value, received str.')
 
 class TestFindConvoParticipantsView(TestCase):
     def setUp(self):
