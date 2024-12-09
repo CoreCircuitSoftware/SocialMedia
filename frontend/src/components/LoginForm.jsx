@@ -92,48 +92,105 @@ function LoginForm({ route }) {
 
     //This is the basic format of a form, note that 'name' is the const declared above and dictates the form's name
     return (
-        <form onSubmit={handleSubmit} className="form-container">
-            <h1>Login</h1>
-            {accountError && (
-                <h5 data-cy="acc-error">Error: Incorrect Account Credentials</h5> 
-            )}
-            {missingUsername && (
-                <h5 data-cy="username-error">Error: Enter a username</h5> 
-            )}
-            <input
-                className="form-input"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Username"
-                data-cy="username"
+        <>
+            {/* Image positioned separately */}
+            <img
+                src="src/assets/login images/pexels-photo-6432056.jpeg" // Replace with the actual image path
+                alt="Login Illustration"
+                style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "30%", // Position image separately from the form
+                    transform: "translate(-50%, -50%)",
+                    width: "905px",
+                    height: "830px",
+                    objectFit: "cover",
+                }}
             />
-            {missingPassword && (
-                <h5 data-cy="password-error">Error: Enter a password</h5> 
-            )}
-            <input
-                className="form-input"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                data-cy="password"
+            <img
+                src="src/assets/csbutwhiteoutlined.png" // Path to your logo
+                alt="Logo"
+                style={{
+                    width: 85,
+                    height: 70,
+                    position: "absolute",
+                    top: "14%",
+                    right: "26%", 
+                    transform: "translate(-50%, -50%)",
+                    objectFit: "cover",
+                   
+                }}
             />
-            <input
-                className="form-input"
-                type="password"
-                value={key}
-                onChange={(e) => setKey(e.target.value)}
-                placeholder="Enter login key"
-                data-cy="key"
-            />
-            <button className="form-button" type="submit" data-cy="login">
-                Login
-            </button>
-            <button className="form-button" type="button" data-cy="register" onClick={handleRegister}>
-                Register
-            </button>
-        </form>
+           
+        <div className="Login Header" 
+            style={{
+             width:"300px",
+             position: "absolute",
+             top: "5%",
+             left: "72%",
+             }}>
+            <h5 style={{ fontSize: "35px", fontWeight: "bold", marginLeft: "0px"}}> 
+                Circuit Social
+            </h5>
+        </div>
+             {/* Form */}
+            <form 
+                onSubmit={handleSubmit} 
+                className="form-container"
+                style={{
+                    display: "flex",
+                    marginTop: "120px",
+                    marginRight: "100px",
+                    flexDirection: "column"
+                    }}>
+
+                <h1>Login</h1>
+                {accountError && (
+                    <h5 data-cy="acc-error">Error: Incorrect Account Credentials</h5> 
+                )}
+                {missingUsername && (
+                    <h5 data-cy="username-error">Error: Enter a username</h5> 
+                )}
+                <input
+                    className="form-input"
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Username"
+                    data-cy="username"
+                    style={{marginBottom: "-18px"}}
+                />
+                <h5 style={{marginRight: "225px", marginBottom: "1px", fontSize: "12px"}}> Required Field*</h5>
+                {missingPassword && (
+                    <h5 data-cy="password-error">Error: Enter a password</h5> 
+                )}
+                <input
+                    className="form-input"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Password"
+                    data-cy="password"
+                    style={{marginBottom: "-18px"}}
+                />
+                <h5 style={{marginRight: "225px", marginBottom: "-1px", fontSize: "12px"}}> Required Field*</h5>
+                <input
+                    className="form-input"
+                    type="password"
+                    value={key}
+                    onChange={(e) => setKey(e.target.value)}
+                    placeholder="Enter login key"
+                    data-cy="key"
+                />
+                <button className="form-button" type="submit" data-cy="login">
+                    Login
+                </button>
+                <button className="form-button" type="button" data-cy="register" onClick={handleRegister}>
+                    Register
+                </button>
+            </form>
+        </>
+        
     );
 }
 

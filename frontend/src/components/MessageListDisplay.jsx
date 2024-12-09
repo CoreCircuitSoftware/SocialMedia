@@ -51,9 +51,14 @@ export default function MessageListDisplay(slug) {
             </div>
             <div className="MessageListDisplayHolder-bottom">
                 {(latestMessage.sender === myProfile.id) ? (
-                    <p><b>You said:</b> {latestMessage.message}</p>
+                    <p style={{ margin: 0 }}>
+                        <b>You said:</b> {latestMessage.message.length > 20 ? `${latestMessage.message.slice(0, 20)}...` : latestMessage.message}
+                    </p>
                 ) : (
-                    <p><b>{otherUser.username}</b> said: {latestMessage.message}</p>
+                    <p style={{ margin: 0 }}>
+                        <b>{otherUser?.username || "Unknown User"}</b> said: 
+                            {latestMessage?.message && latestMessage.message.length > 20 ? `${latestMessage.message.slice(0, 20)}...` : latestMessage?.message || "No message available"}
+                    </p>
                 )}
             </div>
         </div>

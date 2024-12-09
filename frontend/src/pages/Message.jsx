@@ -156,14 +156,6 @@ export default function MessagePage() {
             })
     }
 
-    // const loadConvo = () => {
-    //     api
-    //         .post(`/api/profile/message/loadconvo/${convoID}/`)
-    //         .then((res) => res.data)
-    //         .then((data) => {
-    //             setThisConvo(data[0])
-    //         })
-    // }
 
     const getMessages = () => {
         api
@@ -246,8 +238,8 @@ export default function MessagePage() {
                                 src={myProfile.profilePicture}
                                 alt={`${myProfile.username}'s Avatar`}
                                 sx={{
-                                    width: 40,
-                                    height: 40,
+                                    width: 55,
+                                    height: 55,
                                     cursor: 'pointer',
                                     marginRight: 3,
                                 }}
