@@ -11,9 +11,7 @@ import Menu from "../components/Menu.jsx";
 import Footer from "../components/Footer.jsx";
 
 export default function ProfileSearch() {
-    console.log('hello')
     const { userchunk } = useParams();
-    console.log(`hello again`)
     console.log(`userchunk: ${userchunk}`)
     const [results, setResults] = useState([]);
     const navigate = useNavigate();
@@ -63,11 +61,11 @@ export default function ProfileSearch() {
                 <ul>
                     {results.length > 0 ? results.map((profile) => {
                         return (
-                            <li key={profile.username} data-cy="search-user">
+                            <li key={profile.username} data-cy="search-user" data-testid="search-user">
                                 <img className="friendlistimage" src={profile.profilePicture} alt="profile" />
-                                <a href={`/profile/${profile.username}`}>{profile.username}</a>
-                                <a href={`/profile/${profile.username}/message`}>
-                                    <img className="friendlistimage" src="https://icons.veryicon.com/png/o/miscellaneous/official-icon-of-flying-pig/mailbox-82.png"></img>
+                                <a href={`/profile/${profile.username}`} data-testid="username-link">{profile.username}</a>
+                                <a href={`/profile/${profile.username}/message`} data-testid="message-link">
+                                    <img className="friendlistimage" data-testid="img-link" src="https://icons.veryicon.com/png/o/miscellaneous/official-icon-of-flying-pig/mailbox-82.png"></img>
                                 </a>
                             </li>
                         );
