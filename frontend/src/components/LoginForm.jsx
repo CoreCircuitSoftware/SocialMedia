@@ -63,27 +63,45 @@ function LoginForm({ route }) {
             }
         }
         setLoading(true);       //Start loading while the form is processed
-        if (key == "CS4800" ) {   //If the key is correct and the fields are filled out
-            setMissingPassword(false);
-            setMissingUsername(false);
-            try {
-                console.log("password: ", password)
-                console.log("username: ", username)
-                const res = await api.post(route, { username, password })   //Set res variable to response from backend after sending form data
-                localStorage.setItem(ACCESS_TOKEN, res.data.access);
-                localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
-                //navigate("/")
-                sendWebhook()
-                navigate("/profile");   //Should eventually just navigate to / (home) once that's set up
-            } catch (error) {
-                console.log(error)
-                setAccountError(true)
-            } finally { //Eventually, no matter what happens, loading must stop at the end
-                setLoading(false)
-            }
-        } else {
-            alert("Invalid Key")
-            setLoading(false)
+        // if (key == "CS4800" ) {   //If the key is correct and the fields are filled out
+        //     setMissingPassword(false);
+        //     setMissingUsername(false);
+        //     try {
+        //         console.log("password: ", password)
+        //         console.log("username: ", username)
+        //         const res = await api.post(route, { username, password })   //Set res variable to response from backend after sending form data
+        //         localStorage.setItem(ACCESS_TOKEN, res.data.access);
+        //         localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
+        //         //navigate("/")
+        //         sendWebhook()
+        //         navigate("/profile");   //Should eventually just navigate to / (home) once that's set up
+        //     } catch (error) {
+        //         console.log(error)
+        //         setAccountError(true)
+        //     } finally { //Eventually, no matter what happens, loading must stop at the end
+        //         setLoading(false)
+        //     }
+        // } else {
+        //     alert("Invalid Key")
+        //     setLoading(false)
+        // }
+        try {
+            console.log("password: ", password);
+            console.log("username: ", username);
+    
+            const res = await api.post(route, { username, password }); // Set res variable to response from backend after sending form data
+    
+            localStorage.setItem(ACCESS_TOKEN, res.data.access);
+            localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
+    
+            sendWebhook();
+            navigate("/profile"); // Navigate to profile
+        } catch (error) {
+            console.log(error);
+            setAccountError(true);
+            alert("Invalid Credentials")
+        } finally {
+            setLoading(false); // Loading must stop at the end
         }
     }
     const handleRegister = () => {   //Will send user to alternate form (logout->register and vice versa)
@@ -174,14 +192,14 @@ function LoginForm({ route }) {
                     style={{marginBottom: "-18px"}}
                 />
                 <h5 style={{marginRight: "225px", marginBottom: "-1px", fontSize: "12px"}}> Required Field*</h5>
-                <input
+                {/* <input
                     className="form-input"
                     type="password"
                     value={key}
                     onChange={(e) => setKey(e.target.value)}
                     placeholder="Enter login key"
                     data-cy="key"
-                />
+                /> */}
                 <button className="form-button" type="submit" data-cy="login">
                     Login
                 </button>

@@ -340,7 +340,7 @@ export default function UserProfileTest() {
                                 </div>
                             </div>
 
-                            <div className="bio" data-cy="bio" >{profile.bio}</div>
+                            <div className="bio" data-cy="bio"  style={{fontSize: '20px'}}>{profile.bio}</div>
 
                             {/* Display Pending Friend Requests */}
                             {isMyProfile && friendRequests.length > 0 && (

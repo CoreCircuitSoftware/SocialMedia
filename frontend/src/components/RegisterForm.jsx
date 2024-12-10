@@ -48,18 +48,14 @@ function RegisterForm({ route }) {
     const handleSubmit = async (e) => {
         setLoading(true);       //Start loading while the form is processed
         e.preventDefault();
-        if (key == "CS4800") {
-            try {
-                await api.post(route, { username, password, email, displayName })   //Set res variable to response from backend after sending form data
-                sendWebhook()
-                navigate("/login")   //Send to Profile page to finish setup? or back to login?
-            } catch (error) {
-                alert(error)
-            } finally { //Eventually, no matter what happens, loading must stop at the end
-                setLoading(false)
-            }
-        } else {
-            alert("Invalid Key")
+    
+        try {
+            await api.post(route, { username, password, email, displayName })   //Set res variable to response from backend after sending form data
+            sendWebhook()
+            navigate("/login")   //Send to Profile page to finish setup? or back to login?
+        } catch (error) {
+            alert(error)
+        } finally { //Eventually, no matter what happens, loading must stop at the end
             setLoading(false)
         }
     }
@@ -156,16 +152,7 @@ function RegisterForm({ route }) {
                     onChange={(e) => setDisplayName(e.target.value)}
                     placeholder="Display Name"
                     data-cy="display-name"
-                    style={{marginBottom: "-18px"}}
-                />
-                <h5 style={{marginRight: "225px", marginBottom: "-1px", fontSize: "12px"}}> Required Field*</h5>
-                <input
-                    className="form-input"
-                    type="password"
-                    value={key}
-                    onChange={(e) => setKey(e.target.value)}
-                    placeholder="Enter register key"
-                    data-cy="key"
+                   
                 />
                 <button className="form-button" type="submit" data-cy="register">
                     Register
