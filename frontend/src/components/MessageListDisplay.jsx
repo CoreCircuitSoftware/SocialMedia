@@ -42,6 +42,7 @@ export default function MessageListDisplay(slug) {
     return (
         <div className="MessageListDisplayHolder-combined" 
              onClick={() => {
+                slug.getOtherUser(otherUser.username)
                 slug.onConvoSelect(convo.convo)
                 navigate(`/messages`)
             }}>

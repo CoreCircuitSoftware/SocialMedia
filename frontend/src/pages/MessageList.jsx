@@ -13,7 +13,7 @@ import logo from '../assets/csbutwhiteoutlined.png'
 import Avatar from '@mui/material/Avatar';
 import { AppBar, Toolbar, Typography, Container, Grid2, Paper, Box } from "@mui/material";
 
-export default function MessageListPage({onConvoSelect}) {
+export default function MessageListPage({onConvoSelect, getOtherUser}) {
     const [myProfile, setMyProfile] = useState([]);
     const [conversations, setConversations] = useState([]);
     const navigate = useNavigate();
@@ -127,7 +127,7 @@ export default function MessageListPage({onConvoSelect}) {
                             <div>
                                 {conversations.map((convo) => (
                                     <div key={convo.convo}>
-                                        <MessageListDisplay convo={convo} myProfile={myProfile} onConvoSelect={onConvoSelect} />
+                                        <MessageListDisplay convo={convo} myProfile={myProfile} onConvoSelect={onConvoSelect} getOtherUser={getOtherUser} />
                                     </div>
                                 ))}
                             </div>

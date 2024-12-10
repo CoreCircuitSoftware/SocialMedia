@@ -18,6 +18,7 @@ export default function MessagePage() {
     const navigate = useNavigate();
     const [profile, setProfile] = useState([]);
     const [myProfile, setMyProfile] = useState([]);
+    const [otherUser, setOtherUser] = useState();
     const [convoExists, setConvoExists] = useState([]);
     const [convoID, setConvoID] = useState([]);
     const [selected, setSelected] = useState(false);
@@ -209,6 +210,11 @@ export default function MessagePage() {
         setSelected(true)
     }
 
+    const displayOtherUser = (clickedUser) => {
+        //username = ""
+        setOtherUser(clickedUser)
+    }
+
     useEffect(() => { //check if both user's have been found yet
         if (profile.id && myProfile.id) {
             checkIfConvo()
@@ -270,7 +276,7 @@ export default function MessagePage() {
 
             {/* Side Menu */}
             <Menu />
-            <MessageListPage onConvoSelect={handleConvoSelection}/>
+            <MessageListPage onConvoSelect={handleConvoSelection} getOtherUser={displayOtherUser}/>
             {/* Main Content */}
             <Box
                 sx={{
@@ -291,7 +297,12 @@ export default function MessagePage() {
                     <div className="title">
                         {/* Show conversation title */}
                         <Typography variant="h5" sx={{ mb: 2, textAlign: 'center', display: 'block', whiteSpace: 'normal', wordBreak: 'normal' }}>
-                            Your convo with {profile.username}
+                            {(username)  ? (
+                                <>Your convo with {username}</>
+                                ) : (
+                                <>Your convo with {otherUser}</>
+                                )}
+                            
                         </Typography>
                     </div>
 
