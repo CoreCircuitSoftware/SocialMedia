@@ -1,124 +1,67 @@
-/* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../api"
-import { useNavigate } from "react-router-dom";
-//import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
-import "../styles/Form.css"
+import { useParams, useNavigate } from "react-router-dom";
 
-function RegisterForm({ route }) {
-    const [username, setUsername] = useState("");    //These are the fields that must be filled out by the form
-    const [password, setPassword] = useState("");
-    const [email, setEmail] = useState("");
-    const [displayName, setDisplayName] = useState("");
-    const [key, setKey] = useState("");
-    const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
+export default function PostPage() {
+    const { postid } = useParams()
+    const navigate = useNavigate()
+    const [post, setPost] = useState([])
+    const [title, setTitle] = useState("")
+    const [description, setDescription] = useState("")
 
-/*     const sendWebhook = () => {
-        const date = new Date();
-        const formattedDate = date.toISOString();
-        const content = {
-            "embeds": [{
-                "title": "New account registered!",
-                "url": `http://circuitsocial.tech/profile/${username}`,
-                "fields": [
-                    {
-                        "name": "Username:",
-                        "value": username,
-                        "inline": true
-                    },
-                    {
-                        "name": "Display name:",
-                        "value": displayName,
-                        "inline": true
-                    },
-                ],
-                "timestamp": formattedDate
-            }]
-        }
-        fetch('INSERTWEBHOOKHERE', {
-            method: 'POST',
-            body: JSON.stringify(content),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-    } */
+    useEffect(() => { 
+        api.get(`/api/posts/${postid}/`)
+            .then((res) => res.data)
+            .then((data) => {
+                setPost(data)
+                setTitle(data.title)
+                setDescription(data.description)
+            })
+            .catch((err) => console.log("Error LOL"))
+    }, [postid])
 
-    const handleSubmit = async (e) => {
-        setLoading(true);       //Start loading while the form is processed
-        e.preventDefault();
-        /* istanbul ignore next */
-        if (key == "CS4800") {
-            try {
-                await api.post(route, { username, password, email, displayName })   //Set res variable to response from backend after sending form data
-                //sendWebhook()
-                navigate("/login")   //Send to Profile page to finish setup? or back to login?
-            } catch (error) {
-                alert(error)
-            } finally { //Eventually, no matter what happens, loading must stop at the end
-                setLoading(false)
-            }
-        } else {
-            alert("Invalid Key")
-            setLoading(false)
-        }
+    const handleSubmit = () => {
+        event.preventDefault()
+        api
+            .patch(`/api/posts/edit/${postid}/`, {title, description})
+            .then((res) => {
+                navigate(`/post/view/${postid}`)
+            })
+            .catch((err) => console.log("errorrrrr"))
     }
-    const handleLogin = () => {   //Will send user to login form
-        navigate("/login");
+
+    const handleCancel = (e) => {
+        e.preventDefault()
+        navigate(`/post/view/${postid}`)
     }
-    //This is the basic format of a form, note that 'name' is the const declared above and dictates the form's name
+
     return (
-        <form onSubmit={handleSubmit} className="form-container">
-            <h1>Register</h1>
-            <input
+        <form className="edit-post" onSubmit={handleSubmit}>
+            <h1>Edit Post</h1>
+            <label htmlFor="post-title">Post Title</label>
+            <input id="post-title"
                 className="form-input"
                 type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Username"
-                data-cy="username"
-            />
-            <input
-                className="form-input"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                data-cy="password"
-            />
-            <input
-                className="form-input"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-                data-cy="email"
-            />
-            <input
-                className="form-input"
-                type="text"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                placeholder="Display Name"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder={title}
                 data-cy="display-name"
             />
-            <input
+            <label htmlFor="post-description">Post Description</label>
+            <input id="post-description"
                 className="form-input"
-                type="password"
-                value={key}
-                onChange={(e) => setKey(e.target.value)}
-                placeholder="Enter register key"
-                data-cy="key"
+                type="text"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder={title}
+                data-cy="display-name"
             />
-            <button className="form-button" type="submit" data-cy="register">
-                Register
+            <button className="form-button" type="submit" data-cy="confirm">
+                Confirm
             </button>
-            <button className="form-button" type="button" onClick={handleLogin} data-cy="login">
-                Login
+            <button className="form-button" type="button" onClick={handleCancel} data-cy="cancel">
+                Cancel
             </button>
         </form>
-    );
+    )
 }
-
-export default RegisterForm

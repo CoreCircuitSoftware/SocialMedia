@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { useNavigate, useParams } from 'react-router-dom';
-import PostEdit from '../components/ProfileForm';
+import PostPage from '../pages/PostPage';
 import React from 'react';
 import api from '../api';
 
@@ -35,7 +35,7 @@ describe("PostEdit", () => {
     it('fetches and displays post data', async () => {
         api.get.mockResolvedValue({ data: mockPost });
 
-        render(<PostEdit />);
+        render(<PostPage />);
 
         // Wait for data to be loaded and check that it is displayed
         await waitFor(() => {
@@ -48,7 +48,7 @@ describe("PostEdit", () => {
     it('Entering data updates the state', async () => {
         api.get.mockResolvedValue({ data: mockPost });
 
-        render(<PostEdit />);
+        render(<PostPage />);
         await waitFor(() => {
             fireEvent.change(screen.getByLabelText('Post Title'), { target: { value: 'New Title' } });
             fireEvent.change(screen.getByLabelText('Post Description'), { target: { value: 'New Description' } });
@@ -61,7 +61,7 @@ describe("PostEdit", () => {
         api.get.mockResolvedValue({ data: mockPost });
         api.patch.mockResolvedValue({ data: {} });
 
-        render(<PostEdit />);
+        render(<PostPage />);
         await waitFor(() => {
             fireEvent.click(screen.getByRole('button', { name: /confirm/i }));
             expect(api.patch).toHaveBeenCalledWith(`/api/posts/edit/${mockPost.postID}/`, { title: mockPost.title, description: mockPost.description });
@@ -71,7 +71,7 @@ describe("PostEdit", () => {
 
     it('pressing cancel returns user back to the page of the post', async () => {
         api.get.mockResolvedValue({ data: mockPost });
-        render(<PostEdit />);
+        render(<PostPage />);
         await waitFor(() => {
             fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
             expect(mockNavigate).toHaveBeenCalledWith(`/post/view/${mockPost.postID}`);
@@ -80,7 +80,7 @@ describe("PostEdit", () => {
 
     it('getting post but error', async () => {
         api.get.mockRejectedValue({ response: { status: 401 } });
-        render(<PostEdit />);
+        render(<PostPage />);
         await waitFor(() => {
             expect(api.get).toHaveBeenCalledWith(`/api/posts/${mockPost.postID}/`);
         });
@@ -90,7 +90,7 @@ describe("PostEdit", () => {
         api.get.mockResolvedValue({ data: mockPost });
         api.patch.mockRejectedValue({ response: { status: 401 } });
 
-        render(<PostEdit />);
+        render(<PostPage />);
         await waitFor(() => {
             fireEvent.click(screen.getByRole('button', { name: /confirm/i }));
             expect(api.patch).toHaveBeenCalledWith(`/api/posts/edit/${mockPost.postID}/`, { title: mockPost.title, description: mockPost.description });

@@ -1,426 +1,99 @@
-import React from "react";
-import { render, screen, waitFor, fireEvent, act } from "@testing-library/react";
-import { MemoryRouter, useParams, useNavigate } from "react-router-dom";
-import MessagePage from "../pages/Message";
-import api from "../api";
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { useNavigate, useParams } from 'react-router-dom';
+import PostEdit from '../pages/Message';
+import React from 'react';
+import api from '../api';
 
-// Mock API module
-jest.mock("../api");
-
-// Mock react-router-dom hooks
-jest.mock("react-router-dom", () => ({
-    ...jest.requireActual("react-router-dom"),
-    useNavigate: jest.fn(),
+jest.mock('react-router-dom', () => ({ //mock useNavigate
+    ...jest.requireActual('react-router-dom'),
     useParams: jest.fn(),
+    useNavigate: jest.fn(),
 }));
 
-describe("MessagePage", () => {
+jest.mock('../api');
+
+describe("PostEdit", () => { 
+    global.React = React;
     const mockNavigate = jest.fn();
-    global.React = React
+
+    const mockPost = {
+        user: '3405dbb2-abbf-471a-afcf-b45ddc505554',
+        postID: 123,
+        title: 'Test Post Title',
+        description: 'Test Post Description',
+        postDate: new Date().toISOString(),
+        editDate: new Date().toISOString(),
+        hasEdit: true,
+      }
+
     beforeEach(() => {
+        useParams.mockReturnValue({ postid: mockPost.postID });
+        useNavigate.mockImplementation(() => mockNavigate);
         jest.clearAllMocks();
-        useNavigate.mockReturnValue(mockNavigate);
-        useParams.mockReturnValue({ username: "testuser" });
-    });
+      });
 
-    it("should render the page and fetch profiles", async () => {
-        const mockProfile = { id: "1", username: "testuser" };
-        const mockMyProfile = { id: "2", username: "myprofile" };
-        const mockMessages = [
-            { messageID: "1", sender: "2", message: "Hello!" },
-            { messageID: "2", sender: "1", message: "Hi there!" },
-        ];
+    it('fetches and displays post data', async () => {
+        api.get.mockResolvedValue({ data: mockPost });
 
-        api.get.mockImplementation((url) => {
-            if (url.includes('/api/profile/getuserdata/testuser/')) {
-                return Promise.resolve({ data: [mockProfile] });
-            }
-            if (url.includes("/api/profile/")) {
-                return Promise.resolve({ data: mockMyProfile });
-            }
-            
-            if (url.includes(`/api/profile/message/getmessages/3/`)) {
-                return Promise.resolve({ data: mockMessages });
-            }
-            return Promise.reject(new Error('Not found'));
-        })
+        render(<PostEdit />);
 
-        api.post.mockImplementation((url) => {
-            if (url.includes(`/api/profile/message/1/2/`)) {
-                return Promise.resolve({ data: "3" });
-            }
-            return Promise.reject(new Error('Not found'));
-        })
-
-        render(
-            <MemoryRouter>
-                <MessagePage />
-            </MemoryRouter>
-        );
-
+        // Wait for data to be loaded and check that it is displayed
         await waitFor(() => {
-            expect(api.get).toHaveBeenCalledWith("/api/profile/getuserdata/testuser/");
-            expect(api.get).toHaveBeenCalledWith("/api/profile/");
-            expect(api.post).toHaveBeenCalledWith(`/api/profile/message/1/2/`);
-        });
-
-    });
-
-    it("should show messages when convoID exists", async () => {
-        const mockProfile = { id: "1", username: "testuser" };
-        const mockMyProfile = { id: "2", username: "myprofile" };
-        const mockMessages = [
-            { messageID: "1", sender: "2", message: "Hello!" },
-            { messageID: "2", sender: "1", message: "Hi there!" },
-        ];
-
-        api.get.mockImplementation((url) => {
-            if (url.includes('/api/profile/getuserdata/testuser/')) {
-                return Promise.resolve({ data: [mockProfile] });
-            }
-            if (url.includes("/api/profile/")) {
-                return Promise.resolve({ data: mockMyProfile });
-            }
-            
-            if (url.includes(`/api/profile/message/getmessages/3/`)) {
-                return Promise.resolve({ data: mockMessages });
-            }
-            return Promise.reject(new Error('Not found'));
-        })
-
-        api.post.mockImplementation((url) => {
-            if (url.includes(`/api/profile/message/1/2/`)) {
-                return Promise.resolve({ data: "3" });
-            }
-            return Promise.reject(new Error('Not found'));
-        })
-
-        render(
-            <MemoryRouter>
-                <MessagePage />
-            </MemoryRouter>
-        );
-
-        await waitFor(() => {
-            expect(api.get).toHaveBeenCalledWith("/api/profile/getuserdata/testuser/");
-            expect(api.get).toHaveBeenCalledWith("/api/profile/");
-            expect(api.post).toHaveBeenCalledWith(`/api/profile/message/1/2/`);
-        });
-
-        expect(screen.getByText("Your convo with testuser")).toBeInTheDocument();
-    });
-
-    it("should send a message when the form is submitted", async () => {
-        const mockProfile = { id: "1", username: "testuser" };
-        const mockMyProfile = { id: "2", username: "myprofile" };
-        const mockMessages = [
-            { messageID: "1", sender: "2", message: "Hello!" },
-            { messageID: "2", sender: "1", message: "Hi there!" },
-        ];
-
-        api.get.mockImplementation((url) => {
-            if (url.includes('/api/profile/getuserdata/testuser/')) {
-                return Promise.resolve({ data: [mockProfile] });
-            }
-            if (url.includes("/api/profile/")) {
-                return Promise.resolve({ data: mockMyProfile });
-            }
-            
-            if (url.includes(`/api/profile/message/getmessages/3/`)) {
-                return Promise.resolve({ data: mockMessages });
-            }
-            return Promise.reject(new Error('Not found'));
-        })
-
-        api.post.mockImplementation((url) => {
-            if (url.includes(`/api/profile/message/1/2/`)) {
-                return Promise.resolve({ data: "3" });
-            }
-            if (url.includes(`/api/profile/message/send/`)) {
-                return Promise.resolve([{ messageID: "3", sender: "2", message: "Test Message" }],);
-            }
-            return Promise.reject(new Error('Not found'));
-        })
-
-        render(
-            <MemoryRouter>
-                <MessagePage />
-            </MemoryRouter>
-        );
-
-        await waitFor(() => {
-            expect(api.get).toHaveBeenCalledWith("/api/profile/getuserdata/testuser/");
-            expect(api.get).toHaveBeenCalledWith("/api/profile/");
-            expect(api.post).toHaveBeenCalledWith(`/api/profile/message/1/2/`);
-        });
-
-        expect(screen.getByTestId("message-input")).toBeInTheDocument();
-       
-        fireEvent.change(screen.getByTestId("message-input")), {
-            target: { value: "Test Message" },
-        };
-        fireEvent.click(screen.getByRole("button", { name: /send message/i }));
-    });
-
-    it("should show 'You have not messaged this user before' when no convo exists", async () => {
-        const mockProfile = { id: "1", username: "testuser" };
-        const mockMyProfile = { id: "2", username: "myprofile" };
-        const mockMessages = [
-            { messageID: "1", sender: "2", message: "Hello!" },
-            { messageID: "2", sender: "1", message: "Hi there!" },
-        ];
-
-        api.get.mockImplementation((url) => {
-            if (url.includes('/api/profile/getuserdata/testuser/')) {
-                return Promise.resolve({ data: [mockProfile] });
-            }
-            if (url.includes("/api/profile/")) {
-                return Promise.resolve({ data: mockMyProfile });
-            }
-            
-            if (url.includes(`/api/profile/message/getmessages/3/`)) {
-                return Promise.resolve({ data: mockMessages });
-            }
-            return Promise.reject(new Error('Not found'));
-        })
-
-        api.post.mockImplementation((url) => {
-            if (url.includes(`/api/profile/message/1/2/`)) {
-                return Promise.resolve({ data: null });
-            }
-            if (url.includes(`/api/profile/message/send/`)) {
-                return Promise.resolve([{ messageID: "3", sender: "2", message: "Test Message" }],);
-            }
-            return Promise.reject(new Error('Not found'));
-        })
-
-        render(
-            <MemoryRouter>
-                <MessagePage />
-            </MemoryRouter>
-        );
-
-        await waitFor(() => {
-            expect(api.post).toHaveBeenCalledWith("/api/profile/message/1/2/");
-        });
-
-        expect(screen.getByText("You have not messaged this user before")).toBeInTheDocument();
-    });
-
-    it("create new convo", async () => {
-        const mockProfile = { id: "1", username: "testuser" };
-        const mockMyProfile = { id: "2", username: "myprofile" };
-        const mockMessages = [
-            { messageID: "1", sender: "2", message: "Hello!" },
-            { messageID: "2", sender: "1", message: "Hi there!" },
-        ];
-
-        api.get.mockImplementation((url) => {
-            if (url.includes('/api/profile/getuserdata/testuser/')) {
-                return Promise.resolve({ data: [mockProfile] });
-            }
-            if (url.includes("/api/profile/")) {
-                return Promise.resolve({ data: mockMyProfile });
-            }
-            
-            if (url.includes(`/api/profile/message/getmessages/3/`)) {
-                return Promise.resolve({ data: mockMessages });
-            }
-            return Promise.reject(new Error('Not found'));
-        })
-
-        api.post.mockImplementation((url) => {
-            if (url.includes(`/api/profile/message/1/2/`)) {
-                return Promise.resolve({ data: null });
-            }
-            if (url.includes(`/api/profile/message/send/`)) {
-                return Promise.resolve([{ messageID: "3", sender: "2", message: "Test Message" }],);
-            }
-            if (url.includes("/api/profile/message/createconvo/")) {
-                return Promise.resolve({ status: 201, data: { success: true }});
-            }
-            if (url.includes("/api/profile/message/setconvoparticipant/")) {
-                return Promise.resolve({ status: 201, data: { success: true }});
-            }
-            return Promise.reject(new Error('Not found'));
-        })
-
-        render(
-            <MemoryRouter>
-                <MessagePage />
-            </MemoryRouter>
-        );
-
-        await waitFor(() => {
-            expect(api.post).toHaveBeenCalledWith("/api/profile/message/1/2/");
-        });
-
-        expect(screen.getByText("You have not messaged this user before")).toBeInTheDocument();
-        expect(screen.getByTestId("create-convo-button")).toBeInTheDocument();
-
-        fireEvent.click(screen.getByTestId("create-convo-button"))
-
-        await waitFor(() => {
-            expect(api.post).toHaveBeenCalledWith("/api/profile/message/createconvo/");
-            });
-    });
-
-    it("create new convo - error", async () => {
-        const mockProfile = { id: "1", username: "testuser" };
-        const mockMyProfile = { id: "2", username: "myprofile" };
-        const mockMessages = [
-            { messageID: "1", sender: "2", message: "Hello!" },
-            { messageID: "2", sender: "1", message: "Hi there!" },
-        ];
-
-        api.get.mockImplementation((url) => {
-            if (url.includes('/api/profile/getuserdata/testuser/')) {
-                return Promise.resolve({ data: [mockProfile] });
-            }
-            if (url.includes("/api/profile/")) {
-                return Promise.resolve({ data: mockMyProfile });
-            }
-            
-            if (url.includes(`/api/profile/message/getmessages/3/`)) {
-                return Promise.resolve({ data: mockMessages });
-            }
-            return Promise.reject(new Error('Not found'));
-        })
-
-        api.post.mockImplementation((url) => {
-            if (url.includes(`/api/profile/message/1/2/`)) {
-                return Promise.resolve({ data: null });
-            }
-            if (url.includes(`/api/profile/message/send/`)) {
-                return Promise.resolve([{ messageID: "3", sender: "2", message: "Test Message" }],);
-            }
-            if (url.includes("/api/profile/message/createconvo/")) {
-                return Promise.resolve(new Error('Convo Error'));
-            }
-            if (url.includes("/api/profile/message/setconvoparticipant/")) {
-                return Promise.resolve({ status: 201, data: { success: true }});
-            }
-            return Promise.reject(new Error('Not found'));
-        })
-
-        render(
-            <MemoryRouter>
-                <MessagePage />
-            </MemoryRouter>
-        );
-
-        await waitFor(() => {
-            expect(api.post).toHaveBeenCalledWith("/api/profile/message/1/2/");
-        });
-
-        expect(screen.getByText("You have not messaged this user before")).toBeInTheDocument();
-        expect(screen.getByTestId("create-convo-button")).toBeInTheDocument();
-
-        fireEvent.click(screen.getByTestId("create-convo-button"))
-
-        await waitFor(() => {
-            expect(api.post).toHaveBeenCalledWith("/api/profile/message/createconvo/");
+        expect(api.get).toHaveBeenCalledWith(`/api/posts/${mockPost.postID}/`);
+        expect(screen.getByLabelText('Post Title')).toHaveValue(mockPost.title);
+        expect(screen.getByLabelText('Post Description')).toHaveValue(mockPost.description);
         });
     });
 
-    it("create new convo - error", async () => {
-        const mockProfile = { id: "1", username: "testuser" };
-        const mockMyProfile = { id: "2", username: "myprofile" };
-        const mockMessages = [
-            { messageID: "1", sender: "2", message: "Hello!" },
-            { messageID: "2", sender: "1", message: "Hi there!" },
-        ];
+    it('Entering data updates the state', async () => {
+        api.get.mockResolvedValue({ data: mockPost });
 
-        api.get.mockImplementation((url) => {
-            if (url.includes('/api/profile/getuserdata/testuser/')) {
-                return Promise.resolve({ data: [mockProfile] });
-            }
-            if (url.includes("/api/profile/")) {
-                return Promise.resolve({ data: mockMyProfile });
-            }
-            
-            if (url.includes(`/api/profile/message/getmessages/3/`)) {
-                return Promise.resolve({ data: mockMessages });
-            }
-            return Promise.reject(new Error('Not found'));
-        })
-
-        api.post.mockImplementation((url) => {
-            if (url.includes(`/api/profile/message/1/2/`)) {
-                return Promise.resolve(new Error('Convo Error'));
-            }
-            if (url.includes(`/api/profile/message/send/`)) {
-                return Promise.resolve([{ messageID: "3", sender: "2", message: "Test Message" }],);
-            }
-            if (url.includes("/api/profile/message/createconvo/")) {
-                return Promise.resolve(new Error('Convo Error'));
-            }
-            if (url.includes("/api/profile/message/setconvoparticipant/")) {
-                return Promise.resolve({ status: 201, data: { success: true }});
-            }
-            return Promise.reject(new Error('Not found'));
-        })
-
-        render(
-            <MemoryRouter>
-                <MessagePage />
-            </MemoryRouter>
-        );
-
+        render(<PostEdit />);
         await waitFor(() => {
-            expect(api.post).toHaveBeenCalledWith("/api/profile/message/1/2/");
-        });
-    });
-
-    it("should initialize WebSocket when convoID is set", async () => {
-        const mockProfile = { id: "1", username: "testuser" };
-        const mockMyProfile = { id: "2", username: "myprofile" };
-        const mockMessages = [
-            { messageID: "1", sender: "2", message: "Hello!" },
-            { messageID: "2", sender: "1", message: "Hi there!" },
-        ];
-
-        api.get.mockImplementation((url) => {
-            if (url.includes('/api/profile/getuserdata/testuser/')) {
-                return Promise.resolve({ data: [mockProfile] });
-            }
-            if (url.includes("/api/profile/")) {
-                return Promise.resolve({ data: mockMyProfile });
-            }
-            
-            if (url.includes(`/api/profile/message/getmessages/3/`)) {
-                return Promise.resolve({ data: mockMessages });
-            }
-            return Promise.reject(new Error('Not found'));
-        })
-
-        api.post.mockImplementation((url) => {
-            if (url.includes(`/api/profile/message/1/2/`)) {
-                return Promise.resolve(new Error('Convo Error'));
-            }
-            if (url.includes(`/api/profile/message/send/`)) {
-                return Promise.resolve([{ messageID: "3", sender: "2", message: "Test Message" }],);
-            }
-            if (url.includes("/api/profile/message/createconvo/")) {
-                return Promise.resolve(new Error('Convo Error'));
-            }
-            if (url.includes("/api/profile/message/setconvoparticipant/")) {
-                return Promise.resolve({ status: 201, data: { success: true }});
-            }
-            return Promise.reject(new Error('Not found'));
-        })
-    
-        render(
-            <MemoryRouter>
-                <MessagePage />
-            </MemoryRouter>
-        );
-    
-        // Simulate convoID effect
-        await waitFor(() => {
-            const newSocket = new WebSocket(`ws://127.0.0.1/ws/chat/3/`);
-            expect(newSocket).toBeDefined();
-            expect(newSocket.readyState).toBe(0); // WebSocket connecting state
+            fireEvent.change(screen.getByLabelText('Post Title'), { target: { value: 'New Title' } });
+            fireEvent.change(screen.getByLabelText('Post Description'), { target: { value: 'New Description' } });
+            expect(screen.getByLabelText('Post Title')).toHaveValue('New Title');
+            expect(screen.getByLabelText('Post Description')).toHaveValue('New Description');
         });
     })
-});
+
+    it('submits the form and navigates to the post view page', async () => {
+        api.get.mockResolvedValue({ data: mockPost });
+        api.patch.mockResolvedValue({ data: {} });
+
+        render(<PostEdit />);
+        await waitFor(() => {
+            fireEvent.click(screen.getByRole('button', { name: /confirm/i }));
+            expect(api.patch).toHaveBeenCalledWith(`/api/posts/edit/${mockPost.postID}/`, { title: mockPost.title, description: mockPost.description });
+            expect(mockNavigate).toHaveBeenCalledWith(`/post/view/${mockPost.postID}`);
+        });
+    })
+
+    it('pressing cancel returns user back to the page of the post', async () => {
+        api.get.mockResolvedValue({ data: mockPost });
+        render(<PostEdit />);
+        await waitFor(() => {
+            fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
+            expect(mockNavigate).toHaveBeenCalledWith(`/post/view/${mockPost.postID}`);
+        });
+    })
+
+    it('getting post but error', async () => {
+        api.get.mockRejectedValue({ response: { status: 401 } });
+        render(<PostEdit />);
+        await waitFor(() => {
+            expect(api.get).toHaveBeenCalledWith(`/api/posts/${mockPost.postID}/`);
+        });
+    })
+
+    it('submitting form but error', async () => {
+        api.get.mockResolvedValue({ data: mockPost });
+        api.patch.mockRejectedValue({ response: { status: 401 } });
+
+        render(<PostEdit />);
+        await waitFor(() => {
+            fireEvent.click(screen.getByRole('button', { name: /confirm/i }));
+            expect(api.patch).toHaveBeenCalledWith(`/api/posts/edit/${mockPost.postID}/`, { title: mockPost.title, description: mockPost.description });
+        })
+    })
+})

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../api"
 import { useParams, useNavigate } from "react-router-dom";
 
-export default function PostEdit() {
+export default function PostPage() {
     const { postid } = useParams()
     const navigate = useNavigate()
     const [post, setPost] = useState([])

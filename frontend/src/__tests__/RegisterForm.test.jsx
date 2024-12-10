@@ -1,111 +1,99 @@
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
-import { useNavigate } from 'react-router-dom';
-import RegisterForm from '../components/RegisterForm';
+import { useNavigate, useParams } from 'react-router-dom';
+import PostEdit from '../components/RegisterForm';
 import React from 'react';
 import api from '../api';
-import { ACCESS_TOKEN, REFRESH_TOKEN } from '../constants';
 
 jest.mock('react-router-dom', () => ({ //mock useNavigate
     ...jest.requireActual('react-router-dom'),
+    useParams: jest.fn(),
     useNavigate: jest.fn(),
-}))
+}));
 
-jest.mock('../api')
+jest.mock('../api');
 
-describe("RegisterForm", () => {
+describe("PostEdit", () => { 
     global.React = React;
     const mockNavigate = jest.fn();
 
+    const mockPost = {
+        user: '3405dbb2-abbf-471a-afcf-b45ddc505554',
+        postID: 123,
+        title: 'Test Post Title',
+        description: 'Test Post Description',
+        postDate: new Date().toISOString(),
+        editDate: new Date().toISOString(),
+        hasEdit: true,
+      }
+
     beforeEach(() => {
+        useParams.mockReturnValue({ postid: mockPost.postID });
         useNavigate.mockImplementation(() => mockNavigate);
+        jest.clearAllMocks();
+      });
+
+    it('fetches and displays post data', async () => {
+        api.get.mockResolvedValue({ data: mockPost });
+
+        render(<PostEdit />);
+
+        // Wait for data to be loaded and check that it is displayed
+        await waitFor(() => {
+        expect(api.get).toHaveBeenCalledWith(`/api/posts/${mockPost.postID}/`);
+        expect(screen.getByLabelText('Post Title')).toHaveValue(mockPost.title);
+        expect(screen.getByLabelText('Post Description')).toHaveValue(mockPost.description);
+        });
+    });
+
+    it('Entering data updates the state', async () => {
+        api.get.mockResolvedValue({ data: mockPost });
+
+        render(<PostEdit />);
+        await waitFor(() => {
+            fireEvent.change(screen.getByLabelText('Post Title'), { target: { value: 'New Title' } });
+            fireEvent.change(screen.getByLabelText('Post Description'), { target: { value: 'New Description' } });
+            expect(screen.getByLabelText('Post Title')).toHaveValue('New Title');
+            expect(screen.getByLabelText('Post Description')).toHaveValue('New Description');
+        });
     })
 
-    it("Form loads with placeholders", async () => {
-        render(<RegisterForm />)
+    it('submits the form and navigates to the post view page', async () => {
+        api.get.mockResolvedValue({ data: mockPost });
+        api.patch.mockResolvedValue({ data: {} });
+
+        render(<PostEdit />);
         await waitFor(() => {
-            expect(screen.getByPlaceholderText("Username")).toBeInTheDocument()
-            expect(screen.getByPlaceholderText("Password")).toBeInTheDocument()
-            expect(screen.getByPlaceholderText("Email")).toBeInTheDocument()
-            expect(screen.getByPlaceholderText("Display Name")).toBeInTheDocument()
+            fireEvent.click(screen.getByRole('button', { name: /confirm/i }));
+            expect(api.patch).toHaveBeenCalledWith(`/api/posts/edit/${mockPost.postID}/`, { title: mockPost.title, description: mockPost.description });
+            expect(mockNavigate).toHaveBeenCalledWith(`/post/view/${mockPost.postID}`);
+        });
+    })
+
+    it('pressing cancel returns user back to the page of the post', async () => {
+        api.get.mockResolvedValue({ data: mockPost });
+        render(<PostEdit />);
+        await waitFor(() => {
+            fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
+            expect(mockNavigate).toHaveBeenCalledWith(`/post/view/${mockPost.postID}`);
+        });
+    })
+
+    it('getting post but error', async () => {
+        api.get.mockRejectedValue({ response: { status: 401 } });
+        render(<PostEdit />);
+        await waitFor(() => {
+            expect(api.get).toHaveBeenCalledWith(`/api/posts/${mockPost.postID}/`);
+        });
+    })
+
+    it('submitting form but error', async () => {
+        api.get.mockResolvedValue({ data: mockPost });
+        api.patch.mockRejectedValue({ response: { status: 401 } });
+
+        render(<PostEdit />);
+        await waitFor(() => {
+            fireEvent.click(screen.getByRole('button', { name: /confirm/i }));
+            expect(api.patch).toHaveBeenCalledWith(`/api/posts/edit/${mockPost.postID}/`, { title: mockPost.title, description: mockPost.description });
         })
     })
-
-    it('navigates to /login when the Login button is clicked', () => {
-        render(<RegisterForm />)
-        fireEvent.click(screen.getByRole('button', { name: /login/i }))
-        expect(mockNavigate).toHaveBeenCalledWith('/login')
-    })
-
-    it('submits the form and navigates to the login page', async () => {
-        api.post.mockResolvedValue({ status: 201 }); // Mock API response
-    
-        render(<RegisterForm route="/register" />);
-    
-        // Simulate input changes
-        fireEvent.change(screen.getByPlaceholderText("Username"), { target: { value: 'test_user' } });
-        fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: 'test_password' } });
-        fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: 'test_email' } });
-        fireEvent.change(screen.getByPlaceholderText("Display Name"), { target: { value: 'test_display_name' } });
-        fireEvent.change(screen.getByPlaceholderText("Enter register key"), { target: { value: 'CS4800' } }); // Ensure the key is correct
-        
-        await waitFor(() => {
-            fireEvent.click(screen.getByRole('button', { name: /register/i }));
-        });
-
-        expect(mockNavigate).toHaveBeenCalledWith('/login');
-    })
-
-    it("Invalid Key Error", async () => {
-        jest.spyOn(window, 'alert').mockImplementation(() => {})
-
-        render(<RegisterForm route="/register" />);
-        
-        const registerButton = screen.getByRole("button", { name: /register/i });
-        expect(registerButton).toBeInTheDocument();
-
-        await act(async () => {
-            fireEvent.click(screen.getByRole('button', { name: /register/i }));
-        });
-
-        await waitFor(() => {
-            expect(window.alert).toHaveBeenCalledWith("Invalid Key")
-        });     
-    });
-    
-    it("Invalid Key Error 2", async () => {
-        jest.spyOn(window, 'alert').mockImplementation(() => {})
-
-        render(<RegisterForm route="/register" />);
-        
-        const registerButton = screen.getByRole("button", { name: /register/i });
-        expect(registerButton).toBeInTheDocument();
-
-        fireEvent.change(screen.getByPlaceholderText("Enter register key"), { target: { value: 'CS432131800' } })
-
-        await act(async () => {
-            fireEvent.click(screen.getByRole('button', { name: /register/i }));
-            expect(window.alert).toHaveBeenCalledWith("Invalid Key")
-          });
-    });
-
-    it("Api error when registering", async () => {
-        const mockError = new Error("Error");
-        api.post.mockRejectedValue(mockError); // Mock API response
-        jest.spyOn(window, 'alert').mockImplementation(() => {})
-
-        render(<RegisterForm route="/register" />);
-
-        fireEvent.change(screen.getByPlaceholderText("Enter register key"), { target: { value: "CS4800" } });
-        
-        const registerButton = screen.getByRole("button", { name: /register/i });
-        expect(registerButton).toBeInTheDocument();
-
-        await waitFor(() => {
-            fireEvent.click(screen.getByRole('button', { name: /register/i }));
-        });
-
-        expect(window.alert).toHaveBeenCalledWith(mockError)
-    });
-
-    
 })

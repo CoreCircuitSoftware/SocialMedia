@@ -1,84 +1,60 @@
-import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import api from "../api";
-import Menu from '../components/Menu';
-import SearchBar from '../components/SearchBar';
-import Footer from '../components/Footer';
-import '../styles/FriendsList.css'
+import api from "../api"
+import { useNavigate, Link } from "react-router-dom";
+//import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
+// import "../styles/PostProfile.css"
+import MessageListDisplay from "../components/MessageListDisplay";
+import "../styles/MessageListDisplay.css"
+import SearchBar from "../components/SearchBar";
+import Menu from "../components/Menu";
+import Footer from "../components/Footer";
+
 import logo from '../assets/csbutwhiteoutlined.png'
 import Avatar from '@mui/material/Avatar';
 import { AppBar, Toolbar, Typography, Container, Grid2, Paper, Box } from "@mui/material";
 
-export default function FriendsList() {
-    const { username } = useParams();  // Get the username from the URL
-    const [friends, setFriends] = useState([]);
-    const [userId, setUserId] = useState(null);
+export default function FriendActions() {
     const [myProfile, setMyProfile] = useState([]);
-
+    const [conversations, setConversations] = useState([]);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        // Fetch profile ID based on username
-        api.get(`/api/profile/getuserdata/${username}/`)
-            .then((res) => res.data)
-            .then((data) => {
-                if (data && data.length > 0) {
-                    setUserId(data[0].id);
-                } else {
-                    console.error("No profile data found.");
-                }
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 404) {
-                    navigate("/404");
-                } else if (err.response && err.response.status === 401) {
-                    navigate("/login");
-                } else {
-                    alert(err);
-                }
-            })
-    }, [username]);
-
-    useEffect(() => {
-        // Fetch friends once userId is set
-        if (userId) {
-            api.get(`/api/friends/${userId}/`)
-                .then((res) => {
-                    console.log(res.data);
-                    setFriends(res.data)
-                })
-                .catch((err) => {
-                    if (err.response && err.response.status === 404) {
-                        navigate("/404");
-                    } else if (err.response && err.response.status === 401) {
-                        navigate("/login");
-                    } else {
-                        alert(err);
-                    }
-                })
-        }
-    }, [userId]);
-    useEffect(() => {
-        getMyProfile();
-    }, [])
 
     const getMyProfile = () => {
         api
             .get(`/api/profile/`)
             .then((res) => res.data)
-            .then((data) => {
-                setMyProfile(data)
-            })
+            .then((data) => setMyProfile(data))
             .catch((err) => {
-                if (err.response && err.response.status === 404) {
-                    navigate("/404");
-                } else if (err.response && err.response.status === 401) {
+                if (err.response && err.response.status === 401) {
                     navigate("/login");
                 } else {
-                    alert(err);
+                    //alert(err);
+                }
+            })
+    };
+
+    const findConvos = () => {
+        api
+            .get(`/api/message/findconvos/${myProfile.id}/`)
+            .then((res) => res.data)
+            .then((data) => setConversations(data))
+            .catch((err) => {
+                if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    //alert(err);
                 }
             })
     }
+
+    useEffect(() => {
+        if (myProfile) {
+            findConvos()
+        }
+    }, [myProfile])
+
+    useEffect(() => {
+        getMyProfile()
+    }, [])
 
     return (
         <main>
@@ -128,28 +104,55 @@ export default function FriendsList() {
             </AppBar>
             <Menu />
 
-            <div className="content">
-                <h1>{username}'s Friends</h1>
-                <ul>
-                    {friends.length > 0 ? friends.map((friend) => {
-                        const friendUser = friend.user1.id === userId ? friend.user2 : friend.user1;
-                        console.log(friendUser);
-                        return (
-                            <li key={friend.friendShipID}>
-                                <img className="friendlistimage" src={friendUser.profilePicture} alt="profile" />
-                                <a href={`/profile/${friendUser.username}`}>{friendUser.username}</a>
-                                <a href={`/profile/${friendUser.username}/message`}>
-                                    <img className="friendlistimage" src="https://icons.veryicon.com/png/o/miscellaneous/official-icon-of-flying-pig/mailbox-82.png"></img>
-                                </a>
-                            </li>
-                        );
-                    }) : (
-                        <p>No friends found.</p>
-                    )}
-                </ul>
-            </div>
+            {/* Main Content */}
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginTop: '30px', // Adjust to match the height of the AppBar
+                    marginLeft: '380px', // Adjust to match the width of the Menu
+                    padding: '20px',
+                    boxSizing: 'border-box',
+                    height: 'calc(100vh - 230px)', // Full height minus AppBar
+                    justifyContent: conversations.length === 0 ? 'center' : 'flex-start', // Center if no conversations
+                    alignItems: 'center', // Center horizontally
+                }}
+            >
+                <div className="MessageListPage">
+                    <Typography variant="h4" component="h1" sx={{ mb: 2, textAlign: 'center' }}>
+                        Your Conversations:
+                    </Typography>
+                    <div>
+                        {conversations.length > 0 ? (
+                            <div>
+                                {conversations.map((convo) => (
+                                    <div key={convo.convo}>
+                                        <MessageListDisplay convo={convo} myProfile={myProfile} />
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    height: '100%', // Center within the available space
+                                }}
+                            >
+                                <Typography variant="h6" component="h2" sx={{ textAlign: 'center', mb: 40 }}>
+                                    No Conversations :(
+                                </Typography>
+                            </Box>
+                        )}
+                    </div>
+                </div>
+            </Box>
+
+
+            {/* Footer */}
             <Footer />
         </main>
-    );
+    )
 }
-

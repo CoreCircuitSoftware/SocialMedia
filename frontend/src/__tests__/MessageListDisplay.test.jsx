@@ -1,133 +1,99 @@
-import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
-import MessageListDisplay from "../components/MessageListDisplay";
-import api from "../api";
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { useNavigate, useParams } from 'react-router-dom';
+import PostEdit from '../components/MessageListDisplay';
+import React from 'react';
+import api from '../api';
 
-
-// Mock the `useNavigate` hook from React Router
-const mockNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({
-    ...jest.requireActual("react-router-dom"),
-    useNavigate: () => mockNavigate,
+jest.mock('react-router-dom', () => ({ //mock useNavigate
+    ...jest.requireActual('react-router-dom'),
+    useParams: jest.fn(),
+    useNavigate: jest.fn(),
 }));
 
 jest.mock('../api');
 
-const mockSlug = {
-    myProfile: {
-        "id": "3405dbb2-abbf-471a-afcf-b45ddc505554",
-        "username": "123",
-        "email": "123@123.com",
-        "displayName": "123",
-        "profilePicture": "https://upload.wikimedia.org/wikipedia/commons/7/74/White_domesticated_duck,_stretching.jpg",
-        "bio": "bio",
-        "backgroundColor": "",
-        "backgroundImage": ""
-        },
-    convo: {
-        "convo": "1",
-        "user": "h"     
-    }
-  };
+describe("PostEdit", () => { 
+    global.React = React;
+    const mockNavigate = jest.fn();
 
-const mockOtherUser = {
-    username: "testuser",
-    profilePicture: "https://via.placeholder.com/150",
-};
-
-const mockOtherUserNoPFP = {
-    username: "testuser",
-    profilePicture: "",
-};
-
-const mockLatestMessage = {
-    sender: "456",
-    message: "Hello!",
-};
-
-
-
-describe("RecsDisplay", () => {
-    global.React = React
+    const mockPost = {
+        user: '3405dbb2-abbf-471a-afcf-b45ddc505554',
+        postID: 123,
+        title: 'Test Post Title',
+        description: 'Test Post Description',
+        postDate: new Date().toISOString(),
+        editDate: new Date().toISOString(),
+        hasEdit: true,
+      }
 
     beforeEach(() => {
+        useParams.mockReturnValue({ postid: mockPost.postID });
+        useNavigate.mockImplementation(() => mockNavigate);
         jest.clearAllMocks();
-    });
+      });
 
-    it("should render user details correctly", async () => {
-        api.get.mockImplementation((url) => {
-            if (url === `/api/message/latest/${mockSlug.convo.convo}/`) {
-                return Promise.resolve({ data: mockLatestMessage });
-            }
-            if (url === `/api/profile/getuserdata2/${mockSlug.convo.user}/`) {
-                return Promise.resolve({ data: mockOtherUser });
-            }
-            return Promise.reject(new Error("Unknown API call"));
-        });
+    it('fetches and displays post data', async () => {
+        api.get.mockResolvedValue({ data: mockPost });
 
-        render(
-            <MemoryRouter>
-                <MessageListDisplay convo={mockSlug.convo} myProfile={mockSlug.myProfile} />
-            </MemoryRouter>
-        );
+        render(<PostEdit />);
 
-        expect(api.get).toHaveBeenCalledWith(`/api/message/latest/${mockSlug.convo.convo}/`);
-        expect(api.get).toHaveBeenCalledWith(`/api/profile/getuserdata2/${mockSlug.convo.user}/`);
-
+        // Wait for data to be loaded and check that it is displayed
         await waitFor(() => {
-            expect(screen.getByAltText("profile")).toHaveAttribute("src", mockOtherUser.profilePicture);
+        expect(api.get).toHaveBeenCalledWith(`/api/posts/${mockPost.postID}/`);
+        expect(screen.getByLabelText('Post Title')).toHaveValue(mockPost.title);
+        expect(screen.getByLabelText('Post Description')).toHaveValue(mockPost.description);
         });
-        
     });
 
-    it("other user no pfp", async () => {
-        api.get.mockImplementation((url) => {
-            if (url === `/api/message/latest/${mockSlug.convo.convo}/`) {
-                return Promise.resolve({ data: mockLatestMessage });
-            }
-            if (url === `/api/profile/getuserdata2/${mockSlug.convo.user}/`) {
-                return Promise.resolve({ data: mockOtherUserNoPFP });
-            }
-            return Promise.reject(new Error("Unknown API call"));
-        });
+    it('Entering data updates the state', async () => {
+        api.get.mockResolvedValue({ data: mockPost });
 
-        render(
-            <MemoryRouter>
-                <MessageListDisplay convo={mockSlug.convo} myProfile={mockSlug.myProfile} />
-            </MemoryRouter>
-        );
-
-        expect(api.get).toHaveBeenCalledWith(`/api/message/latest/${mockSlug.convo.convo}/`);
-        expect(api.get).toHaveBeenCalledWith(`/api/profile/getuserdata2/${mockSlug.convo.user}/`);
-
+        render(<PostEdit />);
         await waitFor(() => {
-            expect(screen.getByAltText("profile")).toHaveAttribute("src", "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg");
+            fireEvent.change(screen.getByLabelText('Post Title'), { target: { value: 'New Title' } });
+            fireEvent.change(screen.getByLabelText('Post Description'), { target: { value: 'New Description' } });
+            expect(screen.getByLabelText('Post Title')).toHaveValue('New Title');
+            expect(screen.getByLabelText('Post Description')).toHaveValue('New Description');
         });
-        
-    });
+    })
 
-    it("should display 'You said' for messages sent by the user", async () => {
-        // Mock API responses
-        api.get.mockImplementation((url) => {
-            if (url === `/api/message/latest/${mockSlug.convo.convo}/`) {
-                return Promise.resolve({ data: { sender: mockSlug.myProfile.id, message: "Hi there!" }});
-            }
-            if (url === `/api/profile/getuserdata2/${mockSlug.convo.user}/`) {
-                return Promise.resolve({ data: mockOtherUser });
-            }
-            return Promise.reject(new Error("Unknown API call"));
-        });
+    it('submits the form and navigates to the post view page', async () => {
+        api.get.mockResolvedValue({ data: mockPost });
+        api.patch.mockResolvedValue({ data: {} });
 
-        render(
-            <MemoryRouter>
-                <MessageListDisplay convo={mockSlug.convo} myProfile={mockSlug.myProfile} />
-            </MemoryRouter>
-        );
-
-        // Wait for API calls to resolve
+        render(<PostEdit />);
         await waitFor(() => {
-            expect(screen.getByText("You said:")).toBeInTheDocument();
+            fireEvent.click(screen.getByRole('button', { name: /confirm/i }));
+            expect(api.patch).toHaveBeenCalledWith(`/api/posts/edit/${mockPost.postID}/`, { title: mockPost.title, description: mockPost.description });
+            expect(mockNavigate).toHaveBeenCalledWith(`/post/view/${mockPost.postID}`);
         });
-    });
-});
+    })
+
+    it('pressing cancel returns user back to the page of the post', async () => {
+        api.get.mockResolvedValue({ data: mockPost });
+        render(<PostEdit />);
+        await waitFor(() => {
+            fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
+            expect(mockNavigate).toHaveBeenCalledWith(`/post/view/${mockPost.postID}`);
+        });
+    })
+
+    it('getting post but error', async () => {
+        api.get.mockRejectedValue({ response: { status: 401 } });
+        render(<PostEdit />);
+        await waitFor(() => {
+            expect(api.get).toHaveBeenCalledWith(`/api/posts/${mockPost.postID}/`);
+        });
+    })
+
+    it('submitting form but error', async () => {
+        api.get.mockResolvedValue({ data: mockPost });
+        api.patch.mockRejectedValue({ response: { status: 401 } });
+
+        render(<PostEdit />);
+        await waitFor(() => {
+            fireEvent.click(screen.getByRole('button', { name: /confirm/i }));
+            expect(api.patch).toHaveBeenCalledWith(`/api/posts/edit/${mockPost.postID}/`, { title: mockPost.title, description: mockPost.description });
+        })
+    })
+})

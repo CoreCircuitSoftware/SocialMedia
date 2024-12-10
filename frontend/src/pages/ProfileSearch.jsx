@@ -1,76 +1,67 @@
-import api from "../api.js";
-import "../styles/Home.css";
-import "../styles/Profile.css";
-import "../styles/Layout.css";
-import { useState, useEffect } from "react";
-import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import PostDisplay from "../components/ProfilePostDisplay.jsx";
-import SearchBar from "../components/SearchBar.jsx";
-import Menu from "../components/Menu.jsx";
-import Footer from "../components/Footer.jsx";
+import { useEffect, useState } from "react";
+import api from "../api"
+import { useParams, useNavigate } from "react-router-dom";
 
-export default function ProfileSearch() {
-    const { userchunk } = useParams();
-    const [results, setResults] = useState([]);
-    const navigate = useNavigate();
+export default function PostPage() {
+    const { postid } = useParams()
+    const navigate = useNavigate()
+    const [post, setPost] = useState([])
+    const [title, setTitle] = useState("")
+    const [description, setDescription] = useState("")
 
+    useEffect(() => { 
+        api.get(`/api/posts/${postid}/`)
+            .then((res) => res.data)
+            .then((data) => {
+                setPost(data)
+                setTitle(data.title)
+                setDescription(data.description)
+            })
+            .catch((err) => console.log("Error LOL"))
+    }, [postid])
 
-    useEffect(() => {
-        if (userchunk !== undefined) {
-            api.get(`/api/search/profile/${userchunk}/`)
-                .then((res) => {
-                    setResults(res.data)
-                })
-                .catch((err) => {
-                    if (err.response && err.response.status === 404) {
-                        navigate("/404");
-                    } else if (err.response && err.response.status === 401) {
-                        navigate("/login");
-                    } else {
-                        alert(err);
-                    }
-                })
-        }
-        else {
-            api.get(`/api/search/profile/`)
-                .then((res) => {
-                    setResults(res.data)
-                })
-                .catch((err) => {
-                    if (err.response && err.response.status === 404) {
-                        navigate("/404");
-                    } else if (err.response && err.response.status === 401) {
-                        navigate("/login");
-                    } else {
-                        alert(err);
-                    }
-                })
-        }
-    }, [userchunk]);
+    const handleSubmit = () => {
+        event.preventDefault()
+        api
+            .patch(`/api/posts/edit/${postid}/`, {title, description})
+            .then((res) => {
+                navigate(`/post/view/${postid}`)
+            })
+            .catch((err) => console.log("errorrrrr"))
+    }
+
+    const handleCancel = (e) => {
+        e.preventDefault()
+        navigate(`/post/view/${postid}`)
+    }
 
     return (
-        <main>
-            <SearchBar />
-            <Footer />
-            <div className="content">
-                {userchunk !== undefined ? <h1>Results</h1> : <h1 data-cy="search-all">All Profiles</h1>}
-                <ul>
-                    {results.length > 0 ? results.map((profile) => {
-                        return (
-                            <li key={profile.username} data-cy="search-user" data-testid="search-user">
-                                <img className="friendlistimage" src={profile.profilePicture} alt="profile" />
-                                <a href={`/profile/${profile.username}`} data-testid="username-link">{profile.username}</a>
-                                <a href={`/profile/${profile.username}/message`} data-testid="message-link">
-                                    <img className="friendlistimage" data-testid="img-link" src="https://icons.veryicon.com/png/o/miscellaneous/official-icon-of-flying-pig/mailbox-82.png"></img>
-                                </a>
-                            </li>
-                        );
-                    }) : (
-                        <p data-cy="no-results">No Results found.</p>
-                    )}
-                </ul>
-            </div>
-        </main>
-    );
+        <form className="edit-post" onSubmit={handleSubmit}>
+            <h1>Edit Post</h1>
+            <label htmlFor="post-title">Post Title</label>
+            <input id="post-title"
+                className="form-input"
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder={title}
+                data-cy="display-name"
+            />
+            <label htmlFor="post-description">Post Description</label>
+            <input id="post-description"
+                className="form-input"
+                type="text"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder={title}
+                data-cy="display-name"
+            />
+            <button className="form-button" type="submit" data-cy="confirm">
+                Confirm
+            </button>
+            <button className="form-button" type="button" onClick={handleCancel} data-cy="cancel">
+                Cancel
+            </button>
+        </form>
+    )
 }

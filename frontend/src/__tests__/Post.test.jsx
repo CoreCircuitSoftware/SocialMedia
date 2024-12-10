@@ -1,205 +1,99 @@
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
-import { MemoryRouter } from "react-router-dom";
-import { useNavigate } from 'react-router-dom';
-import PostForm from '../components/PostForm';
+import { useNavigate, useParams } from 'react-router-dom';
+import PostEdit from '../components/PostForm';
 import React from 'react';
 import api from '../api';
 
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
+jest.mock('react-router-dom', () => ({ //mock useNavigate
     ...jest.requireActual('react-router-dom'),
-    useNavigate: () => mockNavigate,
+    useParams: jest.fn(),
+    useNavigate: jest.fn(),
 }));
 
 jest.mock('../api');
 
-beforeAll(() => {
-  global.URL.createObjectURL = jest.fn(() => "mockedURL");
-});
+describe("PostEdit", () => { 
+    global.React = React;
+    const mockNavigate = jest.fn();
 
-describe("PostForm", () => {
-    global.React = React; //This line fixes the error: "ReferenceError: React is not defined"
+    const mockPost = {
+        user: '3405dbb2-abbf-471a-afcf-b45ddc505554',
+        postID: 123,
+        title: 'Test Post Title',
+        description: 'Test Post Description',
+        postDate: new Date().toISOString(),
+        editDate: new Date().toISOString(),
+        hasEdit: true,
+      }
 
     beforeEach(() => {
+        useParams.mockReturnValue({ postid: mockPost.postID });
+        useNavigate.mockImplementation(() => mockNavigate);
         jest.clearAllMocks();
-      })
+      });
 
-    it("Form renders correctly", async () => {
-        const mockData = { "profile": { "username": "example_user" } };
-        api.get.mockResolvedValue({ data: mockData });
-        render(
-        <MemoryRouter>
-            <PostForm />
-        </MemoryRouter>
-        );
+    it('fetches and displays post data', async () => {
+        api.get.mockResolvedValue({ data: mockPost });
 
+        render(<PostEdit />);
+
+        // Wait for data to be loaded and check that it is displayed
         await waitFor(() => {
-            expect(api.get).toHaveBeenCalledWith('/api/profile/');
-        })
-
-        expect(screen.getByPlaceholderText("Enter Post Title")).toBeInTheDocument();
-        expect(screen.getByPlaceholderText("Enter Post Description")).toBeInTheDocument();
-        expect(screen.getByText("Upload Image")).toBeInTheDocument();
-        expect(screen.getByText("Submit Post")).toBeInTheDocument();
-        expect(screen.getByText("Go Back")).toBeInTheDocument();
+        expect(api.get).toHaveBeenCalledWith(`/api/posts/${mockPost.postID}/`);
+        expect(screen.getByLabelText('Post Title')).toHaveValue(mockPost.title);
+        expect(screen.getByLabelText('Post Description')).toHaveValue(mockPost.description);
+        });
     });
 
-    it("should navigate to login if user is not authenticated", async () => {
+    it('Entering data updates the state', async () => {
+        api.get.mockResolvedValue({ data: mockPost });
+
+        render(<PostEdit />);
+        await waitFor(() => {
+            fireEvent.change(screen.getByLabelText('Post Title'), { target: { value: 'New Title' } });
+            fireEvent.change(screen.getByLabelText('Post Description'), { target: { value: 'New Description' } });
+            expect(screen.getByLabelText('Post Title')).toHaveValue('New Title');
+            expect(screen.getByLabelText('Post Description')).toHaveValue('New Description');
+        });
+    })
+
+    it('submits the form and navigates to the post view page', async () => {
+        api.get.mockResolvedValue({ data: mockPost });
+        api.patch.mockResolvedValue({ data: {} });
+
+        render(<PostEdit />);
+        await waitFor(() => {
+            fireEvent.click(screen.getByRole('button', { name: /confirm/i }));
+            expect(api.patch).toHaveBeenCalledWith(`/api/posts/edit/${mockPost.postID}/`, { title: mockPost.title, description: mockPost.description });
+            expect(mockNavigate).toHaveBeenCalledWith(`/post/view/${mockPost.postID}`);
+        });
+    })
+
+    it('pressing cancel returns user back to the page of the post', async () => {
+        api.get.mockResolvedValue({ data: mockPost });
+        render(<PostEdit />);
+        await waitFor(() => {
+            fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
+            expect(mockNavigate).toHaveBeenCalledWith(`/post/view/${mockPost.postID}`);
+        });
+    })
+
+    it('getting post but error', async () => {
         api.get.mockRejectedValue({ response: { status: 401 } });
-    
-        render(
-          <MemoryRouter>
-            <PostForm />
-          </MemoryRouter>
-        );
-    
+        render(<PostEdit />);
         await waitFor(() => {
-          expect(api.get).toHaveBeenCalledWith("/api/profile/");
-          expect(mockNavigate).toHaveBeenCalledWith("/login");
+            expect(api.get).toHaveBeenCalledWith(`/api/posts/${mockPost.postID}/`);
         });
-      });
+    })
 
-      it("should navigate to 404 if 404", async () => {
-        api.get.mockRejectedValue({ response: { status: 404 } });
-    
-        render(
-          <MemoryRouter>
-            <PostForm />
-          </MemoryRouter>
-        );
-    
+    it('submitting form but error', async () => {
+        api.get.mockResolvedValue({ data: mockPost });
+        api.patch.mockRejectedValue({ response: { status: 401 } });
+
+        render(<PostEdit />);
         await waitFor(() => {
-          expect(api.get).toHaveBeenCalledWith("/api/profile/");
-          expect(mockNavigate).toHaveBeenCalledWith("/404");
-        });
-      });
-
-      it("Window alert error", async () => {
-        jest.spyOn(window, 'alert').mockImplementation(() => {}) 
-        api.get.mockRejectedValue({ response: { status: 500 } });
-        render(
-          <MemoryRouter>
-            <PostForm />
-          </MemoryRouter>
-        );
-    
-        await waitFor(() => {
-          expect(api.get).toHaveBeenCalledWith("/api/profile/");
-          expect(window.alert).toHaveBeenCalled();
-        });
-      });
-
-      it("Post Success -> navigate to profile", async () => {
-        api.post.mockResolvedValue({});
-
-        render(
-        <MemoryRouter>
-            <PostForm />
-        </MemoryRouter>
-        );
-
-        fireEvent.change(screen.getByPlaceholderText("Enter Post Title"), {
-            target: { value: "Test Post" },
-        });
-        fireEvent.change(screen.getByPlaceholderText("Enter Post Description"), {
-            target: { value: "This is a test description." },
-        });
-
-        fireEvent.click(screen.getByText("Submit Post"));
-
-        await waitFor(() => {
-        expect(api.post).toHaveBeenCalledWith(
-            "/api/createpost/",
-            expect.any(FormData),
-            expect.objectContaining({
-            headers: { "Content-Type": "multipart/form-data" },
-            })
-        );
-        expect(mockNavigate).toHaveBeenCalledWith("/profile");
-        });
-      });
-
-      it("Post error", async () => {
-        api.post.mockRejectedValue({ response: { status: 401 } });
-
-        render(
-          <MemoryRouter>
-            <PostForm />
-          </MemoryRouter>
-        );
-
-        fireEvent.change(screen.getByPlaceholderText("Enter Post Title"), {
-          target: { value: "Test Post" },
-        });
-        fireEvent.change(screen.getByPlaceholderText("Enter Post Description"), {
-          target: { value: "This is a test description." },
-        });
-
-        fireEvent.click(screen.getByText("Submit Post"));
-
-        await waitFor(() => {
-          expect(api.post).toHaveBeenCalledWith(
-            "/api/createpost/",
-            expect.any(FormData),
-            expect.objectContaining({
-              headers: { "Content-Type": "multipart/form-data" },
-            })
-          );
-          expect(mockNavigate).toHaveBeenCalledWith("/login");
-        });
-      })
-
-      it("should show title error when title is not provided", async () => {
-        render(
-          <MemoryRouter>
-            <PostForm />
-          </MemoryRouter>
-        );
-    
-        fireEvent.click(screen.getByText("Submit Post"));
-    
-        expect(await screen.findByText("Error: Title required for post")).toBeInTheDocument();
-      });
-
-      it("should navigate back to profile when 'Go Back' is clicked", () => {
-        render(
-          <MemoryRouter>
-            <PostForm />
-          </MemoryRouter>
-        );
-    
-        fireEvent.click(screen.getByText("Go Back"));
-    
-        expect(mockNavigate).toHaveBeenCalledWith("/profile");
-      });
-
-      it("should handle file uploads and display image previews", async () => {
-        render(
-            <MemoryRouter>
-                <PostForm />
-            </MemoryRouter>
-        );
-
-        // Create mock files for file input
-        const file1 = new File(["file1"], "file1.png", { type: "image/png" });
-        const file2 = new File(["file2"], "file2.jpg", { type: "image/jpeg" });
-
-        // Find the hidden input element by its label text
-        const fileInput = screen.getByLabelText("Upload Image");
-
-        // Fire the change event with the mock files
-        fireEvent.change(fileInput, {
-            target: { files: [file1, file2] }
-        });
-
-        // Wait for image previews to be displayed
-        await waitFor(() => {
-            expect(screen.getAllByRole("img")).toHaveLength(2);
-        });
-
-        // Check if image previews are displayed with the correct src
-        const previews = screen.getAllByRole("img");
-        expect(previews[0]).toHaveAttribute("src", "mockedURL");
-        expect(previews[1]).toHaveAttribute("src", "mockedURL");
-    });
+            fireEvent.click(screen.getByRole('button', { name: /confirm/i }));
+            expect(api.patch).toHaveBeenCalledWith(`/api/posts/edit/${mockPost.postID}/`, { title: mockPost.title, description: mockPost.description });
+        })
+    })
 })

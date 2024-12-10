@@ -1,148 +1,67 @@
 import { useEffect, useState } from "react";
 import api from "../api"
-import { useNavigate } from "react-router-dom";
-//import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
-import "../styles/Post.css"
-import Button from "@mui/material/Button";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { styled } from "@mui/material/styles";
+import { useParams, useNavigate } from "react-router-dom";
 
-const VisuallyHiddenInput = styled("input")({
-    clip: "rect(0 0 0 0)",
-    clipPath: "inset(10%)",
-    height: 1,
-    overflow: "hidden",
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    whiteSpace: "nowrap",
-    width: 1,
-});
+export default function PostPage() {
+    const { postid } = useParams()
+    const navigate = useNavigate()
+    const [post, setPost] = useState([])
+    const [title, setTitle] = useState("")
+    const [description, setDescription] = useState("")
 
-export default function PostForm() {
-    const navigate = useNavigate();
-    const [title, setTitle] = useState("");
-    const [titleError, setTitleError] = useState(false);
-    const [description, setDescription] = useState("");
-    const [images, setImages] = useState([]);
-    const [imagePreviews, setImagePreviews] = useState([]);
-
-    //Here to check the user is signed in, returns them to login if not
-    useEffect(() => {
-        api
-            .get(`/api/profile/`)
-            .catch((err) => {
-                if (err.response && err.response.status === 404) {
-                    navigate("/404");
-                } else if (err.response && err.response.status === 401) {
-                    navigate("/login");
-                } else {
-                    alert(err);
-                }
+    useEffect(() => { 
+        api.get(`/api/posts/${postid}/`)
+            .then((res) => res.data)
+            .then((data) => {
+                setPost(data)
+                setTitle(data.title)
+                setDescription(data.description)
             })
-    })
+            .catch((err) => console.log("Error LOL"))
+    }, [postid])
 
-    const handleFileChange = (event) => {
-        const files = Array.from(event.target.files); // Set selected image files
-        setImages(files);
-        const previews = files.map((file) => URL.createObjectURL(file));
-        setImagePreviews(previews);
-    };
-
-    const handleReturn = async (e) => {
-        e.preventDefault();
-        navigate("/profile")
+    const handleSubmit = () => {
+        event.preventDefault()
+        api
+            .patch(`/api/posts/edit/${postid}/`, {title, description})
+            .then((res) => {
+                navigate(`/post/view/${postid}`)
+            })
+            .catch((err) => console.log("errorrrrr"))
     }
 
-    const createPost = async (e) => {
-        e.preventDefault();
-        if (!title) {
-            setTitleError(true);
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append("title", title);
-        formData.append("description", description);
-        images.forEach((image) => {
-            formData.append("media", image);
-        });
-
-        try {
-            await api.post("/api/createpost/", formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
-            navigate("/profile");
-        } catch (error) {
-            if (error.response.status === 401)
-                navigate("/login");
-        }
-    };
+    const handleCancel = (e) => {
+        e.preventDefault()
+        navigate(`/post/view/${postid}`)
+    }
 
     return (
-        <form onSubmit={createPost} className="post-submit-container">
-            <h2>Create Post</h2>
-            <label htmlFor="title">Title:</label>
-            {titleError && (
-                <h5>Error: Title required for post</h5>
-            )}
-            <input id="post_title"
+        <form className="edit-post" onSubmit={handleSubmit}>
+            <h1>Edit Post</h1>
+            <label htmlFor="post-title">Post Title</label>
+            <input id="post-title"
                 className="form-input"
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="Enter Post Title"
-                data-cy="post-title"
+                placeholder={title}
+                data-cy="display-name"
             />
-            <label htmlFor="description">Description:</label>
-            <input id="post_description"
+            <label htmlFor="post-description">Post Description</label>
+            <input id="post-description"
                 className="form-input"
                 type="text"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Enter Post Description"
-                data-cy="post-description"
+                placeholder={title}
+                data-cy="display-name"
             />
-            <Button
-                component="label"
-                variant="contained"
-                startIcon={<CloudUploadIcon />}
-                fullWidth
-                style={{ width: '360px', marginBottom: '16px' }}  // Set width here
-                color="customGreen"
-            >
-                Upload Image
-                <VisuallyHiddenInput type="file" accept="image/*" multiple onChange={handleFileChange} />
-            </Button>
-            {imagePreviews.length > 0 && (
-                <div className="image-preview">
-                    {imagePreviews.map((preview, index) => (
-                        <img key={index} src={preview} alt={`Preview ${index + 1}`} style={{ width: '90%', margin: '5px', height: '90%' }} />
-                    ))}
-                </div>
-            )}
-            <Button
-                variant="contained"
-                type="submit"
-                data-cy="submit-post"
-                style={{ width: '360px', marginBottom: '16px' }}
-                color="customGreen"
-            >
-                Submit Post
-            </Button>
-            <Button
-                //className="form-button" 
-                type="button"
-                variant="contained"
-                onClick={handleReturn}
-                data-cy="go-back"
-                style={{ width: '360px' }}
-                color="customGreen"
-            >
-                Go Back
-            </Button>
+            <button className="form-button" type="submit" data-cy="confirm">
+                Confirm
+            </button>
+            <button className="form-button" type="button" onClick={handleCancel} data-cy="cancel">
+                Cancel
+            </button>
         </form>
-    );
+    )
 }
