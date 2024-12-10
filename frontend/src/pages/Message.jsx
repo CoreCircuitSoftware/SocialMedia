@@ -25,7 +25,7 @@ export default function MessagePage() {
     const placeholderText = `Send a message to ${profile.displayName}`
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
     const [socket, setSocket] = useState(null);
-    const baseURL = import.meta.env.VITE_MESSAGE_URL
+    const baseURL = '127.0.0.1:8000'
 
     useEffect(() => {
         if (!convoID || convoID.length === 0) {
@@ -341,6 +341,7 @@ export default function MessagePage() {
                                 onChange={(e) => setCurMessage(e.target.value)}
                                 placeholder="Type your message..."
                                 data-cy="message-input"
+                                data-testid="message-input"
                                 style={{
                                     flex: 1, // Make the input box grow to fill space
                                     padding: '10px',
@@ -376,6 +377,7 @@ export default function MessagePage() {
                             <button
                                 onClick={createConvo}
                                 type="submit"
+                                data-testid="create-convo-button"
                                 style={{
                                     padding: '10px 20px',
                                     backgroundColor: '#007BFF',

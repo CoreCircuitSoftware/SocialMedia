@@ -98,7 +98,7 @@ describe('PostDisplay', () => {
         
         jest.clearAllMocks();
     });
-/*  
+  
     it('renders the post details correctly when user is not one who posted', async () => {
         api.get.mockImplementation((url) => {
             if (url.includes('/api/profile/')) {
@@ -326,7 +326,7 @@ describe('PostDisplay', () => {
 
     });
 
-*/
+
     it('Upvote a post', async () => { 
         api.get.mockImplementation((url) => {
             if (url.includes('/api/profile/')) {
