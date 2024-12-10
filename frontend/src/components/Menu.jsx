@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import React from 'react';
 // Material-UI imports
 import { List, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
@@ -13,7 +14,7 @@ export default function Menu() {
         { text: "Profile", icon: <PersonIcon />, action: () => navigate("/profile") },
         { text: "Home", icon: <HomeIcon />, action: () => navigate("/home") },
         // { text: "Communities", icon: <GroupIcon />, action: () => navigate("/communities") },
-        { text: "Messages", icon: <MessageIcon />, action: () => navigate("/message") },
+        { text: "Messages", icon: <MessageIcon />, action: () => navigate("/messages") },
       ];
 
     return (

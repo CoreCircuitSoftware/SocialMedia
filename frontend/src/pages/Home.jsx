@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import React from "react"
 import api from "../api"
-import logo from'../assets/csbutwhiteoutlined.png'
+import logo from '../assets/csbutwhiteoutlined.png'
 // import "../styles/Home.css"
 import { useNavigate, Link } from "react-router-dom";
 import { AppBar, Toolbar, Typography, Container, Grid2, Paper, Box } from "@mui/material";
@@ -23,6 +23,7 @@ export default function Home() {
     const [friends, setFriends] = useState([])
     const [loading, setLoading] = useState(true)
     const delay = ms => new Promise(res => setTimeout(res, ms))
+    const navigate = useNavigate();
 
     useEffect(() => {
         getMyProfile();
@@ -71,16 +72,32 @@ export default function Home() {
             .then((data) => {
                 setPosts(data.reverse())
             })
-            .catch((err) => alert(err))
+            .catch((err) => {
+                if (err.response && err.response.status === 404) {
+                    navigate("/404");
+                } else if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
             .finally(() => setLoading(false))
     }
 
-    const fetchFriends = () => { 
+    const fetchFriends = () => {
         api.get(`/api/friends/${myProfile.id}/`)
-        .then((res) => {
-            setFriends(res.data)
-        })
-        .catch((err) => console.log(err));
+            .then((res) => {
+                setFriends(res.data)
+            })
+            .catch((err) => {
+                if (err.response && err.response.status === 404) {
+                    navigate("/404");
+                } else if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
     }
 
     const getPostFromUser = (friendID) => {
@@ -93,7 +110,15 @@ export default function Home() {
                     return [...prev, ...newPosts.reverse()];
                 });
             })
-            .catch((err) => console.log("Error getting posts"));
+            .catch((err) => {
+                if (err.response && err.response.status === 404) {
+                    navigate("/404");
+                } else if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
     };
 
     const getMyProfile = () => {
@@ -103,7 +128,15 @@ export default function Home() {
             .then((data) => {
                 setMyProfile(data)
             })
-            .catch((err) => alert(err));
+            .catch((err) => {
+                if (err.response && err.response.status === 404) {
+                    navigate("/404");
+                } else if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
     };
 
     const findUsersToDisplay = () => {
@@ -122,7 +155,15 @@ export default function Home() {
                 }
                 setUserRec(userArr)
             })
-            .catch((err) => console.log(err));
+            .catch((err) => {
+                if (err.response && err.response.status === 404) {
+                    navigate("/404");
+                } else if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
     }
 
     const handleSort = (sortOption) => {
@@ -140,16 +181,16 @@ export default function Home() {
     }
 
     return (
-        
+
         <Box sx={{ display: 'flex' }}>
-        
+
             {/* Main Content */}
             <Box sx={{ flexGrow: 1, marginLeft: '250px', mt: 8 }}>
                 <AppBar position="fixed">
                     <Toolbar sx={{ display: 'flex', alignItems: 'center', width: '102%' }}>
 
                         {/* Logo - Aligned to the left */}
-                        <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 1}}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 1 }}>
                             <Link to="/home"> {/* Redirect to the home page */}
                                 <img
                                     src={logo} // Path to your logo
@@ -173,7 +214,7 @@ export default function Home() {
                         </Box>
 
                         {/* Avatar - Aligned to the right */}
-                        <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center'}}>
+                        <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center' }}>
                             <Link to={`/profile/${myProfile.username}`}> {/* Navigate to the user's profile */}
                                 <Avatar
                                     src={myProfile.profilePicture} // Path to the avatar image
@@ -193,29 +234,29 @@ export default function Home() {
                 <Menu />
 
 
-                <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                    <Grid2 container spacing={4}>
+                <Container maxWidth='lg' sx={{ mt: 4, mb: 4, px: 2, mx: 'auto', width: '100%' }}>
+                    <Grid2 container spacing={12} flexWrap="wrap" style={{ width: '120dvh' }}>
                         {/* Feed */}
                         <Grid2 item xs={12} md={8}>
-                            <div className="feed-center">
-                                { loading ? (<h1>Loading...</h1>) : (
-                                <div> 
-                                    {sort == "friends" ? (<h1>Home - Friend's posts</h1>) : (<h1>Home - New posts</h1>)}
-                                    <div className="sort">
-                                        <Button variant='contained' color='primary' startIcon=<PeopleAltIcon /> onClick={() => handleSort("friends")}>Friends</Button>
-                                        <Button variant='contained' color='primary' startIcon=<GradeIcon /> onClick={() => handleSort("new")}>New</Button>
+                            <div className="feed-center" style={{ width: '70dvh' }}>
+                                {loading ? (<h1>Loading...</h1>) : (
+                                    <div>
+                                        {sort == "friends" ? (<h1>Home - Friend's posts</h1>) : (<h1>Home - New posts</h1>)}
+                                        <div className="sort">
+                                            <Button variant='contained' color='primary' startIcon=<PeopleAltIcon /> onClick={() => handleSort("friends")}>Friends</Button>
+                                            <Button variant='contained' color='primary' startIcon=<GradeIcon /> onClick={() => handleSort("new")}>New</Button>
+                                        </div>
+                                        <div className="post-holder">
+                                            {posts.map((post) => <PostDisplay post={post} key={post.postID} />)}
+                                            {posts.length == 0 ? (<h1>No posts found</h1>) : null}
+                                        </div>
                                     </div>
-                                    <div className="post-holder">
-                                        {posts.map((post) => <PostDisplay post={post} key={post.postID} />)}
-                                        {posts.length == 0 ? (<h1>No posts found</h1>) : null}
-                                    </div>
-                                </div>
                                 )}
                             </div>
                         </Grid2>
                         {/* Right Sidebar */}
-                        <Grid2 item xs={12} md={4} sx={{ paddingLeft: 20 }}>
-                            <Paper elevation={3} sx={{ p: 3}}>
+                        <Grid2 item xs={12} md={4} >
+                            <Paper elevation={3} sx={{ p: 3 }}>
                                 <Typography variant="h6" gutterBottom>
                                     Accounts suggested for you!
                                 </Typography>
@@ -230,6 +271,6 @@ export default function Home() {
                 {/* Footer */}
                 <Footer />
             </Box>
-         </Box>
+        </Box>
     );
 }

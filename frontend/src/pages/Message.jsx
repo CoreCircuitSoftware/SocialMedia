@@ -3,12 +3,13 @@ import { useState, useEffect } from "react";
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useParams, Link } from "react-router-dom";
 import MessageDisplay from "../components/MessageDisplay";
+import MessageListPage from "./MessageList";
 import "../styles/Message.css"
 import SearchBar from "../components/SearchBar";
 import Menu from "../components/Menu";
 import Footer from "../components/Footer";
 
-import logo from'../assets/csbutwhiteoutlined.png'
+import logo from '../assets/csbutwhiteoutlined.png'
 import Avatar from '@mui/material/Avatar';
 import { AppBar, Toolbar, Typography, Container, Grid2, Paper, Box } from "@mui/material";
 
@@ -17,9 +18,10 @@ export default function MessagePage() {
     const navigate = useNavigate();
     const [profile, setProfile] = useState([]);
     const [myProfile, setMyProfile] = useState([]);
+    const [otherUser, setOtherUser] = useState();
     const [convoExists, setConvoExists] = useState([]);
     const [convoID, setConvoID] = useState([]);
-    const [thisConvo, setThisConvo] = useState([]);
+    const [selected, setSelected] = useState(false);
     const [curMessage, setCurMessage] = useState([]);
     const [messages, setMessages] = useState([]);
     const placeholderText = `Send a message to ${profile.displayName}`
@@ -32,10 +34,10 @@ export default function MessagePage() {
             console.warn("WebSocket connection aborted: convoID is undefined or empty.");
             return;
         }
-    
+
         console.log("Initializing WebSocket with convoID:", convoID); // Debugging
-    
-        const newSocket = new WebSocket(`ws://${baseURL}/ws/chat/${convoID}/`);
+
+        const newSocket = new WebSocket(`wss://${baseURL}/ws/chat/${convoID}/`);
         newSocket.onmessage = (e) => {
             const data = JSON.parse(e.data);
             setMessages((prev) => {
@@ -45,23 +47,28 @@ export default function MessagePage() {
                 return prev;
             });
         };
-    
+
         newSocket.onerror = (error) => {
             console.error("WebSocket error:", error);
         };
-    
+
         setSocket(newSocket);
-    
+
         return () => {
             if (newSocket) {
                 console.log("Closing WebSocket connection.");
                 newSocket.close();
             }
         };
-    }, [convoID]);    
-    
+    }, [convoID]);
+
     useEffect(() => {
-        getProfile();
+        if (username) {
+            setSelected(true)
+            getProfile();
+        } else {
+            setSelected(false)
+        }
         getMyProfile()
     }, [])
 
@@ -72,7 +79,13 @@ export default function MessagePage() {
             .then((data) => {
                 setProfile(data[0])
             })
-            .catch((err) => console.log(err));
+            .catch((err) => {
+                if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
     }
 
     const getMyProfile = () => {
@@ -82,7 +95,13 @@ export default function MessagePage() {
             .then((data) => {
                 setMyProfile(data)
             })
-            .catch((err) => alert(err));
+            .catch((err) => {
+                if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
     }
 
 
@@ -96,6 +115,13 @@ export default function MessagePage() {
                     setConvoID(data)
                 } else {
                     setConvoExists(false)
+                }
+            })
+            .catch((err) => {
+                if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
                 }
             })
     }
@@ -128,7 +154,13 @@ export default function MessagePage() {
                 addParticipant(profile.id, data.convoID)
                 navigateBackHere();
             })
-            .catch((error) => console.log("error.response.data"))
+            .catch((err) => {
+                if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
     }
 
     // const loadConvo = () => {
@@ -147,6 +179,13 @@ export default function MessagePage() {
             .then((data) => {
                 setMessages(data)
             })
+            .catch((err) => {
+                if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
     }
 
 
@@ -154,16 +193,26 @@ export default function MessagePage() {
         event.preventDefault()
         try {
             const response = await api.post("/api/profile/message/send/", {
-                  convo: convoID,
-                  sender: myProfile.id,
-                  message: curMessage 
-                }, );
-                const messageData = JSON.stringify(response.data)
-                socket.send(messageData);
-            }catch (error) {
-                //console.error('Error sending message:', error.response ? error.response.data : error.message);
-            }
+                convo: convoID,
+                sender: myProfile.id,
+                message: curMessage
+            },);
+            const messageData = JSON.stringify(response.data)
+            socket.send(messageData);
+        } catch (error) {
+            //console.error('Error sending message:', error.response ? error.response.data : error.message);
+        }
         setCurMessage("")
+    }
+
+    const handleConvoSelection = (chosenConvo) => {
+        setConvoID(chosenConvo)
+        setSelected(true)
+    }
+
+    const displayOtherUser = (clickedUser) => {
+        //username = ""
+        setOtherUser(clickedUser)
     }
 
     useEffect(() => { //check if both user's have been found yet
@@ -227,140 +276,156 @@ export default function MessagePage() {
 
             {/* Side Menu */}
             <Menu />
-
+            <MessageListPage onConvoSelect={handleConvoSelection} getOtherUser={displayOtherUser}/>
             {/* Main Content */}
             <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        marginTop: '80px', // Adjust for AppBar height
-                        marginLeft: '240px', // Adjust for Menu width
-                        padding: '20px',
-                        boxSizing: 'border-box',
-                        height: 'calc(100vh - 180px)', // Full height minus AppBar
-                        width: 'calc(100% - 50px)', // Full width minus Menu
-                        overflow: 'hidden,'
-                        
-                    }}
-                >
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginTop: '80px', // Adjust for AppBar height
+                    marginLeft: '240px', // Adjust for Menu width
+                    padding: '20px',
+                    boxSizing: 'border-box',
+                    height: 'calc(100vh - 180px)', // Full height minus AppBar
+                    width: 'calc(100% - 50px)', // Full width minus Menu
+                    overflow: 'hidden,'
+
+                }}
+            >
+                {selected ? (
+                <div className="messages-page" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <div className="title">
+                        {/* Show conversation title */}
+                        <Typography variant="h5" sx={{ mb: 2, textAlign: 'center', display: 'block', whiteSpace: 'normal', wordBreak: 'normal' }}>
+                            {(username)  ? (
+                                <>Your convo with {username}</>
+                                ) : (
+                                <>Your convo with {otherUser}</>
+                                )}
+                            
+                        </Typography>
+                    </div>
+
+                    {/* Messages */}
+                    <div
+                        className="message-holder"
+                        data-cy="message-holder"
+                        style={{
+                            flex: 1, // Allow the message holder to grow and fill available space
+                            overflowY: 'auto', // Enable scrolling if messages overflow
+                            padding: '50px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '10px', // Add spacing between messages
+                            wordBreak: 'break-word', // Break long words
+                            marginBottom: '0px',
+                            width: '400px'
+                        }}
+                    >
+                        {messages.map((message) => (
+                            <div
+                                key={`${message.messageID}`}
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    justifyContent: message.sender === myProfile.id ? 'flex-end' : 'flex-start', // Align messages correctly
+                                    width: '100%', // Make sure the message takes the full width of the container
+                                }}
+                            >
+                                <MessageDisplay
+                                    key={`${message.messageID}`}
+                                    message={message}
+                                    myProfileId={myProfile.id}
+                                />
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Message Input */}
+                    {convoExists ? (
+                        <form
+                            onSubmit={handleSendMessage}
+                            className="message-input"
+                            data-cy="message-form"
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px', // Add spacing between input and button
+                                padding: '0px',
+                                boxShadow: '0px 2px 5px rgba(0,0,0,0.1)',
+                                borderRadius: '5px',
+                            }}
+                        >
+                            <input
+                                id="input-box"
+                                className="form-input"
+                                type="text"
+                                value={curMessage}
+                                onChange={(e) => setCurMessage(e.target.value)}
+                                placeholder="Type your message..."
+                                data-cy="message-input"
+                                style={{
+                                    flex: 1, // Make the input box grow to fill space
+                                    padding: '10px',
+                                    border: '1px solid #ccc',
+                                    borderRadius: '5px',
+                                    outline: 'none',
+                                }}
+                            />
+                            <button
+                                className="send-message"
+                                type="submit"
+                                data-cy="send-message"
+                                style={{
+                                    padding: '10px 20px',
+                                    backgroundColor: '#007BFF',
+                                    color: '#fff',
+                                    border: 'none',
+                                    borderRadius: '5px',
+                                    cursor: 'pointer',
+                                }}
+                            >
+                                Send Message
+                            </button>
+                        </form>
+                    ) : (
+                        <form data-cy="no-msg-user-before" style={{ textAlign: 'center', width: '110%' }}>
+                            <Typography variant="h6" sx={{ mb: 1 }}>
+                                You have not messaged this user before
+                            </Typography>
+                            <Typography variant="body1" sx={{ mb: 2 }}>
+                                Begin here!
+                            </Typography>
+                            <button
+                                onClick={createConvo}
+                                type="submit"
+                                style={{
+                                    padding: '10px 20px',
+                                    backgroundColor: '#007BFF',
+                                    color: '#fff',
+                                    border: 'none',
+                                    borderRadius: '5px',
+                                    cursor: 'pointer',
+                                }}
+                            >
+                                Start your convo with {profile.username}!
+                            </button>
+                        </form>
+                    )}
+                </div>
+                ) : (
                     <div className="messages-page" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                         <div className="title">
                             {/* Show conversation title */}
-                            <Typography variant="h5" sx={{ mb: 2, textAlign: 'center', display: 'block', whiteSpace: 'normal', wordBreak: 'normal'}}>
-                                Your convo with {profile.username}
+                            <Typography variant="h5" sx={{ mb: 2, textAlign: 'center', display: 'block', whiteSpace: 'normal', wordBreak: 'normal' }}>
+                                Select a conversation to start chatting!
                             </Typography>
                         </div>
-
-                        {/* Messages */}
-                        <div
-                            className="message-holder"
-                            data-cy="message-holder"
-                            style={{
-                                flex: 1, // Allow the message holder to grow and fill available space
-                                overflowY: 'auto', // Enable scrolling if messages overflow
-                                padding: '50px',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '10px', // Add spacing between messages
-                                wordBreak: 'break-word', // Break long words
-                                marginBottom: '0px',
-                                width: '400px'
-                            }}
-                        >
-                            {messages.map((message) => (
-                                <div
-                                    key={`${message.messageID}`}
-                                    style={{
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        justifyContent: message.sender === myProfile.id ? 'flex-end' : 'flex-start', // Align messages correctly
-                                        width: '100%', // Make sure the message takes the full width of the container
-                                    }}
-                                >
-                                    <MessageDisplay
-                                        key={`${message.messageID}`}
-                                        message={message}
-                                        myProfileId={myProfile.id}
-                                    />
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Message Input */}
-                        {convoExists ? (
-                            <form
-                                onSubmit={handleSendMessage}
-                                className="message-input"
-                                data-cy="message-form"
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '10px', // Add spacing between input and button
-                                    padding: '0px',
-                                    boxShadow: '0px 2px 5px rgba(0,0,0,0.1)',
-                                    borderRadius: '5px',
-                                }}
-                            >
-                                <input
-                                    id="input-box"
-                                    className="form-input"
-                                    type="text"
-                                    value={curMessage}
-                                    onChange={(e) => setCurMessage(e.target.value)}
-                                    placeholder="Type your message..."
-                                    data-cy="message-input"
-                                    style={{
-                                        flex: 1, // Make the input box grow to fill space
-                                        padding: '10px',
-                                        border: '1px solid #ccc',
-                                        borderRadius: '5px',
-                                        outline: 'none',
-                                    }}
-                                />
-                                <button
-                                    className="send-message"
-                                    type="submit"
-                                    data-cy="send-message"
-                                    style={{
-                                        padding: '10px 20px',
-                                        backgroundColor: '#007BFF',
-                                        color: '#fff',
-                                        border: 'none',
-                                        borderRadius: '5px',
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    Send Message
-                                </button>
-                            </form>
-                        ) : (
-                            <form data-cy="no-msg-user-before" style={{ textAlign: 'center', width: '110%' }}>
-                                <Typography variant="h6" sx={{ mb: 1 }}>
-                                    You have not messaged this user before
-                                </Typography>
-                                <Typography variant="body1" sx={{ mb: 2 }}>
-                                    Begin here!
-                                </Typography>
-                                <button
-                                    onClick={createConvo}
-                                    type="submit"
-                                    style={{
-                                        padding: '10px 20px',
-                                        backgroundColor: '#007BFF',
-                                        color: '#fff',
-                                        border: 'none',
-                                        borderRadius: '5px',
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    Start your convo with {profile.username}!
-                                </button>
-                            </form>
-                        )}
                     </div>
-                </Box>
+                )}
+            </Box>
             {/* Footer */}
             {/* <Footer /> */}
-        </main> 
+        </main>
     )
 }

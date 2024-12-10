@@ -9,20 +9,27 @@ import SearchBar from "../components/SearchBar";
 import Menu from "../components/Menu";
 import Footer from "../components/Footer";
 
-import logo from'../assets/csbutwhiteoutlined.png'
+import logo from '../assets/csbutwhiteoutlined.png'
 import Avatar from '@mui/material/Avatar';
 import { AppBar, Toolbar, Typography, Container, Grid2, Paper, Box } from "@mui/material";
 
-export default function MessageListPage() { 
+export default function MessageListPage({onConvoSelect, getOtherUser}) {
     const [myProfile, setMyProfile] = useState([]);
     const [conversations, setConversations] = useState([]);
+    const navigate = useNavigate();
 
     const getMyProfile = () => {
         api
             .get(`/api/profile/`)
             .then((res) => res.data)
             .then((data) => setMyProfile(data))
-            .catch((err) => alert(err));
+            .catch((err) => {
+                if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    //alert(err);
+                }
+            })
     };
 
     const findConvos = () => {
@@ -30,26 +37,32 @@ export default function MessageListPage() {
             .get(`/api/message/findconvos/${myProfile.id}/`)
             .then((res) => res.data)
             .then((data) => setConversations(data))
-            .catch((err) => alert)
+            .catch((err) => {
+                if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    //alert(err);
+                }
+            })
     }
 
-    useEffect(() => { 
+    useEffect(() => {
         if (myProfile) {
             findConvos()
         }
     }, [myProfile])
 
-    useEffect(() => { 
+    useEffect(() => {
         getMyProfile()
     }, [])
 
     return (
         <main>
-           <AppBar position="fixed">
+            <AppBar position="fixed">
                 <Toolbar sx={{ display: 'flex', alignItems: 'center', width: '102%' }}>
 
                     {/* Logo - Aligned to the left */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 1}}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 1 }}>
                         <Link to="/home"> {/* Redirect to the home page */}
                             <img
                                 src={logo} // Path to your logo
@@ -73,7 +86,7 @@ export default function MessageListPage() {
                     </Box>
 
                     {/* Avatar - Aligned to the right */}
-                    <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center'}}>
+                    <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center' }}>
                         <Link to={`/profile/${myProfile.username}`}> {/* Navigate to the user's profile */}
                             <Avatar
                                 src={myProfile.profilePicture} // Path to the avatar image
@@ -90,7 +103,7 @@ export default function MessageListPage() {
                 </Toolbar>
             </AppBar>
             <Menu />
-            
+
             {/* Main Content */}
             <Box
                 sx={{
@@ -114,7 +127,7 @@ export default function MessageListPage() {
                             <div>
                                 {conversations.map((convo) => (
                                     <div key={convo.convo}>
-                                        <MessageListDisplay convo={convo} myProfile={myProfile} />
+                                        <MessageListDisplay convo={convo} myProfile={myProfile} onConvoSelect={onConvoSelect} getOtherUser={getOtherUser} />
                                     </div>
                                 ))}
                             </div>

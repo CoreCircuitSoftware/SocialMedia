@@ -19,7 +19,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import Button from "@mui/material/Button";
 import { ButtonGroup } from "@mui/material";
 
-import logo from'../assets/csbutwhiteoutlined.png'
+import logo from '../assets/csbutwhiteoutlined.png'
 import Avatar from '@mui/material/Avatar';
 import { AppBar, Toolbar, Typography, Container, Grid2, Paper, Box } from "@mui/material";
 
@@ -62,6 +62,15 @@ export default function PostPage() {
                 setIsMyPost(res.data.id === post.user)
             }
             )
+            .catch((err) => {
+                if (err.response && err.response.status === 404) {
+                    navigate("/404");
+                } else if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
     }
 
     useEffect(() => {
@@ -70,7 +79,15 @@ export default function PostPage() {
             .then((data) => {
                 setPost(data)
             })
-            .catch((err) => console.log("Error LOL"))
+            .catch((err) => {
+                if (err.response && err.response.status === 404) {
+                    navigate("/404");
+                } else if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
     }, [postid])
 
     useEffect(() => {
@@ -82,7 +99,15 @@ export default function PostPage() {
                 setThisUser(data)
                 setcommentContent('')
             })
-            .catch((err) => alert("error"));
+            .catch((err) => {
+                if (err.response && err.response.status === 404) {
+                    navigate("/404");
+                } else if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
     }, [post])
 
     const handleCommentSubmit = (e) => {
@@ -92,7 +117,15 @@ export default function PostPage() {
             .then((res) => {
                 window.location.reload();
             })
-            .catch((err) => console.log(err))
+            .catch((err) => {
+                if (err.response && err.response.status === 404) {
+                    navigate("/404");
+                } else if (err.response && err.response.status === 401) {
+                    navigate("/login");
+                } else {
+                    alert(err);
+                }
+            })
     }
 
     const getComments = () => {
@@ -103,7 +136,15 @@ export default function PostPage() {
                 .then((data) => {
                     setComments(data.reverse())
                 })
-                .catch((err) => console.log(err))
+                .catch((err) => {
+                    if (err.response && err.response.status === 404) {
+                        navigate("/404");
+                    } else if (err.response && err.response.status === 401) {
+                        navigate("/login");
+                    } else {
+                        alert(err);
+                    }
+                })
         }
     }
 
@@ -155,11 +196,11 @@ export default function PostPage() {
 
     return (
         <main>
-           <AppBar position="fixed">
+            <AppBar position="fixed">
                 <Toolbar sx={{ display: 'flex', alignItems: 'center', width: '102%' }}>
 
                     {/* Logo - Aligned to the left */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 1}}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 1 }}>
                         <Link to="/home"> {/* Redirect to the home page */}
                             <img
                                 src={logo} // Path to your logo
@@ -183,7 +224,7 @@ export default function PostPage() {
                     </Box>
 
                     {/* Avatar - Aligned to the right */}
-                    <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center'}}>
+                    <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center' }}>
                         <Link to={`/profile/${myProfile.username}`}> {/* Navigate to the user's profile */}
                             <Avatar
                                 src={myProfile.profilePicture} // Path to the avatar image
@@ -203,14 +244,14 @@ export default function PostPage() {
             <div className="content">
                 <div className="main-post">
                     <div className="post-page-options-buttons">
-                         <button className="pfp-post-main-btn" onClick={handleProfileClick} data-cy="profile-picture"><img className="pfp-post-main" src={thisUser.profilePicture} /></button>
+                        <button className="pfp-post-main-btn" onClick={handleProfileClick} data-cy="profile-picture"><img className="pfp-post-main" src={thisUser.profilePicture} /></button>
 
                         <ButtonGroup variant="contained" >
                             <Button startIcon=<ShareIcon /> onClick={handleShare}>share</Button>
                             {isMyPost && <Button startIcon=<EditIcon /> onClick={() => navigate(`/post/edit/${post.postID}`)}> Edit</Button>}
                         </ButtonGroup>
                     </div>
-                     <h1 className="post-title" data-cy="post-title">{post.title}</h1>
+                    <h1 className="post-title" data-cy="post-title">{post.title}</h1>
                     <p className="post-description" data-cy="post-description">{post.description}</p>
 
                     {post.hasMedia && media.length > 0 && (
