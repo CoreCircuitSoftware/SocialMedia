@@ -76,6 +76,7 @@ export default function PostDisplay(slug) {
     });
 
     const getUser = async () => {
+        console.log("getting user!")
         api
             .get(`/api/profile/getuserdata2/${slug.post.user}/`)
             .then((res) => res.data)
@@ -121,8 +122,9 @@ export default function PostDisplay(slug) {
     const getMyProfile = () => {
         api
             .get(`/api/profile/`)
-            .then((res) => {
-                setIsMyPost(res.data.id === thisUser.id)
+            .then((res) => res.data)
+            .then((data) => {                
+                setIsMyPost(data.id === thisUser.id)
             }
             )
     }
@@ -173,11 +175,15 @@ export default function PostDisplay(slug) {
         }
     }
 
+    useEffect(() => {
+        console.log(votes)
+    }, [votes])
+
     const handleVote = (voteType) => {
         if (postVote == -1) {
             changeVoteCountLocally(voteType, 0)
             api
-                .post('/api/posts/vote/new/', { vote: voteType, post: thisPost.postID, user: thisUser.id })
+                .post('/api/posts/vote/new/', { vote: voteType, post: thisPost.postID, user: thisUser })
                 .catch((err) => console.log(err))
             setPostVote(voteType)
         } else if (postVote == voteType) {
@@ -267,7 +273,7 @@ export default function PostDisplay(slug) {
                 {isMyPost ?
                     (<div>
                         <ButtonGroup variant="contained">
-                            <Button onClick={() => navigate(`/post/edit/${thisPost.postID}`)}>edit</Button>
+                            <Button onClick={() => navigate(`/post/edit/${thisPost.postID}`)} data-testid="edit-button">edit</Button>
                             <Button onClick={handlePostDelete}>delete</Button>
                             <Button variant='contained' color='primary' startIcon={<Share />} onClick={() => handlePostShare} data-cy="share">Share</Button>
                         </ButtonGroup>

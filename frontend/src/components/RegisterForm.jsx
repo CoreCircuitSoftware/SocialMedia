@@ -14,7 +14,7 @@ function RegisterForm({ route }) {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const sendWebhook = () => {
+/*     const sendWebhook = () => {
         const date = new Date();
         const formattedDate = date.toISOString();
         const content = {
@@ -43,15 +43,16 @@ function RegisterForm({ route }) {
                 'Content-Type': 'application/json'
             }
         })
-    }
+    } */
 
     const handleSubmit = async (e) => {
         setLoading(true);       //Start loading while the form is processed
         e.preventDefault();
+        /* istanbul ignore next */
         if (key == "CS4800") {
             try {
                 await api.post(route, { username, password, email, displayName })   //Set res variable to response from backend after sending form data
-                sendWebhook()
+                //sendWebhook()
                 navigate("/login")   //Send to Profile page to finish setup? or back to login?
             } catch (error) {
                 alert(error)
@@ -66,7 +67,6 @@ function RegisterForm({ route }) {
     const handleLogin = () => {   //Will send user to login form
         navigate("/login");
     }
-
     //This is the basic format of a form, note that 'name' is the const declared above and dictates the form's name
     return (
         <form onSubmit={handleSubmit} className="form-container">

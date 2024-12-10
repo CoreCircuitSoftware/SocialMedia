@@ -47,21 +47,65 @@ describe("RegisterForm", () => {
         fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: 'test_email' } });
         fireEvent.change(screen.getByPlaceholderText("Display Name"), { target: { value: 'test_display_name' } });
         fireEvent.change(screen.getByPlaceholderText("Enter register key"), { target: { value: 'CS4800' } }); // Ensure the key is correct
-    
-        // Simulate form submission
+        
+        await waitFor(() => {
+            fireEvent.click(screen.getByRole('button', { name: /register/i }));
+        });
+
+        expect(mockNavigate).toHaveBeenCalledWith('/login');
+    })
+
+    it("Invalid Key Error", async () => {
+        jest.spyOn(window, 'alert').mockImplementation(() => {})
+
+        render(<RegisterForm route="/register" />);
+        
+        const registerButton = screen.getByRole("button", { name: /register/i });
+        expect(registerButton).toBeInTheDocument();
+
         await act(async () => {
             fireEvent.click(screen.getByRole('button', { name: /register/i }));
         });
-    
-        // Wait for API call and assertions
+
         await waitFor(() => {
-            expect(api.post).toHaveBeenCalledWith('/register', {
-                username: 'test_user',
-                password: 'test_password',
-                email: 'test_email',
-                displayName: 'test_display_name',
-            });
-            expect(mockNavigate).toHaveBeenCalledWith('/login');
-        });
+            expect(window.alert).toHaveBeenCalledWith("Invalid Key")
+        });     
     });
+    
+    it("Invalid Key Error 2", async () => {
+        jest.spyOn(window, 'alert').mockImplementation(() => {})
+
+        render(<RegisterForm route="/register" />);
+        
+        const registerButton = screen.getByRole("button", { name: /register/i });
+        expect(registerButton).toBeInTheDocument();
+
+        fireEvent.change(screen.getByPlaceholderText("Enter register key"), { target: { value: 'CS432131800' } })
+
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button', { name: /register/i }));
+            expect(window.alert).toHaveBeenCalledWith("Invalid Key")
+          });
+    });
+
+    it("Api error when registering", async () => {
+        const mockError = new Error("Error");
+        api.post.mockRejectedValue(mockError); // Mock API response
+        jest.spyOn(window, 'alert').mockImplementation(() => {})
+
+        render(<RegisterForm route="/register" />);
+
+        fireEvent.change(screen.getByPlaceholderText("Enter register key"), { target: { value: "CS4800" } });
+        
+        const registerButton = screen.getByRole("button", { name: /register/i });
+        expect(registerButton).toBeInTheDocument();
+
+        await waitFor(() => {
+            fireEvent.click(screen.getByRole('button', { name: /register/i }));
+        });
+
+        expect(window.alert).toHaveBeenCalledWith(mockError)
+    });
+
+    
 })

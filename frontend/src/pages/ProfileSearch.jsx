@@ -12,7 +12,6 @@ import Footer from "../components/Footer.jsx";
 
 export default function ProfileSearch() {
     const { userchunk } = useParams();
-    console.log(`userchunk: ${userchunk}`)
     const [results, setResults] = useState([]);
     const navigate = useNavigate();
 
@@ -21,7 +20,6 @@ export default function ProfileSearch() {
         if (userchunk !== undefined) {
             api.get(`/api/search/profile/${userchunk}/`)
                 .then((res) => {
-                    console.log(res.data);
                     setResults(res.data)
                 })
                 .catch((err) => {
@@ -37,7 +35,6 @@ export default function ProfileSearch() {
         else {
             api.get(`/api/search/profile/`)
                 .then((res) => {
-                    console.log(res.data);
                     setResults(res.data)
                 })
                 .catch((err) => {
