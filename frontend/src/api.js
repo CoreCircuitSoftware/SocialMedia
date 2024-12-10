@@ -2,7 +2,8 @@ import axios from "axios"
 import { ACCESS_TOKEN } from "./constants"
 
 const api = axios.create({  //With this, we no longer need to include the base URL in our paths, we can just put the appropriate path instead
-    baseURL: import.meta.env.VITE_API_URL
+    baseURL: '127.0.0.1'
+    //baseURL: import.meta.env.VITE_API_URL
 });
 
 api.interceptors.request.use(

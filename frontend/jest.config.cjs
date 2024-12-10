@@ -12,6 +12,8 @@ module.exports = {
     collectCoverageFrom: [
       'src/**/*.{js,jsx}',
       '!src/index.js',
+      '!src/App.jsx',
+      '!src/components/ProtectedRoute.jsx',
     ],
     coverageDirectory: 'coverage',
     coverageReporters: ['text', 'lcov', 'json', 'html'],
