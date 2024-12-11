@@ -24,8 +24,13 @@ class PostSerializer(serializers.ModelSerializer):
     media = MediaSerializer(many=True, read_only=True) 
     class Meta:
         model = Post
-        fields = ["postID", "user", "community", "postDate","title","description","hasEdit","hasMedia","editDate", "media"]
-        extra_kwargs = {"postID": {"read_only": True}, "user": {"read_only": True},"postDate": {"read_only": True}}
+        fields = ["postID", "user", "community", "postDate", "title", "description", "hasEdit", "hasMedia", "editDate", "media"]
+        extra_kwargs = {
+            "postID": {"read_only": True},
+            "user": {"read_only": True},
+            "postDate": {"read_only": True},
+            "community": {"required": False},  # Make sure it's either optional or handled properly
+        }
 
 class PostVoteSerializer(serializers.ModelSerializer):
     class Meta:

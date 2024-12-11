@@ -6,6 +6,12 @@ import "../styles/Post.css"
 import Button from "@mui/material/Button";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
+import * as React from 'react';
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -29,7 +35,10 @@ export default function PostForm() {
     const [description, setDescription] = useState("");
     const [images, setImages] = useState([]);
     const [imagePreviews, setImagePreviews] = useState([]);
-
+    const [age, setAge] = React.useState(''); //rename and change to later
+    const handleChange = (event) => {
+        setAge(event.target.value);
+    };
     //Here to check the user is signed in, returns them to login if not
     useEffect(() => {
         api
@@ -54,18 +63,23 @@ export default function PostForm() {
 
     const createPost = async (e) => {
         e.preventDefault();
+        
         if (!title) {
             setTitleError(true);
             return;
         }
-
+        
+        console.log(age);  // Assuming `age` holds the community ID
+        
         const formData = new FormData();
         formData.append("title", title);
         formData.append("description", description);
+        formData.set("community", age);  // Add community ID (age) to formData
+    
         images.forEach((image) => {
             formData.append("media", image);
         });
-
+    
         try {
             await api.post("/api/createpost/", formData, {
                 headers: {
@@ -74,18 +88,23 @@ export default function PostForm() {
             });
             navigate("/profile");
         } catch (error) {
-            if (error.response.status === 401)
+            if (error.response.status === 401) {
                 navigate("/login");
+            }
         }
     };
+    
 
 
     const handleReturn = async (e) => {
         e.preventDefault();
         navigate("/profile")
-    }
 
+    
+    }
+    
     return (
+        
         <form onSubmit={createPost} className="post-submit-container">
             <h2>Create Post</h2>
             <label htmlFor="title">Title:</label>
@@ -109,6 +128,30 @@ export default function PostForm() {
                 placeholder="Enter Post Description"
                 data-cy="post-description"
             />
+            <Box sx={{ minWidth: 120 }}>
+                <FormControl fullWidth>
+                    <InputLabel id="CommunityDropDown">Community</InputLabel>
+                    <Select
+                        labelId="CommunityDropDown-label"
+                        id="demo-simple-select"
+                        value={age}
+                        label="Community"
+                        onChange={handleChange}
+                    >
+                        {/* Value = community ID */}
+                        <MenuItem value={null}>None</MenuItem>
+                        <MenuItem value={3}>Linux</MenuItem>
+                        <MenuItem value={4}>Hardware</MenuItem>
+                        <MenuItem value={5}>Gaming</MenuItem>
+                        <MenuItem value={6}>Funny</MenuItem>
+                        <MenuItem value={7}>Development</MenuItem>
+                        <MenuItem value={8}>Pets</MenuItem>
+                        <MenuItem value={9}>Cyber Security</MenuItem>
+                        <MenuItem value={10}>News</MenuItem>
+
+                    </Select>
+                </FormControl>
+            </Box>
             <Button
                 component="label"
                 variant="contained"
@@ -120,6 +163,7 @@ export default function PostForm() {
                 Upload Image
                 <VisuallyHiddenInput type="file" accept="image/*" multiple onChange={handleFileChange} />
             </Button>
+            
             {imagePreviews.length > 0 && (
                 <div className="image-preview">
                     {imagePreviews.map((preview, index) => (
@@ -147,6 +191,9 @@ export default function PostForm() {
             >
                 Go Back
             </Button>
+
+            
         </form>
+        
     );
 }
