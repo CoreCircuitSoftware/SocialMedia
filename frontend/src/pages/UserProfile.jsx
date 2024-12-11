@@ -275,8 +275,8 @@ export default function UserProfileTest() {
                                 src={myProfile.profilePicture} // Path to the avatar image
                                 alt={`${myProfile.username}'s Avatar`}
                                 sx={{
-                                    width: 40, // Adjust avatar size
-                                    height: 40,
+                                    width: 55, // Adjust avatar size
+                                    height: 55,
                                     cursor: 'pointer', // Make it clickable
                                     marginRight: 3, // Add space between avatar and username
                                 }}
@@ -340,7 +340,7 @@ export default function UserProfileTest() {
                                 </div>
                             </div>
 
-                            <div className="bio" data-cy="bio" >{profile.bio}</div>
+                            <div className="bio" data-cy="bio"  style={{fontSize: '20px'}}>{profile.bio}</div>
 
                             {/* Display Pending Friend Requests */}
                             {isMyProfile && friendRequests.length > 0 && (

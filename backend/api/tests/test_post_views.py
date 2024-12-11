@@ -5,6 +5,8 @@ from api.Models.user import CustomUser
 from api.Models.post import *
 from api.Views.post import *
 from rest_framework import status
+from django.core.files.uploadedfile import SimpleUploadedFile
+from unittest.mock import patch
 
 class TestCreatePostView(APITestCase):
     def setUp(self):
@@ -14,6 +16,9 @@ class TestCreatePostView(APITestCase):
             email='user@mail.com',
             displayName='DisplayUser'
         )
+        self.media_file1 = SimpleUploadedFile("media1.jpg", b"file_content", content_type="image/jpeg")
+        self.media_file2 = SimpleUploadedFile("media2.jpg", b"file_content", content_type="image/jpeg")
+        self.media_file3 = SimpleUploadedFile("media3.mp4", b"file_content", content_type="video/mp4")
         
         self.token = str(AccessToken.for_user(self.user))
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
@@ -25,9 +30,26 @@ class TestCreatePostView(APITestCase):
             'title': 'Test Post',
             'description': 'Test description',
         }
-        response = self.client.post(self.url, data, format='json')
+        files = {"media": [self.media_file1, self.media_file2]}
+        #response = self.client.post(self.url, data=data, media=files, format='json')
+        response = self.client.post(
+            self.url, 
+            data={**data, 'media': [self.media_file1, self.media_file2]}, 
+            format='multipart'
+        )
         self.assertEqual(response.status_code, 201)
         self.assertTrue(Post.objects.filter(user=self.user, title='Test Post').exists())
+    def test_create_post_bad_media(self):
+        data = {
+            'title': 'Test Post 2',
+            'description': 'Test description',
+            'media': [self.media_file1]
+        }
+        with patch('api.models.Media.objects.create') as mock_create:
+            mock_create.side_effect = ValidationError("Error saving media file")
+            response = self.client.post(self.url, data=data, format='multipart')
+            self.assertEqual(response.status_code, 400)
+            self.assertRaisesMessage(ValidationError, 'Validation Error')
 
     def test_create_post_unauthenticated(self):
         self.client.credentials()  # Clear authentication
@@ -201,6 +223,15 @@ class TestPostVotesCreateView(APITestCase):
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, 401)
         
+    def test_bad_upvote(self):
+        data = {'vote': True, 'post': self.post.postID, 'user': self.user.pk}
+        with patch('api.models.PostVote.objects.create') as mock_create:
+            mock_create.side_effect = ValidationError("Validation Error")
+            response = self.client.post(self.url, data=data, format='multipart')
+            self.assertEqual(response.status_code, 400)
+            with self.assertRaisesMessage(ValidationError, 'Validation Error'):
+                mock_create()
+        
 class TestPostVotesReturnView(APITestCase):
     def setUp(self):
         self.user1 = CustomUser.objects.create_user(
@@ -299,6 +330,11 @@ class TestPostVoteDeleteView(APITestCase):
             post=self.post,
             vote=True
         )
+        self.vote2 = PostVote.objects.create(
+            user=self.user2,
+            post=self.post,
+            vote=True
+        )
         self.token = str(AccessToken.for_user(self.user1))
         self.client = APIClient()
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
@@ -309,6 +345,14 @@ class TestPostVoteDeleteView(APITestCase):
         self.assertEqual(response.status_code, 204)
         self.assertFalse(PostVote.objects.filter(user=self.user1, post=self.post).exists())
 
+    def test_bad_post_vote_delete(self):
+        with patch('api.models.PostVote.delete') as mock_delete:
+            mock_delete.side_effect = ValidationError("Validation Error")
+            response = self.client.delete(self.url, format='multipart')
+            self.assertEqual(response.status_code, 400)
+            with self.assertRaisesMessage(ValidationError, 'Validation Error'):
+                mock_delete()
+            
     def test_post_vote_delete_unauthenticated(self):
         self.client.credentials()  # Clear authentication
         response = self.client.post(self.url)
@@ -341,7 +385,15 @@ class TestPostVotesUpdateView(APITestCase):
         response = self.client.patch(self.url, {'vote': False})
         self.assertEqual(response.status_code, 200)
         self.vote.refresh_from_db()
-        self.assertEqual(self.vote.vote, False)
+        self.assertEqual(self.vote.vote, False)   
+        
+    def test_bad_post_vote_update(self):
+        with patch('api.models.PostVote.save') as mock_save:
+            mock_save.side_effect = ValidationError("Validation Error")
+            response = self.client.patch(self.url, format='multipart')
+            self.assertEqual(response.status_code, 400)
+            with self.assertRaisesMessage(ValidationError, 'Validation Error'):
+                mock_save()
         
     def test_update_post_vote_unauthenticated(self):
         self.client.credentials()  # Clear authentication
@@ -397,10 +449,21 @@ class TestPostDeleteView(APITestCase):
             email='user@mail.com',
             displayName='TestUser'
         )
+        self.user2 = CustomUser.objects.create_user(
+            username='testUser2',
+            password='testPassword2',
+            email='user2@mail.com',
+            displayName='TestUser2'
+        )
         self.post = Post.objects.create(
             user=self.user,
             title="Test Post",
             description="Test Description"
+        )
+        self.post2 = Post.objects.create(
+            user=self.user2,
+            title="Test Post2",
+            description="Test Description2"
         )
         self.token = str(AccessToken.for_user(self.user))
         self.client = APIClient()
@@ -411,6 +474,20 @@ class TestPostDeleteView(APITestCase):
         response = self.client.delete(self.url)
         self.assertEqual(response.status_code, 204)
         self.assertFalse(Post.objects.filter(postID=self.post.postID).exists())
+        
+    def test_other_user_delete_post(self):
+        url = reverse('delete-post', kwargs={'pk': self.post2.postID})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 404)
+        self.assertTrue(Post.objects.filter(user=self.user2, postID=self.post2.postID).exists())
+        
+    def test_bad_post_delete(self):
+        with patch('api.models.Post.delete') as mock_delete:
+            mock_delete.side_effect = ValidationError("Validation Error")
+            response = self.client.delete(self.url, format='multipart')
+            self.assertEqual(response.status_code, 400)
+            with self.assertRaisesMessage(ValidationError, 'Validation Error'):
+                mock_delete()
 
     def test_delete_post_unauthorized(self):
         post2 = Post.objects.create(
@@ -432,10 +509,21 @@ class TestPostUpdateView(APITestCase):
             email='user@mail.com',
             displayName='TestUser'
         )
+        self.user2 = CustomUser.objects.create_user(
+            username='testUser2',
+            password='testPassword2',
+            email='user2@mail.com',
+            displayName='TestUser2'
+        )
         self.post = Post.objects.create(
             user=self.user,
             title="Test Post",
             description="Test Description"
+        )
+        self.post2 = Post.objects.create(
+            user=self.user2,
+            title="Test Post2",
+            description="Test Description2"
         )
         self.token = str(AccessToken.for_user(self.user))
         self.client = APIClient()
@@ -447,6 +535,21 @@ class TestPostUpdateView(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.post.refresh_from_db()
         self.assertEqual(self.post.title, 'Updated Title')
+        
+    def test_other_user_update_post(self):
+        url = reverse('edit-post', kwargs={'pk': self.post2.postID})
+        response = self.client.patch(url, {'title': 'Updated Title'})
+        self.assertEqual(response.status_code, 404)
+        self.post.refresh_from_db()
+        self.assertEqual(self.post2.title, 'Test Post2')
+        
+    def test_bad_post_update(self):
+        with patch('api.models.Post.save') as mock_save:
+            mock_save.side_effect = ValidationError("Validation Error")
+            response = self.client.patch(self.url, format='multipart')
+            self.assertEqual(response.status_code, 400)
+            with self.assertRaisesMessage(ValidationError, 'Validation Error'):
+                mock_save()
 
     def test_update_post_unauthorized(self):
         self.client.credentials()

@@ -8,7 +8,7 @@
   }
   
   .main-content {
-    flex: 3;
+    flex: 1;
     padding: 20px;
     /* Add any additional styles for the main content */
   }

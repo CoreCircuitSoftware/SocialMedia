@@ -31,7 +31,7 @@ class Message(models.Model): #add editing?
     editDate = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return self.messageID
+        return str(self.messageID)
     
 class ConvoSetting(models.Model):
     settingID = models.AutoField(primary_key=True)

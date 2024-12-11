@@ -34,7 +34,7 @@ class CreateConvo(generics.GenericAPIView):
         if serializer.is_valid():
             convo = serializer.save()
             return Response(serializer.data)
-        return Response(serializer.errors)
+        return Response(serializer.errors, status=400)
         
 class AddConvoParticipant(generics.CreateAPIView):
     serializer_class = ConvoParticipantSerializer

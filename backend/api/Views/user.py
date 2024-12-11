@@ -47,7 +47,6 @@ class UserProfileDelete(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated]
     
     def get_object(self):
-        print(self.request.method)
         return self.request.user
     
 class SearchProfiles(generics.ListAPIView):
