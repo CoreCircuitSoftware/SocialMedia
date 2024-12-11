@@ -9,7 +9,7 @@ import SearchBar from "../components/SearchBar";
 import Menu from "../components/Menu";
 import Footer from "../components/Footer";
 import PostDisplay from "../components/ProfilePostDisplay.jsx";
-import RecsDisplay from "../components/RecsDisplay.jsx";
+import RecsDisplayComm from "../components/RecsDisplayComm.jsx";
 import Avatar from '@mui/material/Avatar';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import GradeIcon from '@mui/icons-material/Grade';
@@ -18,7 +18,7 @@ import CommunityTest from "./Community"
 
 export default function Home() {
     const [posts, setPosts] = useState([])
-    const [userRec, setUserRec] = useState([])
+    const [commRec, setUserRec] = useState([])
     const [myProfile, setMyProfile] = useState([]);
     const [sort, setSort] = useState("friends")
     const [friends, setFriends] = useState([])
@@ -134,20 +134,22 @@ export default function Home() {
     };
 
     const findUsersToDisplay = () => {
-        api.get(`/api/search/profile/`)
+        api.get(`/api/search/community/`)
             .then((res) => {
-                var userArr = new Array()
-                var numUsers = res.data.length
-                for (var i = 0, j = 1; i < 3 && i < numUsers - 1; i++) {
-                    var randomNum = Math.floor(Math.random() * (numUsers + (j - i)))
-                    if (res.data[randomNum] && ((!userArr.includes(res.data[randomNum], 0)) && (myProfile.id != res.data[randomNum].id))) {
-                        userArr.push(res.data[randomNum])
+                var commArr = new Array()
+                var numComms = res.data.length
+                console.log("loading ", numComms, "communities")
+                for (var i = 0, j = 1; i < numComms; i++) {
+                    //var randomNum = Math.floor(Math.random() * (numComms + (j - i)))
+                    if (res.data[i]) {
+                        commArr.push(res.data[i])
                     }
                     else {
-                        i--
+                        
                     }
+                    console.log(commArr[i].name)
                 }
-                setUserRec(userArr)
+                setUserRec(commArr)
             })
             .catch((err) => console.log(err));
     }
@@ -247,8 +249,9 @@ export default function Home() {
                                 <Typography variant="h6" gutterBottom>
                                     Accounts suggested for you!
                                 </Typography>
-                                {userRec.map((rec) => (
-                                    <RecsDisplay rec={rec} key={rec.id} />
+                                {commRec.map((rec) => (
+                                    <RecsDisplayComm rec={rec} key={rec.communityID} />
+                                    
                                 ))}
                             </Paper>
                         </Grid2>

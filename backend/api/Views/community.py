@@ -35,7 +35,22 @@ class CommunityMemberByUser(generics.RetrieveAPIView):
     def get_object(self):
         userid = self.kwargs['user_id']
         return CommunityMembership.objects.get(user_id=userid)
-
+    
+class CommunityMemberAll(generics.ListAPIView):
+    print("getting all communities")
+    serializer_class = CommunitySerializer
+    permission_classes = [AllowAny]
+    def get_queryset(self):
+        return Community.objects.all()
+"""
+class SearchProfilesAll(generics.ListAPIView):
+    print('loading all users')
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return CustomUser.objects.all()
+"""
     
 """ 
 
