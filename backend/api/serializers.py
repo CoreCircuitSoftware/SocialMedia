@@ -98,4 +98,8 @@ class CommunitySerializer(serializers.ModelSerializer):
 class CommunityMembershipSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommunityMembership
-        fields = ['membershipID', 'joinDate', 'role', 'community_id', 'user_id' ]
+        fields = ['membershipID', 'joinDate', 'role', 'community_id']
+        def create(self, validated_data):
+            validated_data['user_id'] = self.context['request'].user  # Add the user here
+            return super().create(validated_data)
+

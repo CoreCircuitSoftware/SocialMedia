@@ -38,16 +38,18 @@ export default function CommunityTest() {
     const [myProfile, setMyProfile] = useState([]);
     const [posts, setPosts] = useState([]);
     const [isMyProfile, setIsMyProfile] = useState(false);
-
+    const [isMember, setIsMember] = useState(false);
 
     useEffect(() => {
         getCommunity();
         getMyProfile(); // Fetch current logged-in user's profile
-        
+        checkMembership();
 
     }, [communityname, username]);
 
     useEffect(() => {
+        checkMembership();
+
         getPosts();
         if (profile.id && myProfile.id) {
             if (profile.id === myProfile.id) {
@@ -59,6 +61,21 @@ export default function CommunityTest() {
 
         }
     }, [profile, myProfile]);
+
+
+
+    const checkMembership = () => {  
+        // Check if the user is already a member when the page loads
+        api
+            .get(`/api/check-membership/${community.communityID}/`)
+            .then((response) => {
+                //console.log(response);
+                setIsMember(response.data.is_member);
+            })
+            .catch((error) => {
+                console.error("Error checking membership:", error);
+            });
+    };
 
 
     const getMyProfile = () => {
@@ -88,11 +105,10 @@ export default function CommunityTest() {
             console.log("getting posts")
     };
 
-    const handleEdit = () => navigate("/profile/edit");
-    const handleLogout = () => navigate("/logout");
+    const handleEdit = () => navigate("/profile/edit"); // CHANGE TO CREATE COMMUNITYMEMBERSHIP
+
     const handlePostCreate = () => navigate("/post/create");
-    const handleMessage = () => navigate(`/profile/${profile.username}/message`);
-    const handleViewFriends = () => navigate(`/profile/${profile.username}/friends`);
+
     const handleShare = async () => {
         try {
             await navigator.clipboard.writeText(`http://circuitsocial.tech/profile/${profile.username}`);
@@ -103,12 +119,92 @@ export default function CommunityTest() {
         }
     }
 
-    const handleRemoveFriend = () => {
-        if (window.confirm("Remove Friend?")) {
-            api.delete(`/api/friends/remove/${friendShipID}/`).then(getProfile())
+
+    const CommunityPage = ({ communityID }) => {
+        const [isMember, setIsMember] = useState(false);
+    
+        useEffect(() => {
+            // Check if the user is already a member when the page loads
+            api
+                .get(`/api/check-membership/${communityID}/`)
+                .then((response) => {
+                    setIsMember(response.data.is_member);
+                })
+                .catch((error) => {
+                    console.error("Error checking membership:", error);
+                });
+        }, [communityID]);
+    
+
+    
+
+
+    };
+
+
+    const handleAddMembership = () => {
+        if (!community || !community.communityID) {
+            console.error("Community ID is not defined.");
+            return;
         }
-    }
-    console.log("community id: ", community.communityID)
+
+        if (!isMember) {
+            api
+                .post(`/api/communityjoin/${community.communityID}/`)
+                .then(() => {
+                    alert("You successfully joined the community!");
+                    setIsMember(true);  // Update state to reflect the new membership
+                })
+                .catch((err) => {
+                    console.error("Error joining the community:", err);
+                });
+        } else {
+            alert("You are already a member of this community.");
+        }
+    };
+
+    // const handleAddMemberhsip = () => {
+    //     console.log(community.communityID)
+    //     api
+    //         .post(`api/communityjoin/${community.communityID}/`,{}) 
+    //         .then(() => {
+    //         alert(`Joined the ${community.name} community!`);
+
+    //         })
+    //         .catch((err) => {
+    //             console.error("Error Joining community", err);
+    //         });
+
+    const handleLeaveCommunity = () => {
+        api
+            .delete(`/api/leave-community/${community.communityID}/`)
+            .then(() => {
+                alert("You have left the community.");
+                setIsMember(false);  // Update the UI to reflect that the user is no longer a member
+            })
+            .catch((err) => {
+                console.error("Error leaving the community:", err);
+            });
+    };
+    // }
+    const handleAddFriend = () => {
+        if (!profile.id || !myProfile.id) {
+            console.error("Profile ID or MyProfile ID is not defined.");
+            return;
+        }
+        api
+            .post(`/api/friend-request/${profile.id}/`, {})
+            .then(() => {
+                alert(`Friend request sent to ${profile.username}!`);
+                setFriendStatus('pending');
+            })
+            .catch((err) => {
+                console.error("Error sending friend request:", err);
+            });
+    };
+
+    
+    //console.log("community id: ", community.communityID)
     return (
         <Box sx={{ display: 'flex'}}> 
           <AppBar position="fixed">
@@ -170,7 +266,7 @@ export default function CommunityTest() {
                                    
                                 </div>
                                 <div className="buttons">
-                                    {isMyProfile ? (
+                                    {true ? (
                                         <ThemeProvider theme={theme}>
                                             <Box
                                         sx={{
@@ -178,10 +274,29 @@ export default function CommunityTest() {
                                             gap: 1, // Space between items, equivalent to 16px (8 * 2)
                                         }}
                                         >
-                                            <Button variant='contained' color='primary' startIcon={<ShareIcon />} onClick={handleShare} data-cy="share">Share</Button>
+                                           
                                             <Button variant='contained' startIcon={<CreateIcon />} onClick={handlePostCreate} data-cy="create-post">Create Post</Button>
-                                            <Button variant='contained' startIcon={<LogoutIcon />} onClick={handleLogout} data-cy="logout">Logout</Button>
-                                            <Button variant='contained' startIcon={<AccountBoxIcon />} onClick={handleEdit} data-cy="edit">Edit</Button>
+                                            {/* INSERT IF STATE FOR ALREADY FOLLOW AND UNFOLLOW BUTTON */}
+                                            <Button 
+                                                variant='contained' 
+                                                startIcon={<AccountBoxIcon />} 
+                                                onClick={handleAddMembership} 
+                                                data-cy="edit"
+                                            >
+                                                {isMember ? "Following" : "Follow Community"}  {/* Button text changes based on isMember */}
+                                            </Button>
+                                            {isMember && (
+                                                <Button 
+                                                    variant='contained' 
+                                                    startIcon={<LogoutIcon />} 
+                                                    onClick={handleLeaveCommunity}  // Define the logic for leaving the community
+                                                    data-cy="leave"
+                                                >
+                                                    Leave Community
+                                                </Button>
+                                            )}
+                                                
+                                            
                                         </Box>
                                         </ThemeProvider>
                                     ) : (

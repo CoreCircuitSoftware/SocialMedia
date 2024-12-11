@@ -60,6 +60,12 @@ urlpatterns = [
     path('community/getdata/<str:name>/', CommunityReadByNameView.as_view(), name='Community-ReadBy-Name' ),
     path('community/getdataid/<int:communityID>/', CommunityReadByID.as_view(), name='Community-ReadBy-Name' ),
     path('communitymember/<str:user_id>/', CommunityMemberByUser.as_view(), name='Communitymember-ReadBy-userid' ),
-    path("search/community/", CommunityMemberAll.as_view(), name="Community-search-all")
+    path("search/community/", CommunityMemberAll.as_view(), name="Community-search-all"),
+    path("communityjoin/<int:communityID>/", CommunityMemberJoin.as_view(), name ="Community-Join"),
+    path("leave-community/<int:communityID>/", LeaveCommunity.as_view(), name="leave-community"),
+    path("check-membership/<int:communityID>/", CheckCommunityMembership.as_view(), name="check-community-membership")
+
+
+    
         
 ]

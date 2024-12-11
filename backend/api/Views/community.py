@@ -10,6 +10,9 @@ from rest_framework import status
 from rest_framework import status
 from rest_framework.exceptions import ValidationError, PermissionDenied
 from django.utils import timezone
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import NotFound
 
 class CommunityView(generics.CreateAPIView):
     serializer_class = CommunitySerializer
@@ -42,165 +45,95 @@ class CommunityMemberAll(generics.ListAPIView):
     permission_classes = [AllowAny]
     def get_queryset(self):
         return Community.objects.all()
-"""
-class SearchProfilesAll(generics.ListAPIView):
-    print('loading all users')
-    serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
     
-    def get_queryset(self):
-        return CustomUser.objects.all()
-"""
-    
-""" 
 
-class PostCreate(generics.CreateAPIView):
-    serializer_class = PostSerializer
+class CommunityMemberJoin(generics.CreateAPIView):
+    serializer_class = CommunityMembershipSerializer
+    permission_classes = [IsAuthenticated]  # Restricts access to authenticated users
+
+    def perform_create(self, serializer):
+        user = self.request.user  # Authenticated user
+        #print(f"User: {user}")  # Debugging print statement to confirm user details
+
+        try:
+            community_id = self.kwargs['communityID']  # Fetch community ID from URL
+            community = Community.objects.get(pk=community_id)  # Get community by primary key
+            serializer.save(user=user, community=community, role=1)  # Save the membership
+        except Community.DoesNotExist:
+            raise NotFound(detail="Community not found.")  # Raise error if community doesn't exist
+        # userid  = self.request.user
+        # communityid = self.kwargs['communityID']
+        # communityofpage = Community.objects.get(communityID = communityid)
+        # serializer.save(community_id=communityofpage, user_id = userid, role = int(1) )
+
+
+class CommunityMembershipStatus(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, communityID):
+        user = request.user
+        try:
+            community = Community.objects.get(pk=communityID)
+            is_following = CommunityMembership.objects.filter(user=user, community=community).exists()
+            return Response({"is_following": is_following})
+        except Community.DoesNotExist:
+            raise NotFound(detail="Community not found.")
+        
+class CommunityMemberLeave(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, communityID):
+        user = request.user
+        try:
+            community = Community.objects.get(pk=communityID)
+            membership = CommunityMembership.objects.get(user=user, community=community)
+            membership.delete()
+            return Response({"message": "Successfully unfollowed the community."}, status=204)
+        except Community.DoesNotExist:
+            raise NotFound(detail="Community not found.")
+        except CommunityMembership.DoesNotExist:
+            raise NotFound(detail="Membership not found.")
+
+class CheckCommunityMembership(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, communityID):
+        user = request.user
+        try:
+            membership = CommunityMembership.objects.get(user=user, community__communityID=communityID)
+            return Response({"is_member": True})
+        except CommunityMembership.DoesNotExist:
+            return Response({"is_member": False})
+        
+
+class CommunityMemberJoin(generics.CreateAPIView):
+    serializer_class = CommunityMembershipSerializer
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-            post = serializer.save(user=self.request.user, hasMedia=True)
-            media_files = self.request.FILES.getlist('media')
-            try:
-                for media_file in media_files:
-                    media_instance = Media.objects.create(post=post, image=media_file, mediaType=0)
-                    media_instance.mediaURL = media_instance.image.url
-                    media_instance.save()
-            except Exception as e:
-                print(f"Error saving media file: {e}")
-
-class PostMediaListView(generics.ListAPIView):
-    serializer_class = MediaSerializer
-
-    def get_queryset(self):
-        post_id = self.kwargs['post_id']  # Extract post_id from the URL
-        return Media.objects.filter(post_id=post_id)
-
-class PostListView(generics.ListAPIView):
-    serializer_class = PostSerializer
-    permission_classes = [IsAuthenticated]
-    def get_queryset(self):
-        user_id = self.kwargs['user_id']
-        return Post.objects.filter(user__id=user_id)
-    
-class PostDetailView(generics.RetrieveAPIView):
-    serializer_class = PostSerializer
-    permission_classes = [IsAuthenticated]
-    def get_queryset(self):
-        post_id = self.kwargs['pk']
-        return Post.objects.filter(postID=post_id)
-    
-class PostListSortNew(generics.ListAPIView):
-    serializer_class = PostSerializer
-    permission_classes = [AllowAny]
-
-    def get_queryset(self):
-        return Post.objects.all()
-    
-class PostVotesCreate(generics.CreateAPIView):
-    serializer_class = PostVoteSerializer
-    permission_classes = [IsAuthenticated]
-
-    def perform_create(self, serializer):
-        try:
-            serializer.save(user=self.request.user)
-        except ValidationError as e:
-            print("Validation error:", e.detail)
-            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
-    
-class PostVotesReturnView(generics.ListAPIView):
-    serializer_class = PostVoteSerializer
-    permission_classes = [AllowAny]
-
-    def get_queryset(self):
-        post_id = self.kwargs['pk']
-        return PostVote.objects.filter(post=post_id)
-    
-class PostVotesGetView(generics.RetrieveAPIView):
-    serializer_class = PostVoteSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_object(self):
         user = self.request.user
-        post_id = self.kwargs['pk']
-        return get_object_or_404(PostVote, user=user, post_id=post_id)
-    
-class PostVoteDeleteView(generics.DestroyAPIView):
-    serializer_class = PostVoteSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_object(self):
-        user = self.request.user
-        post_id = self.kwargs['pk']
-        vote = get_object_or_404(PostVote, user=user, post_id=post_id)
-        if vote.user != self.request.user:
-            raise PermissionDenied("You cannot delete another user's vote")
-        return vote
-
-    def perform_destroy(self, instance):
-        try:
-            instance.delete()
-        except Exception as e:
-            raise ValidationError(f"Error deleting vote: {str(e)}")
+        community_id = self.kwargs['communityID']
         
-class PostVotesUpdate(generics.UpdateAPIView):
-    serializer_class = PostVoteSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_object(self):
-        user = self.request.user
-        post_id = self.kwargs['pk']
-        vote = get_object_or_404(PostVote, user=user, post_id=post_id)
-        if vote.user != self.request.user:
-            raise PermissionDenied("You cannot update another user's vote")
-        return vote
-
-    def perform_update(self, serializer):
-        try:
-            serializer.save()
-        except Exception as e:
-            raise ValidationError(f"Error updating vote: {str(e)}")
-
-class PostCommentsVotesReturnView(generics.ListAPIView):
-    serializer_class = CommentSerializer
-    permission_classes = [AllowAny]
-
-    def get_queryset(self):
-        post_id = self.kwargs['pk']
-        return Comment.objects.filter(post=post_id)
-    
-class PostDeleteView(generics.DestroyAPIView):
-    serializer_class = PostSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_object(self):
-        user = self.request.user
-        post_id = self.kwargs['pk']
-        post = get_object_or_404(Post, user=user, postID=post_id)
-        if post.user != self.request.user:
-            raise PermissionDenied("You cannot delete another user's post")
-        return post
-
-    def perform_destroy(self, instance):
-        try:
-            instance.delete()
-        except Exception as e:
-            raise ValidationError(f"Error deleting post: {str(e)}")
+        # Check if the user is already a member of the community
+        if CommunityMembership.objects.filter(user=user, community__communityID=community_id).exists():
+            raise ValidationError("You are already a member of this community.")
         
-class PostUpdate(generics.UpdateAPIView):
-    serializer_class = PostSerializer
+        try:
+            community = Community.objects.get(communityID=community_id)
+            serializer.save(user=user, community=community, role=1)
+        except Community.DoesNotExist:
+            raise NotFound(detail="Community not found.")
+        
+class LeaveCommunity(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get_object(self):
-        user = self.request.user
-        post_id = self.kwargs['pk']
-        post = get_object_or_404(Post, user=user, postID=post_id)
-        if post.user != self.request.user:
-            raise PermissionDenied("You cannot update another user's post")
-        return post
-
-    def perform_update(self, serializer):
+    def delete(self, request, communityID):
+        user = request.user
         try:
-            serializer.save(hasEdit=True,editDate=timezone.now())
-        except Exception as e:
-            raise ValidationError(f"Error updating post: {str(e)}") """
+            membership = CommunityMembership.objects.get(user=user, community__communityID=communityID)
+            membership.delete()  # Remove the membership
+            return Response({"message": "You have successfully left the community."}, status=200)
+        except CommunityMembership.DoesNotExist:
+            raise NotFound(detail="Membership not found.")
+
+
