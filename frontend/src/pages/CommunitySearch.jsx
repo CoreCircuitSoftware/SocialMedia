@@ -35,19 +35,25 @@ export default function Home() {
         findUsersToDisplay()
     }, [myProfile])
 
+
     useEffect(() => {
-        
         if (sort == "friends" && myProfile.id) {
             //fetchFriends()
-            fetchMyCommunities()
+            fetchMyCommunities()            
 
-            getCommunities()
-            //getPostsSortByMember()
         } else if (sort == "new") {
             getPostsSortByNew()
+            
+
         }
         
     }, [sort, myProfile])
+
+    useEffect(() => {
+
+        getCommunities()
+
+    }, [CommMember])
 
 
     useEffect(() => {
@@ -81,11 +87,20 @@ export default function Home() {
             .get("/api/posts/community/new/")
             .then((res) => res.data)
             .then((data) => {
-                setPosts(data.reverse())
+                setPosts((prev) => {
+                    // Add new posts while avoiding duplicates
+                    const newPosts = data.filter(
+                        post => !prev.some(existingPost => existingPost.postID === post.postID)
+                    );
+    
+                    // Combine and sort posts by "postDate"
+                    return [...prev, ...newPosts].sort((a, b) => new Date(b.postDate) - new Date(a.postDate));
+                });
             })
             .catch((err) => alert(err))
-            .finally(() => setLoading(false))
-    }
+            .finally(() => setLoading(false));
+    };
+    
 
     const getPostsSortByMember = (communityID) => {
         console.log(communityID);
@@ -118,6 +133,7 @@ export default function Home() {
     }
 
     const fetchMyCommunities = async () => { 
+
         api
             .get(`/api/communitymember/${myProfile.id}/`)
             .then((res) => {
@@ -131,29 +147,16 @@ export default function Home() {
     }
 
     const getCommunities = () => {
+
+        console.log("OOOO MAAA GOOD")
+        console.log("OOOO MAAA GOOD")
+        console.log(CommMember)
+        
         CommMember.forEach(member => {
             getPostsSortByMember(member.community_id);
         });
     };
-
-    const getCommunityData = (communityID) => {
-        console.log(communityID)
-        api
-            .get(`/api/community/getdataid/${communityID}/`)
-            .then((res) => res.data)
-            .then((data) => {
-                setCommunity((prev) => {
-                    // Avoid duplicate entries by checking against existing `communityID`s
-                    if (!prev.some(existingCommunity => existingCommunity.communityID === data.communityID)) {
-                        return [...prev, data];
-                    }
-                    return prev;
-                });
-            })
-            .catch((err) => console.log("Error getting community data:", err));
-    };
-
-    
+   
 
     const getPostFromUser = (friendID) => {
         api
@@ -192,7 +195,7 @@ export default function Home() {
                     else {
                         
                     }
-                    console.log(commArr[i].name)
+                    //console.log(commArr[i].name)
                 }
                 setUserRec(commArr)
             })
