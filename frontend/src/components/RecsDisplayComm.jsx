@@ -26,7 +26,7 @@ export default function RecsDisplayComm(slug) {
             />
             <CardActions>
                 <Button size="small" color="primary" onClick={handleGoToAccount}>
-                View Profile
+                Go To Community
                 </Button>
             </CardActions>
         </Card>

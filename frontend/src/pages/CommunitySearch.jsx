@@ -38,15 +38,21 @@ export default function Home() {
     useEffect(() => {
         
         if (sort == "friends" && myProfile.id) {
-            fetchFriends()
+            //fetchFriends()
             fetchMyCommunities()
+
             getCommunities()
+            //getPostsSortByMember()
         } else if (sort == "new") {
             getPostsSortByNew()
         }
+        
     }, [sort, myProfile])
 
+
     useEffect(() => {
+        
+
         handleFriendsPosts()
     }, [friends])
 
@@ -81,6 +87,28 @@ export default function Home() {
             .finally(() => setLoading(false))
     }
 
+    const getPostsSortByMember = (communityID) => {
+        console.log(communityID);
+        api
+            .get(`/api/posts/community/${communityID}/`)
+            .then((res) => res.data)
+            .then((data) => {
+                setPosts((prev) => {
+                    // Add new posts while avoiding duplicates
+                    const newPosts = data.filter(
+                        post => !prev.some(existingPost => existingPost.postID === post.postID)
+                    );
+    
+                    // Combine and sort posts by "postDate"
+                    return [...prev, ...newPosts].sort((a, b) => new Date(b.postDate) - new Date(a.postDate));
+                });
+            })
+            .catch((err) => alert(err))
+            .finally(() => setLoading(false));
+    };
+    
+    
+
     const fetchFriends = () => { 
         api.get(`/api/friends/${myProfile.id}/`)
             .then((res) => {
@@ -89,26 +117,43 @@ export default function Home() {
         .catch((err) => console.log(err));
     }
 
-    const fetchMyCommunities = () => { 
+    const fetchMyCommunities = async () => { 
         api
             .get(`/api/communitymember/${myProfile.id}/`)
             .then((res) => {
             setMembership(res.data)
-        })
-        .catch((err) => console.log(err));
-
-        console.log(myProfile.id)
-    }
-    const getCommunities = () => {
-        api 
-            .get(`/api/community/getdataid/${CommMember.community_id}/`)
-            .then((res) => {
-            setCommunity(res.data)
             
         })
-
-
+        .catch((err) => console.log(err));
+        
+        //console.log(myProfile.id)
+        
     }
+
+    const getCommunities = () => {
+        CommMember.forEach(member => {
+            getPostsSortByMember(member.community_id);
+        });
+    };
+
+    const getCommunityData = (communityID) => {
+        console.log(communityID)
+        api
+            .get(`/api/community/getdataid/${communityID}/`)
+            .then((res) => res.data)
+            .then((data) => {
+                setCommunity((prev) => {
+                    // Avoid duplicate entries by checking against existing `communityID`s
+                    if (!prev.some(existingCommunity => existingCommunity.communityID === data.communityID)) {
+                        return [...prev, data];
+                    }
+                    return prev;
+                });
+            })
+            .catch((err) => console.log("Error getting community data:", err));
+    };
+
+    
 
     const getPostFromUser = (friendID) => {
         api
@@ -247,7 +292,7 @@ export default function Home() {
                         <Grid2 item xs={12} md={4} sx={{ paddingLeft: 20 }}>
                             <Paper elevation={3} sx={{ p: 3}}>
                                 <Typography variant="h6" gutterBottom>
-                                    Accounts suggested for you!
+                                    Check out our Communities!
                                 </Typography>
                                 {commRec.map((rec) => (
                                     <RecsDisplayComm rec={rec} key={rec.communityID} />

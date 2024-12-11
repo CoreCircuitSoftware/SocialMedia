@@ -29,12 +29,12 @@ class CommunityReadByNameView(generics.RetrieveAPIView):
         community_name = self.kwargs['name']
         return Community.objects.get(name=community_name)     
     
-class CommunityMemberByUser(generics.RetrieveAPIView):
+class CommunityMemberByUser(generics.ListAPIView):
     serializer_class = CommunityMembershipSerializer
     permission_classes = [AllowAny]
-    def get_object(self):
+    def get_queryset(self):
         userid = self.kwargs['user_id']
-        return CommunityMembership.objects.get(user_id=userid)
+        return CommunityMembership.objects.filter(user_id=userid)
     
 class CommunityMemberAll(generics.ListAPIView):
     print("getting all communities")
