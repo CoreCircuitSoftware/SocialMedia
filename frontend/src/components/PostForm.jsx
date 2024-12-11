@@ -74,8 +74,9 @@ export default function PostForm() {
         const formData = new FormData();
         formData.append("title", title);
         formData.append("description", description);
+        if(age != null){
         formData.set("community", age);  // Add community ID (age) to formData
-    
+        }
         images.forEach((image) => {
             formData.append("media", image);
         });
