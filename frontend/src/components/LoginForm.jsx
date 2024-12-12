@@ -111,21 +111,29 @@ function LoginForm({ route }) {
     //This is the basic format of a form, note that 'name' is the const declared above and dictates the form's name
     return (
         <>
+                
+            <div
+            style={{
+                width: "60vw",
+                height: "100vh",
+                float: "left",
+                }}>
             {/* Image positioned separately */}
-            <img
+             <img
                 src="src/assets/login images/pexels-photo-6432056.jpeg" // Replace with the actual image path
                 alt="Login Illustration"
-                style={{
+                 style={{
                     position: "absolute",
                     top: "50%",
                     left: "30%", // Position image separately from the form
                     transform: "translate(-50%, -50%)",
-                    width: "905px",
-                    height: "830px",
+                    maxWidth: "60%",
+                    height: "100vh",
                     objectFit: "cover",
                 }}
             />
-            <img
+            </div>
+{/*             <img
                 src="src/assets/csbutwhiteoutlined.png" // Path to your logo
                 alt="Logo"
                 style={{
@@ -136,11 +144,10 @@ function LoginForm({ route }) {
                     right: "26%", 
                     transform: "translate(-50%, -50%)",
                     objectFit: "cover",
-                   
                 }}
-            />
+            /> */}
            
-        <div className="Login Header" 
+{/*         <div className="Login Header" 
             style={{
              width:"300px",
              position: "absolute",
@@ -150,17 +157,49 @@ function LoginForm({ route }) {
             <h5 style={{ fontSize: "35px", fontWeight: "bold", marginLeft: "0px"}}> 
                 Circuit Social
             </h5>
-        </div>
+        </div> */}
+        <div
+        style={{
+            marginLeft: "60vw",
+            height: "100vh",
+            alignContent: "center",
+            display: "flex",
+            flexDirection: "column",
+            }}
+        >  
+            
              {/* Form */}
             <form 
                 onSubmit={handleSubmit} 
                 className="form-container"
                 style={{
                     display: "flex",
-                    marginTop: "120px",
-                    marginRight: "100px",
-                    flexDirection: "column"
+                    flexDirection: "column",
+                    width: "100%",
                     }}>
+
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        }}>
+                    <img
+                        src="src/assets/csbutwhiteoutlined.png" // Path to your logo
+                        alt="Logo"
+                        style={{
+                            width: "45%",
+                            height: "55",
+                            objectFit: "cover",
+                            padding: "1dvh" 
+                        }}
+                    />
+                    <div className="Login Header">
+                        <h5 style={{ fontSize: "35px", fontWeight: "bold"}}> 
+                            Circuit Social
+                        </h5>
+                    </div>
+                </div>
+                
 
                 <h1>Login</h1>
                 {accountError && (
@@ -192,14 +231,6 @@ function LoginForm({ route }) {
                     style={{marginBottom: "-18px"}}
                 />
                 <h5 style={{marginRight: "225px", marginBottom: "-1px", fontSize: "12px"}}> Required Field*</h5>
-                {/* <input
-                    className="form-input"
-                    type="password"
-                    value={key}
-                    onChange={(e) => setKey(e.target.value)}
-                    placeholder="Enter login key"
-                    data-cy="key"
-                /> */}
                 <button className="form-button" type="submit" data-cy="login">
                     Login
                 </button>
@@ -207,6 +238,7 @@ function LoginForm({ route }) {
                     Register
                 </button>
             </form>
+            </div>
         </>
         
     );

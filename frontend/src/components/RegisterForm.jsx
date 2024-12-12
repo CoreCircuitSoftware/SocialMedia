@@ -66,19 +66,8 @@ function RegisterForm({ route }) {
     //This is the basic format of a form, note that 'name' is the const declared above and dictates the form's name
     return (
         <>  
-            <img
-                src="src/assets/login images/peakpx.jpg" // Replace with the actual image path
-                alt="Login Illustration"
-                style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "70%", // Position image separately from the form
-                    transform: "translate(-50%, -50%)",
-                    width: "955px",
-                    height: "930px",
-                    objectFit: "cover",
-                }}
-            />
+
+            {/*
             <img
                 src="src/assets/csbutwhiteoutlined.png" // Path to your logo
                 alt="Logo"
@@ -92,8 +81,8 @@ function RegisterForm({ route }) {
                     objectFit: "cover",
                    
                 }}
-            />
-            <div className="Login Header" 
+            /> */}
+{/*             <div className="Login Header" 
                 style={{
                 width:"300px",
                 position: "absolute",
@@ -103,17 +92,48 @@ function RegisterForm({ route }) {
                 <h5 style={{ fontSize: "35px", fontWeight: "bold", marginLeft: "0px"}}> 
                     Circuit Social
                 </h5>
-            </div>
-
+            </div> */}
+        <div
+        style={{
+            width: "40vw",
+            height: "100vh",
+            float: "left",
+            alignContent: "center",
+            display: "flex",
+            flexDirection: "column",
+            }}>
             <form 
                 onSubmit={handleSubmit} 
                 className="form-container"
                 style={{
                     display: "flex",
-                    marginTop: "120px",
-                    marginLeft: "100px"
+                    flexDirection: "column",
+                    width: "100%",
                     }}
                 >
+
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        }}>
+                    <img
+                        src="src/assets/csbutwhiteoutlined.png" // Path to your logo
+                        alt="Logo"
+                        style={{
+                            width: "45%",
+                            height: "55",
+                            objectFit: "cover",
+                            padding: "1dvh" 
+                        }}
+                    />
+                    <div className="Login Header">
+                        <h5 style={{ fontSize: "35px", fontWeight: "bold"}}> 
+                            Circuit Social
+                        </h5>
+                    </div>
+                </div>
+
                 <h1>Register</h1>
                 <input
                     className="form-input"
@@ -161,6 +181,26 @@ function RegisterForm({ route }) {
                     Login
                 </button>
             </form>
+        </div>
+            <div
+            style={{
+                marginLeft: "40vw",
+                height: "100vh",
+                }}>
+             <img
+                src="src/assets/login images/peakpx.jpg" // Replace with the actual image path
+                alt="Login Illustration"
+                style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "70%", // Position image separately from the form
+                    transform: "translate(-50%, -50%)",
+                    width: "60%",
+                    height: "100vh",
+                    objectFit: "cover",
+                }}
+            /> 
+            </div>
         </>
        
     );
