@@ -270,9 +270,22 @@ export default function MessagePage() {
             <Menu />
             <MessageListPage onConvoSelect={handleConvoSelection} getOtherUser={displayOtherUser}/>
             {/* Main Content */}
+            <div
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                marginTop: '80px', // Adjust for AppBar height
+                marginLeft: '340px', // Adjust for Menu width
+                padding: '20px',
+                //boxSizing: 'border-box',
+                height: '80dvh',//'calc(100vh - 225px)', // Full height minus AppBar
+                width: '500px', // Full width minus Menu
+                overflow: 'hidden,',
+                border: '2px solid white', // Add white border
+                        }}>
             <Box
                 sx={{
-                    display: 'flex',
+/*                     display: 'flex',
                     flexDirection: 'column',
                     marginTop: '80px', // Adjust for AppBar height
                     marginLeft: '340px', // Adjust for Menu width
@@ -281,7 +294,7 @@ export default function MessagePage() {
                     height: 'calc(100vh - 225px)', // Full height minus AppBar
                     width: '500px', // Full width minus Menu
                     overflow: 'hidden,',
-                    border: '2px solid white', // Add white border
+                    border: '2px solid white', // Add white border */
 
                 }}
             >
@@ -312,7 +325,7 @@ export default function MessagePage() {
                             gap: '0px', // Add spacing between messages
                             wordBreak: 'break-word', // Break long words
                             // marginBottom: '0px',
-                            maxHeight: "410px",
+                            maxHeight: "45dvh",
                             width: '400px',
                         }}
                     >
@@ -348,10 +361,10 @@ export default function MessagePage() {
                                 padding: '0px',
                                 boxShadow: '0px 2px 5px rgba(0,0,0,0.1)',
                                 borderRadius: '5px',
-                                minWidth: '500px',
-                                marginTop: "590px",
-                                position: "absolute"
-                        
+                                width: '-webkit-fill-available',
+                                marginTop: "65vh",
+                                position: "absolute",
+                                height: "15dvh"
                             }}
                         >
                             <input
@@ -363,12 +376,12 @@ export default function MessagePage() {
                                 placeholder="Type your message..."
                                 data-cy="message-input"
                                 style={{
-                                    flex: 1, // Make the input box grow to fill space
+                                    //flex: 1, // Make the input box grow to fill space
                                     padding: '10px',
                                     border: '1px solid #ccc',
                                     borderRadius: '5px',
                                     outline: 'none',
-                                    width: '500px'
+                                    width: '-webkit-fill-available',
                             
                                 }}
                             />
@@ -425,6 +438,7 @@ export default function MessagePage() {
                     </div>
                 )}
             </Box>
+            </div>
             {/* Footer */}
             {/* <Footer /> */}
         </main>
