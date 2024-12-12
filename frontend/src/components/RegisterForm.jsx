@@ -4,6 +4,8 @@ import api from "../api"
 import { useNavigate } from "react-router-dom";
 //import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 import "../styles/Form.css"
+import circuit from '../assets/login images/peakpx.jpg'
+import logo from '../assets/csbutwhiteoutlined.png'
 
 function RegisterForm({ route }) {
     const [username, setUsername] = useState("");    //These are the fields that must be filled out by the form
@@ -118,7 +120,7 @@ function RegisterForm({ route }) {
                         flexDirection: "row",
                         }}>
                     <img
-                        src="src/assets/csbutwhiteoutlined.png" // Path to your logo
+                        src={logo} // Path to your logo
                         alt="Logo"
                         style={{
                             width: "45%",
@@ -188,7 +190,7 @@ function RegisterForm({ route }) {
                 height: "100vh",
                 }}>
              <img
-                src="src/assets/login images/peakpx.jpg" // Replace with the actual image path
+                src={circuit} // Replace with the actual image path
                 alt="Login Illustration"
                 style={{
                     position: "absolute",
