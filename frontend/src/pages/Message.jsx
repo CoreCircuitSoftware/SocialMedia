@@ -163,14 +163,6 @@ export default function MessagePage() {
             })
     }
 
-    // const loadConvo = () => {
-    //     api
-    //         .post(`/api/profile/message/loadconvo/${convoID}/`)
-    //         .then((res) => res.data)
-    //         .then((data) => {
-    //             setThisConvo(data[0])
-    //         })
-    // }
 
     const getMessages = () => {
         api
@@ -263,8 +255,8 @@ export default function MessagePage() {
                                 src={myProfile.profilePicture}
                                 alt={`${myProfile.username}'s Avatar`}
                                 sx={{
-                                    width: 40,
-                                    height: 40,
+                                    width: 55,
+                                    height: 55,
                                     cursor: 'pointer',
                                     marginRight: 3,
                                 }}
@@ -283,12 +275,13 @@ export default function MessagePage() {
                     display: 'flex',
                     flexDirection: 'column',
                     marginTop: '80px', // Adjust for AppBar height
-                    marginLeft: '240px', // Adjust for Menu width
+                    marginLeft: '340px', // Adjust for Menu width
                     padding: '20px',
                     boxSizing: 'border-box',
-                    height: 'calc(100vh - 180px)', // Full height minus AppBar
-                    width: 'calc(100% - 50px)', // Full width minus Menu
-                    overflow: 'hidden,'
+                    height: 'calc(100vh - 225px)', // Full height minus AppBar
+                    width: '500px', // Full width minus Menu
+                    overflow: 'hidden,',
+                    border: '2px solid white', // Add white border
 
                 }}
             >
@@ -316,10 +309,11 @@ export default function MessagePage() {
                             padding: '50px',
                             display: 'flex',
                             flexDirection: 'column',
-                            gap: '10px', // Add spacing between messages
+                            gap: '0px', // Add spacing between messages
                             wordBreak: 'break-word', // Break long words
-                            marginBottom: '0px',
-                            width: '400px'
+                            // marginBottom: '0px',
+                            maxHeight: "410px",
+                            width: '400px',
                         }}
                     >
                         {messages.map((message) => (
@@ -349,11 +343,15 @@ export default function MessagePage() {
                             data-cy="message-form"
                             style={{
                                 display: 'flex',
-                                alignItems: 'center',
+                                // alignItems: 'center',
                                 gap: '10px', // Add spacing between input and button
                                 padding: '0px',
                                 boxShadow: '0px 2px 5px rgba(0,0,0,0.1)',
                                 borderRadius: '5px',
+                                minWidth: '500px',
+                                marginTop: "590px",
+                                position: "absolute"
+                        
                             }}
                         >
                             <input
@@ -370,6 +368,8 @@ export default function MessagePage() {
                                     border: '1px solid #ccc',
                                     borderRadius: '5px',
                                     outline: 'none',
+                                    width: '500px'
+                            
                                 }}
                             />
                             <button
@@ -383,6 +383,7 @@ export default function MessagePage() {
                                     border: 'none',
                                     borderRadius: '5px',
                                     cursor: 'pointer',
+                                    
                                 }}
                             >
                                 Send Message

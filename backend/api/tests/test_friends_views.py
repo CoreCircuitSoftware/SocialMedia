@@ -61,13 +61,17 @@ class TestSendFriendRequestView(TestCase):
         self.token = str(AccessToken.for_user(self.user1))
         self.client = APIClient()
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
-        
-        self.url = reverse('send-friend-request', kwargs={'user2_id': self.user2.id})
 
     def test_send_friend_request(self):
-        response = self.client.post(self.url)
+        url = reverse('send-friend-request', kwargs={'user2_id': self.user2.id})
+        response = self.client.post(url)
         self.assertEqual(response.status_code, 201)
         self.assertTrue(FriendRequest.objects.filter(user1=self.user1, user2=self.user2).exists())
+        
+    def test_send_friend_request_fake_user(self):
+        url = reverse('send-friend-request', kwargs={'user2_id': 'ffffffff-ffff-ffff-ffff-ffffffffffff'})
+        response = self.client.post(url)
+        self.assertEqual(response.json(), {"detail": "User not found."})
 
 class TestAcceptFriendRequestView(TestCase):
     def setUp(self):
@@ -83,19 +87,38 @@ class TestAcceptFriendRequestView(TestCase):
             email='user2@mail.com',
             displayName='DisplayUser2'
         )
+        self.user3 = User.objects.create_user(
+            username='testUser3',
+            password='testPassword3',
+            email='user3@mail.com',
+            displayName='DisplayUser3'
+        )
         
-        self.friend_request = FriendRequest.objects.create(user1=self.user1, user2=self.user2)
-        
-        self.token = str(AccessToken.for_user(self.user2))
+        self.token = str(AccessToken.for_user(self.user1))
         self.client = APIClient()
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
-        
-        self.url = reverse('accept-friend-request', kwargs={'pk': self.friend_request.pk})
 
     def test_accept_friend_request(self):
-        response = self.client.patch(self.url, {'accepted': True}, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(Friend.objects.filter(user1=self.user1, user2=self.user2).exists())
+        friend_request = FriendRequest.objects.create(user1=self.user2, user2=self.user1)
+        url = reverse('accept-friend-request', kwargs={'pk': friend_request.pk})
+        response = self.client.patch(url, {'accepted': True}, format='json')
+        self.assertEqual(response.status_code, 204)
+        self.assertTrue(Friend.objects.filter(user1=self.user2, user2=self.user1).exists())
+        self.assertFalse(FriendRequest.objects.filter(user1=self.user2, user2=self.user1).exists())
+        
+    def test_decline_friend_request(self):
+        friend_request = FriendRequest.objects.create(user1=self.user3, user2=self.user1)
+        url = reverse('accept-friend-request', kwargs={'pk': friend_request.pk})
+        response = self.client.patch(url, {'accepted': False}, format='json')
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(Friend.objects.filter(user1=self.user3, user2=self.user1).exists())
+        self.assertFalse(FriendRequest.objects.filter(user1=self.user3, user2=self.user1).exists())
+        
+    def test_accept_friend_request_not_allowed(self):
+        friend_request = FriendRequest.objects.create(user1=self.user2, user2=self.user3)
+        url = reverse('accept-friend-request', kwargs={'pk': friend_request.pk})
+        response = self.client.patch(url, {'accepted': True}, format='json')
+        self.assertEqual(response.json(), ['You cannot respond to this friend request.'])
 
 class TestListFriendRequestsView(TestCase):
     def setUp(self):
@@ -212,12 +235,17 @@ class TestDeleteFriendshipView(TestCase):
         self.client = APIClient()
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
         
-        self.url = reverse('delete-friendship', kwargs={'pk': self.friendship.friendShipID})
 
     def test_delete_friendship(self):
-        response = self.client.delete(self.url)
+        url = reverse('delete-friendship', kwargs={'pk': self.friendship.friendShipID})
+        response = self.client.delete(url)
         self.assertEqual(response.status_code, 204)
         self.assertFalse(Friend.objects.filter(user1=self.user1, user2=self.user2).exists())
+        
+    def test_delete_fake_friendship(self):
+        url = reverse('delete-friendship', kwargs={'pk': 999})  #fake friendship pk
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 404)
         
 class TestUnauthenticated(TestCase):
     def setUp(self):

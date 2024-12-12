@@ -58,76 +58,43 @@ export default function MessageListPage({onConvoSelect, getOtherUser}) {
 
     return (
         <main>
-            <AppBar position="fixed">
-                <Toolbar sx={{ display: 'flex', alignItems: 'center', width: '102%' }}>
-
-                    {/* Logo - Aligned to the left */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 1 }}>
-                        <Link to="/home"> {/* Redirect to the home page */}
-                            <img
-                                src={logo} // Path to your logo
-                                alt="Logo"
-                                style={{
-                                    width: 85,  // Adjust size of the logo
-                                    height: 60,
-                                    marginRight: '1px',
-                                    cursor: 'pointer', // Make it clear that the logo is clickable
-                                }}
-                            />
-                        </Link>
-                    </Box>
-
-                    {/* Centered Text and SearchBar */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-                        <Typography variant="h6" sx={{ textAlign: 'center', marginRight: 1 }}>
-                            CircuitSocial
-                        </Typography>
-                        <SearchBar />
-                    </Box>
-
-                    {/* Avatar - Aligned to the right */}
-                    <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center' }}>
-                        <Link to={`/profile/${myProfile.username}`}> {/* Navigate to the user's profile */}
-                            <Avatar
-                                src={myProfile.profilePicture} // Path to the avatar image
-                                alt={`${myProfile.username}'s Avatar`}
-                                sx={{
-                                    width: 40, // Adjust avatar size
-                                    height: 40,
-                                    cursor: 'pointer', // Make it clickable
-                                    marginRight: 3, // Add space between avatar and username
-                                }}
-                            />
-                        </Link>
-                    </Box>
-                </Toolbar>
-            </AppBar>
-            <Menu />
-
             {/* Main Content */}
             <Box
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    marginTop: '30px', // Adjust to match the height of the AppBar
+                    marginTop: '50px', // Adjust to match the height of the AppBar
                     marginLeft: '380px', // Adjust to match the width of the Menu
-                    padding: '20px',
                     boxSizing: 'border-box',
                     height: 'calc(100vh - 230px)', // Full height minus AppBar
                     justifyContent: conversations.length === 0 ? 'center' : 'flex-start', // Center if no conversations
                     alignItems: 'center', // Center horizontally
+                   
                 }}
             >
-                <div className="MessageListPage">
-                    <Typography variant="h4" component="h1" sx={{ mb: 2, textAlign: 'center' }}>
+                <Typography variant="h4" component="h1" sx={{ mb: 2, textAlign: 'center', marginTop: '20px' }}>
                         Your Conversations:
-                    </Typography>
-                    <div>
+                </Typography>
+
+                <div className="MessageListPage">
+                    <div
+                        style={{
+                            
+                        }}
+                    >
                         {conversations.length > 0 ? (
                             <div>
                                 {conversations.map((convo) => (
                                     <div key={convo.convo}>
-                                        <MessageListDisplay convo={convo} myProfile={myProfile} onConvoSelect={onConvoSelect} getOtherUser={getOtherUser} />
+                                        <MessageListDisplay 
+                                          convo={convo} 
+                                          myProfile={myProfile} 
+                                          onConvoSelect={onConvoSelect} 
+                                          getOtherUser={getOtherUser}
+                                          style={{
+                                            
+                                          }}
+                                          />
                                     </div>
                                 ))}
                             </div>

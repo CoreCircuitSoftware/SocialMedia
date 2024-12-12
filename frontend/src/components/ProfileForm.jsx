@@ -9,7 +9,7 @@ import Button from "@mui/material/Button";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import Avatar from '@mui/material/Avatar';
 import defaultProfilePic from'../assets/csbutwhiteoutlined.png'
-import defaultBackground from'../assets/background.jpg'
+import defaultBackground from'../assets/login images/circuit-electronic-blue-black-dark-background-digital-art-ab.png'
 import Box from '@mui/material/Box';
 
 

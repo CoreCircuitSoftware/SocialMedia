@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import api from "../api";
 import Menu from '../components/Menu';
@@ -10,7 +10,9 @@ import ShareIcon from '@mui/icons-material/Share';
 import EditIcon from '@mui/icons-material/Edit';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import Button from "@mui/material/Button";
-import { ButtonGroup } from "@mui/material";
+import { ButtonGroup, AppBar, Toolbar, Typography, Box } from "@mui/material";
+import logo from '../assets/csbutwhiteoutlined.png'
+import Avatar from '@mui/material/Avatar';
 
 export default function CommentPage() {
     const { commentID } = useParams()
@@ -83,6 +85,7 @@ export default function CommentPage() {
             .then((data) => {
                 setThisUser(data)
                 setcommentContent('')
+                console.log('thisUser', thisUser);
             })
             .catch((err) => {
                 if (err.response && err.response.status === 404) {
@@ -158,9 +161,54 @@ export default function CommentPage() {
 
     return (
         <main>
-            <SearchBar />
+           {/* Upper Bar */}
+           <AppBar position="fixed">
+                <Toolbar sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                    {/* Logo - Aligned to the left */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 1 }}>
+                        <Link to="/home">
+                            <img
+                                src={logo} // Path to your logo
+                                alt="Logo"
+                                style={{
+                                    width: 85,
+                                    height: 65,
+                                    marginRight: '1px',
+                                    cursor: 'pointer',
+                                }}
+                            />
+                        </Link>
+                    </Box>
+
+                    {/* Centered Text and SearchBar */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+                        <Typography variant="h6" sx={{ textAlign: 'center', marginRight: 1 }}>
+                            CircuitSocial
+                        </Typography>
+                        <SearchBar />
+                    </Box>
+
+                    {/* Avatar - Aligned to the right */}
+                    <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center' }}>
+                        <Link to={`/profile/${thisUser.username}`}>
+                            <Avatar
+                                src={thisUser.profilePicture}
+                                alt={`${thisUser.profilePicture}'s Avatar`}
+                                sx={{
+                                    width: 55,
+                                    height: 55,
+                                    cursor: 'pointer',
+                                    marginRight: 3,
+                                }}
+                            />
+                        </Link>
+                    </Box>
+                </Toolbar>
+            </AppBar>
+
+            {/* Side Menu */}
             <Menu />
-            <div className="content">
+            <div className="content" >
                 <div className="main-post">
                     <div className="post-page-options-buttons">
                         <button className="pfp-post-main-btn" onClick={handleProfileClick} data-cy="profile-picture"><img className="pfp-post-main" src={thisUser.profilePicture} /></button>

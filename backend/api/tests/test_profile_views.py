@@ -196,6 +196,7 @@ class TestUserProfileDeleteView(TestCase):
         response = self.client.delete(self.url)
         self.assertEqual(response.status_code, 204)
         self.assertFalse(CustomUser.objects.filter(username=self.user.username).exists())
+        # self.assertEqual(response.data['detail'], 'User profile deleted successfully.')
 
 class TestSearchProfilesView(TestCase):
     url = reverse('profile-search', kwargs={'username_chunk': 'search'})

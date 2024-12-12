@@ -227,11 +227,11 @@ export default function PostPage() {
                     <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center' }}>
                         <Link to={`/profile/${myProfile.username}`}> {/* Navigate to the user's profile */}
                             <Avatar
-                                src={myProfile.profilePicture} // Path to the avatar image
-                                alt={`${myProfile.username}'s Avatar`}
+                                src={thisUser.profilePicture} // Path to the avatar image
+                                alt={`${thisUser.username}'s Avatar`}
                                 sx={{
-                                    width: 40, // Adjust avatar size
-                                    height: 40,
+                                    width: 55, // Adjust avatar size
+                                    height: 55,
                                     cursor: 'pointer', // Make it clickable
                                     marginRight: 3, // Add space between avatar and username
                                 }}
@@ -241,7 +241,7 @@ export default function PostPage() {
                 </Toolbar>
             </AppBar>
             <Menu />
-            <div className="content">
+            <div className="content" style={{marginTop: "40px"}}>
                 <div className="main-post">
                     <div className="post-page-options-buttons">
                         <button className="pfp-post-main-btn" onClick={handleProfileClick} data-cy="profile-picture"><img className="pfp-post-main" src={thisUser.profilePicture} /></button>
