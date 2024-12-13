@@ -79,6 +79,9 @@ export default function MessageListDisplay(slug) {
                         }}>
                     </ArrowForwardIcon>
                 </div>
-            </div>       
+                
+            </div>
+
+       
     )
 }

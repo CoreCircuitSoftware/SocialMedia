@@ -14,6 +14,7 @@ import logo from '../assets/csbutwhiteoutlined.png'
 //Material Ui
 // import Button from "../components/Button/Button";
 import Button from "@mui/material/Button";
+import { ButtonGroup } from "@mui/material";
 
 import { ThemeProvider } from '@mui/material/styles';
 import { AppBar, Toolbar, Typography, Container, Grid2, Paper, Box } from "@mui/material";
@@ -75,8 +76,6 @@ export default function UserProfileTest() {
                     navigate("/404");
                 } else if (err.response && err.response.status === 401) {
                     navigate("/login");
-                } else {
-                    alert(err);
                 }
             })
     };
@@ -91,8 +90,6 @@ export default function UserProfileTest() {
                     navigate("/404");
                 } else if (err.response && err.response.status === 401) {
                     navigate("/login");
-                } else {
-                    alert(err);
                 }
             })
     };
@@ -110,8 +107,6 @@ export default function UserProfileTest() {
                     navigate("/404");
                 } else if (err.response && err.response.status === 401) {
                     navigate("/login");
-                } else {
-                    alert(err);
                 }
             })
     };
@@ -124,8 +119,8 @@ export default function UserProfileTest() {
         api
             .post(`/api/friend-request/${profile.id}/`, {})
             .then(() => {
-                alert(`Friend request sent to ${profile.username}!`);
-                setFriendStatus('pending');
+/*                 alert(`Friend request sent to ${profile.username}!`);
+ */                setFriendStatus('pending');
             })
             .catch((err) => {
                 console.error("Error sending friend request:", err);
@@ -135,8 +130,8 @@ export default function UserProfileTest() {
     const handleAcceptFriendRequest = (requestID, accepted) => {
         api.put(`/api/friend-request/accept/${requestID}/`, { accepted })
             .then(() => {
-                alert(`Friend request ${accepted ? 'accepted' : 'declined'}!`);
-                // Remove the processed request
+/*                 alert(`Friend request ${accepted ? 'accepted' : 'declined'}!`);
+ */                // Remove the processed request
                 setFriendRequests((prevRequests) =>
                     prevRequests.filter((request) => request.requestID !== requestID)
                 );
@@ -157,8 +152,6 @@ export default function UserProfileTest() {
         );
         if (request) {
             handleAcceptFriendRequest(request.requestID, accepted);
-        } else {
-            alert('No friend request found.');
         }
     };
 
@@ -177,8 +170,6 @@ export default function UserProfileTest() {
                     navigate("/404");
                 } else if (err.response && err.response.status === 401) {
                     navigate("/login");
-                } else {
-                    alert(err);
                 }
             })
     };
@@ -195,8 +186,6 @@ export default function UserProfileTest() {
                     navigate("/404");
                 } else if (err.response && err.response.status === 401) {
                     navigate("/login");
-                } else {
-                    alert(err);
                 }
             })
     };
@@ -234,9 +223,7 @@ export default function UserProfileTest() {
     }
 
     const handleRemoveFriend = () => {
-        if (window.confirm("Remove Friend?")) {
-            api.delete(`/api/friends/remove/${friendShipID}/`).then(getProfile())
-        }
+        api.delete(`/api/friends/remove/${friendShipID}/`).then(getProfile())
     }
 
     return (
@@ -309,30 +296,39 @@ export default function UserProfileTest() {
                                                 }}
                                             >
                                                 <Button variant='contained' color='primary' startIcon={<ShareIcon />} onClick={handleShare} data-cy="share">Share</Button>
-                                                <Button variant='contained' startIcon={<CreateIcon />} onClick={handlePostCreate} data-cy="create-post">Create Post</Button>
-                                                <Button variant='contained' startIcon={<LogoutIcon />} onClick={handleLogout} data-cy="logout">Logout</Button>
+                                                <Button variant='contained' startIcon={<CreateIcon />} onClick={handlePostCreate} data-cy="create-post">Create Post</Button>             
                                                 <Button variant='contained' startIcon={<AccountBoxIcon />} onClick={handleEdit} data-cy="edit">Edit</Button>
+                                                <Button variant='contained' startIcon={<LogoutIcon />} onClick={handleLogout} color='error' data-cy="logout">Logout</Button>
                                             </Box>
                                         </ThemeProvider>
                                     ) : (
-                                        <div>
-                                            <button className="edit-button" onClick={handleMessage}>Message</button>
+                                        <ThemeProvider theme={theme}>
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    gap: 1, // Space between items, equivalent to 16px (8 * 2)
+                                                }}
+                                            >
+                                            <Button className="edit-button" onClick={handleMessage}>Message</Button>
                                             {friendStatus === 'none' && (
-                                                <button className="edit-button" onClick={handleAddFriend}>Add Friend</button>
+                                            <Button className="edit-button" onClick={handleAddFriend}>Add Friend</Button>
                                             )}
                                             {friendStatus === 'pending' && (
                                                 <p>Friend Request Sent</p>
                                             )}
                                             {friendStatus === 'pending_received' && (
                                                 <div>
-                                                    <button onClick={() => handleAcceptFriendRequestByButton(true)}>Accept Friend Request</button>
-                                                    <button onClick={() => handleAcceptFriendRequestByButton(false)}>Decline</button>
+                                                    <ButtonGroup variant="contained" color='primary'>
+                                                        <Button  onClick={() => handleAcceptFriendRequestByButton(true)}>Accept Friend Request</Button>
+                                                        <Button color='error' onClick={() => handleAcceptFriendRequestByButton(false)}>Decline</Button>
+                                                    </ButtonGroup>
                                                 </div>
                                             )}
                                             {friendStatus === 'friends' && (
-                                                <button className="logout-button" onClick={handleRemoveFriend} >Remove Friend</button>
+                                                <Button color='error' className="logout-button" onClick={handleRemoveFriend} >Remove Friend</Button>
                                             )}
-                                        </div>
+                                            </Box>
+                                            </ThemeProvider>
                                     )}
                                     <div className="friends-count">
                                         <p onClick={handleViewFriends} data-cy="friends">Friends {friendCount}</p>
@@ -349,8 +345,10 @@ export default function UserProfileTest() {
                                     {friendRequests.map(request => (
                                         <div key={request.requestID}>
                                             <p>{request.user1.username} has sent you a friend request!</p>
-                                            <button onClick={() => handleAcceptFriendRequest(request.requestID, true)}>Accept</button>
-                                            <button onClick={() => handleAcceptFriendRequest(request.requestID, false)}>Decline</button>
+                                            <ButtonGroup variant="contained" color='primary'>
+                                                <Button  onClick={() => handleAcceptFriendRequest(request.requestID, true)}>Accept</Button>
+                                                <Button color='error' onClick={() => handleAcceptFriendRequest(request.requestID, false)}>Decline</Button>
+                                            </ButtonGroup>
                                         </div>
                                     ))}
                                 </div>

@@ -15,7 +15,7 @@ body {
 }
 
 .back-img{
-    width: 102.9%;
+    width: 102.5%;
     object-fit: cover;
     height: 15vh;
     border-top-left-radius: 10px;
@@ -90,7 +90,7 @@ body {
     right: 10px;
 }
 .profile-card .edit-button {
-    background-color: #1976d2;
+    background-color: var(--ButtonColorBase);
     margin: 4px;
     padding: 10px 20px;
     color: white;
@@ -116,9 +116,9 @@ body {
 }
 
 .profile-card .logout-button {
-    background-color:var(--ButtonColorOther);
+    background-color: var(--ButtonColorOtherSoft);
     border-style: solid;
-    border-color: var(--Tertiary1);
+    border-color: var(--ButtonColorOther);
     border-width: -2px;
     
     color: var(--ButtonColorOther);

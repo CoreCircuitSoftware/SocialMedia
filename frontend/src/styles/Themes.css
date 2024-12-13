@@ -27,10 +27,11 @@
   --Secondary1: #f2f2f2;      /* foreground */
   --Tertiary1: #174d38;       /* general borders */
   --Quarternary1: #00487b;    /* For attention */
-  --ButtonColorBase: #00b300;          /* General button color */
+  --ButtonColorBase: #1976d2;          /* General button color */
   --ButtonColorBaseSoft: #00ff003c;  
   --ButtonColorOther: #b30000;
   --ButtonColorOtherSoft: #ff00002d;
   --menutextcolor: white;     /* Background */
+
 
 }

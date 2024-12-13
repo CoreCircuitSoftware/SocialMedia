@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db.models import Q
 from .user import *
+from .community import *
 #from django.contrib.auth.models import User    # "User" references replaced with "CustomUser" custom model
 import uuid
 
@@ -9,7 +10,7 @@ import uuid
 class Post(models.Model):
     postID = models.AutoField(primary_key=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    community = models.ForeignKey('Community', on_delete=models.CASCADE, null=True, blank=True)
+    community = models.ForeignKey(Community, on_delete=models.CASCADE, null=True, blank=True)
     postDate = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=255)
     description = models.CharField(max_length=255, null=True, blank=True)

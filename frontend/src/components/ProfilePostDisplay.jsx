@@ -14,9 +14,11 @@ import ThumbUpAltOutlined from "@mui/icons-material/ThumbUpAltOutlined";
 import Button from "@mui/material/Button";
 import { ButtonGroup } from "@mui/material";
 
+
 export default function PostDisplay(slug) {
     const [thisUser, setThisUser] = useState(slug.post.user);
     const [thisPost, setThisPost] = useState(slug.post)
+    //const [thisComm, setThisCommunity] = useState(slug)
     const [postVote, setPostVote] = useState(-1)
     const [isMyPost, setIsMyPost] = useState(false);
     const [votes, setVotes] = useState({ upvotes: 0, downvotes: 0, total: 0 })
@@ -27,6 +29,7 @@ export default function PostDisplay(slug) {
 
 
     const [media, setMedia] = useState([]);
+    const [community, setCommunity] = useState([]);
 
     //Media event handlers
     const handlePrevImage = () => {
@@ -48,10 +51,23 @@ export default function PostDisplay(slug) {
                 })
                 .catch((err) => console.error("Error fetching media data:", err));
         };
+        const fetchCommunity = async () => {
+            api
+                .get(`/api/community/getdataid/${thisPost.community}/`)
+                .then((res) => {
+                    setCommunity(res.data);
+                })  
+                .catch((err) => console.error("Error fetching community data:", err));
+
+        }
 
         if (thisPost.hasMedia) {
             fetchMedia();
         }
+        if (thisPost.community != null){
+            fetchCommunity();
+        }
+        
     }, [thisPost.postID]);
 
     // const formattedDate = new Date(thisPost.postDate).toLocaleDateString("en-US"
@@ -92,7 +108,6 @@ export default function PostDisplay(slug) {
                 const comments = res.data;
                 setNumOfComments(comments.length)
             })
-            .catch((err) => console.log(err))
     }
 
     const getVoteTotals = async () => { //get all votes for this post
@@ -108,7 +123,6 @@ export default function PostDisplay(slug) {
                     total: upvotes - downvotes
                 });
             })
-            .catch((err) => console.log(err))
     }
 
     const getVote = async () => { //get vote for this post from current user
@@ -178,19 +192,16 @@ export default function PostDisplay(slug) {
             changeVoteCountLocally(voteType, 0)
             api
                 .post('/api/posts/vote/new/', { vote: voteType, post: thisPost.postID, user: thisUser.id })
-                .catch((err) => console.log(err))
             setPostVote(voteType)
         } else if (postVote == voteType) {
             changeVoteCountLocally(voteType, 1)
             api
                 .delete(`api/posts/vote/delete/${thisPost.postID}/`)
-                .catch((err) => console.log(err))
             setPostVote(-1)
         } else {
             changeVoteCountLocally(voteType, 2)
             api
                 .patch(`api/posts/vote/update/${thisPost.postID}/`, { vote: voteType })
-                .catch((err) => console.log(err))
             setPostVote(voteType)
         }
     }
@@ -199,7 +210,6 @@ export default function PostDisplay(slug) {
         api
             .delete(`api/posts/delete/${thisPost.postID}/`)
             .then(() => window.location.reload())
-            .catch((err) => console.log(err))
     }
 
     useEffect(() => {
@@ -227,6 +237,7 @@ export default function PostDisplay(slug) {
             console.log('Error copying profile link')
         }
     }
+    const goToCommunity = () => navigate(`/community/view/${community.name}`)
 
     return (
         <div className="post-container" data-cy="post-display">
@@ -234,7 +245,11 @@ export default function PostDisplay(slug) {
             <header>
                 <button onClick={handleProfileClick}><img className="pfp" src={thisUser.profilePicture} /></button>
                 <div className="name-text">
-                    <h1>{thisUser.displayName}  @{thisUser.username}</h1>
+                    {(thisPost.community != null) ? (
+                        <h1 onClick={goToCommunity}>{community.name}  @{thisUser.username}</h1> 
+                    ):(
+                        <h1>{thisUser.displayName}  @{thisUser.username}</h1>
+                    )}    
                 </div>
             </header>
             {/* <h2 className="post-title">{thisPost.title}</h2>

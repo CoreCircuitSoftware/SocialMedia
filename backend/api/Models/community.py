@@ -17,4 +17,4 @@ class CommunityMembership(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     community = models.ForeignKey(Community, on_delete=models.CASCADE)
     joinDate = models.DateTimeField(auto_now_add=True)
-    role = models.IntegerField() # 0 = member, 1 = moderator, 2 = admin, 3 = owner
+    role = role = models.IntegerField(default=1)  # 0 = member, 1 = moderator, 2 = admin, 3 = owner

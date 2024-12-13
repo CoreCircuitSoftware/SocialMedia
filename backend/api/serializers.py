@@ -24,8 +24,13 @@ class PostSerializer(serializers.ModelSerializer):
     media = MediaSerializer(many=True, read_only=True) 
     class Meta:
         model = Post
-        fields = ["postID", "user", "community", "postDate","title","description","hasEdit","hasMedia","editDate", "media"]
-        extra_kwargs = {"postID": {"read_only": True}, "user": {"read_only": True},"postDate": {"read_only": True}}
+        fields = ["postID", "user", "community", "postDate", "title", "description", "hasEdit", "hasMedia", "editDate", "media"]
+        extra_kwargs = {
+            "postID": {"read_only": True},
+            "user": {"read_only": True},
+            "postDate": {"read_only": True},
+            "community": {"required": False},  # Make sure it's either optional or handled properly
+        }
 
 class PostVoteSerializer(serializers.ModelSerializer):
     class Meta:
@@ -89,3 +94,17 @@ class FriendRequestSerializer(serializers.ModelSerializer):
 
 class FriendStatusSerializer(serializers.Serializer):
     status = serializers.CharField()
+
+class CommunitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Community
+        fields = ['communityID', 'name', 'description', 'iconURL', 'created' ]
+
+class CommunityMembershipSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommunityMembership
+        fields = ['membershipID', 'joinDate', 'role', 'community_id']
+        def create(self, validated_data):
+            validated_data['user_id'] = self.context['request'].user  # Add the user here
+            return super().create(validated_data)
+

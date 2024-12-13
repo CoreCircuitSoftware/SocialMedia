@@ -37,7 +37,7 @@ export default function MessagePage() {
 
         console.log("Initializing WebSocket with convoID:", convoID); // Debugging
 
-        const newSocket = new WebSocket(`wss://${baseURL}/ws/chat/${convoID}/`);
+        const newSocket = new WebSocket(`ws://${baseURL}/ws/chat/${convoID}/`);
         newSocket.onmessage = (e) => {
             const data = JSON.parse(e.data);
             setMessages((prev) => {
@@ -204,6 +204,7 @@ export default function MessagePage() {
 
     const displayOtherUser = (clickedUser) => {
         //username = ""
+        console.log("Other user is... " + clickedUser)
         setOtherUser(clickedUser)
     }
 
@@ -308,7 +309,6 @@ export default function MessagePage() {
                                 ) : (
                                 <>Your convo with {otherUser}</>
                                 )}
-                            
                         </Typography>
                     </div>
 
@@ -325,7 +325,7 @@ export default function MessagePage() {
                             gap: '0px', // Add spacing between messages
                             wordBreak: 'break-word', // Break long words
                             // marginBottom: '0px',
-                            maxHeight: "45dvh",
+                            maxHeight: "50vh",
                             width: '400px',
                         }}
                     >

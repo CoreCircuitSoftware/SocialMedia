@@ -19,6 +19,8 @@ import CommentPage from "./pages/CommentPage";
 import PostEdit from "./components/PostEdit";
 import CommentEdit from "./components/CommentEdit";
 import MessageListPage from "./pages/MessageList";
+import CommunityTest from "./pages/Community";
+import CommunitySearch from "./pages/CommunitySearch"
 
 
 function Logout() { //Clear local storage of any tokens and redirect to login screen
@@ -60,6 +62,7 @@ function App() {
           <Route path="profile/edit" element={<ProfileForm />} />
           <Route path="notes" element={<Notes />} />
           <Route path="post/create" element={<PostForm />} />
+          <Route path="post/create/:communityID" element={<PostForm />} />
           <Route path="post/edit/:postid" element={<PostEdit />} />
           <Route path="post/view/:postid" element={<PostPage />} />
           <Route path="comment/view/:commentID" element={<CommentPage />} />
@@ -67,6 +70,8 @@ function App() {
           <Route path="messages/" element={<MessagePage />} />
           <Route path="profile/:username/friends" element={<FriendsList />} />
           <Route path="search/profile/:userchunk?" element={<ProfileSearch />} />
+          <Route path="community/view/:communityname" element={<CommunityTest />} />
+          <Route path="community/home/" element={<CommunitySearch   />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         </div>

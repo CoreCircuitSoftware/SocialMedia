@@ -16,6 +16,7 @@
     max-width: 5dvh;
     border: solid 2px var(--Tertiary1);
     border-radius: 1cm;
+    object-fit: cover;
 }
 
 /* Scoped Styles for Modern Message Bubbles */

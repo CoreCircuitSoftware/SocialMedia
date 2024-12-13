@@ -1,29 +1,31 @@
 import { useState, useEffect } from "react"
 import React from "react"
 import api from "../api"
-import logo from '../assets/csbutwhiteoutlined.png'
-// import "../styles/Home.css"
+import logo from'../assets/csbutwhiteoutlined.png'
+import "../styles/Home_Community.css"
 import { useNavigate, Link } from "react-router-dom";
 import { AppBar, Toolbar, Typography, Container, Grid2, Paper, Box } from "@mui/material";
 import SearchBar from "../components/SearchBar";
 import Menu from "../components/Menu";
 import Footer from "../components/Footer";
 import PostDisplay from "../components/ProfilePostDisplay.jsx";
-import RecsDisplay from "../components/RecsDisplay.jsx";
+import RecsDisplayComm from "../components/RecsDisplayComm.jsx";
 import Avatar from '@mui/material/Avatar';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import GradeIcon from '@mui/icons-material/Grade';
 import Button from '@mui/material/Button';
-
+/* import CommunityTest from "./Community"
+ */
 export default function Home() {
     const [posts, setPosts] = useState([])
-    const [userRec, setUserRec] = useState([])
+    const [commRec, setUserRec] = useState([])
     const [myProfile, setMyProfile] = useState([]);
     const [sort, setSort] = useState("friends")
     const [friends, setFriends] = useState([])
+    const [CommMember, setMembership] = useState([])
     const [loading, setLoading] = useState(true)
+    const {Communty, setCommunity} = useState([])
     const delay = ms => new Promise(res => setTimeout(res, ms))
-    const navigate = useNavigate();
 
     useEffect(() => {
         getMyProfile();
@@ -33,15 +35,30 @@ export default function Home() {
         findUsersToDisplay()
     }, [myProfile])
 
+
     useEffect(() => {
         if (sort == "friends" && myProfile.id) {
-            fetchFriends()
+            //fetchFriends()
+            fetchMyCommunities()            
+
         } else if (sort == "new") {
             getPostsSortByNew()
+            
+
         }
+        
     }, [sort, myProfile])
 
     useEffect(() => {
+
+        getCommunities()
+
+    }, [CommMember])
+
+
+    useEffect(() => {
+        
+
         handleFriendsPosts()
     }, [friends])
 
@@ -67,38 +84,73 @@ export default function Home() {
 
     const getPostsSortByNew = () => {
         api
-            .get("/api/posts/new/")
+            .get("/api/posts/community/new/")
             .then((res) => res.data)
             .then((data) => {
-                setPosts(data.reverse())
+                setPosts((prev) => {
+                    // Add new posts while avoiding duplicates
+                    const newPosts = data.filter(
+                        post => !prev.some(existingPost => existingPost.postID === post.postID)
+                    );
+    
+                    // Combine and sort posts by "postDate"
+                    return [...prev, ...newPosts].sort((a, b) => new Date(b.postDate) - new Date(a.postDate));
+                });
             })
-            .catch((err) => {
-                if (err.response && err.response.status === 404) {
-                    navigate("/404");
-                } else if (err.response && err.response.status === 401) {
-                    navigate("/login");
-                } else {
-                    alert(err);
-                }
-            })
-            .finally(() => setLoading(false))
-    }
+            .catch((err) => alert(err))
+            .finally(() => setLoading(false));
+    };
+    
 
-    const fetchFriends = () => {
+    const getPostsSortByMember = (communityID) => {
+        api
+            .get(`/api/posts/community/${communityID}/`)
+            .then((res) => res.data)
+            .then((data) => {
+                setPosts((prev) => {
+                    // Add new posts while avoiding duplicates
+                    const newPosts = data.filter(
+                        post => !prev.some(existingPost => existingPost.postID === post.postID)
+                    );
+    
+                    // Combine and sort posts by "postDate"
+                    return [...prev, ...newPosts].sort((a, b) => new Date(b.postDate) - new Date(a.postDate));
+                });
+            })
+            .catch((err) => alert(err))
+            .finally(() => setLoading(false));
+    };
+    
+    
+
+    const fetchFriends = () => { 
         api.get(`/api/friends/${myProfile.id}/`)
             .then((res) => {
-                setFriends(res.data)
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 404) {
-                    navigate("/404");
-                } else if (err.response && err.response.status === 401) {
-                    navigate("/login");
-                } else {
-                    alert(err);
-                }
-            })
+            setFriends(res.data)
+        })
+        .catch((err) => console.log(err));
     }
+
+    const fetchMyCommunities = async () => { 
+
+        api
+            .get(`/api/communitymember/${myProfile.id}/`)
+            .then((res) => {
+            setMembership(res.data)
+            
+        })
+        .catch((err) => console.log(err));
+        
+        //console.log(myProfile.id)
+        
+    }
+
+    const getCommunities = () => { 
+        CommMember.forEach(member => {
+            getPostsSortByMember(member.community_id);
+        });
+    };
+   
 
     const getPostFromUser = (friendID) => {
         api
@@ -110,15 +162,7 @@ export default function Home() {
                     return [...prev, ...newPosts.reverse()];
                 });
             })
-            .catch((err) => {
-                if (err.response && err.response.status === 404) {
-                    navigate("/404");
-                } else if (err.response && err.response.status === 401) {
-                    navigate("/login");
-                } else {
-                    alert(err);
-                }
-            })
+            .catch((err) => console.log("Error getting posts"));
     };
 
     const getMyProfile = () => {
@@ -128,39 +172,26 @@ export default function Home() {
             .then((data) => {
                 setMyProfile(data)
             })
-            .catch((err) => {
-                if (err.response && err.response.status === 404) {
-                    navigate("/404");
-                } else if (err.response && err.response.status === 401) {
-                    navigate("/login");
-                } else {
-                    alert(err);
-                }
-            })
+            .catch((err) => alert(err));
     };
 
     const findUsersToDisplay = () => {
-        api.get(`/api/search/profile/`)
+        api.get(`/api/search/community/`)
             .then((res) => {
-                var userArr = new Array()
-                var numUsers = res.data.length
-                for (var i = 0, j = 1; i < 3 && i < numUsers - 1; i++) {
-                    var randomNum = Math.floor(Math.random() * (numUsers + (j - i)))
-                    if (res.data[randomNum] && ((!userArr.includes(res.data[randomNum], 0)) && (myProfile.id != res.data[randomNum].id))) {
-                        userArr.push(res.data[randomNum])
+                var commArr = new Array()
+                var numComms = res.data.length
+                for (var i = 0, j = 1; i < numComms; i++) {
+                    //var randomNum = Math.floor(Math.random() * (numComms + (j - i)))
+                    if (res.data[i]) {
+                        commArr.push(res.data[i])
+                    }
+                    else {
+                        
                     }
                 }
-                setUserRec(userArr)
+                setUserRec(commArr)
             })
-            .catch((err) => {
-                if (err.response && err.response.status === 404) {
-                    navigate("/404");
-                } else if (err.response && err.response.status === 401) {
-                    navigate("/login");
-                } else {
-                    alert(err);
-                }
-            })
+            .catch((err) => console.log(err));
     }
 
     const handleSort = (sortOption) => {
@@ -178,16 +209,16 @@ export default function Home() {
     }
 
     return (
-
+        
         <Box sx={{ display: 'flex' }}>
-
+        
             {/* Main Content */}
             <Box sx={{ flexGrow: 1, marginLeft: '250px', mt: 8 }}>
                 <AppBar position="fixed">
                     <Toolbar sx={{ display: 'flex', alignItems: 'center', width: '102%' }}>
 
                         {/* Logo - Aligned to the left */}
-                        <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 1 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 1}}>
                             <Link to="/home"> {/* Redirect to the home page */}
                                 <img
                                     src={logo} // Path to your logo
@@ -211,7 +242,7 @@ export default function Home() {
                         </Box>
 
                         {/* Avatar - Aligned to the right */}
-                        <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center' }}>
+                        <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center'}}>
                             <Link to={`/profile/${myProfile.username}`}> {/* Navigate to the user's profile */}
                                 <Avatar
                                     src={myProfile.profilePicture} // Path to the avatar image
@@ -231,34 +262,37 @@ export default function Home() {
                 <Menu />
 
 
-                <Container maxWidth='lg' sx={{ mt: 4, mb: 4, px: 2, mx: 'auto', width: '100%' }}>
-                    <Grid2 container spacing={12} flexWrap="wrap" style={{ width: '120dvh' }}>
+                {/* <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>  */}
+                <Container maxWidth={false} sx={{ mt: 4, mb: 4 }}>
+                    <Grid2 container spacing={4}>
                         {/* Feed */}
-                        <Grid2 item xs={12} md={8}>
-                            <div className="feed-center" style={{ width: '70dvh' }}>
-                                {loading ? (<h1>Loading...</h1>) : (
-                                    <div>
-                                        {sort == "friends" ? (<h1>Home - Friend's posts</h1>) : (<h1>Home - New posts</h1>)}
-                                        <div className="sort">
-                                            <Button variant='contained' color='primary' startIcon=<PeopleAltIcon /> onClick={() => handleSort("friends")}>Friends</Button>
-                                            <Button variant='contained' color='primary' startIcon=<GradeIcon /> onClick={() => handleSort("new")}>New</Button>
-                                        </div>
-                                        <div className="post-holder">
-                                            {posts.map((post) => <PostDisplay post={post} key={post.postID} />)}
-                                            {posts.length == 0 ? (<h1>No posts found</h1>) : null}
-                                        </div>
+                        <Grid2 item xs={12} md={8} sx={{}}>
+                            <div className="feed-center">
+                                { loading ? (<h1>Loading...</h1>) : (
+                                <div> 
+                                    {sort == "friends" ? (<h1>Home - My Communities</h1>) : (<h1>Home - New Community Posts</h1>)}
+                                    <div className="sort">
+                                        <Button variant='contained' color='primary' startIcon=<PeopleAltIcon /> onClick={() => handleSort("friends")}>Followed</Button>
+                                        <Button variant='contained' color='primary' startIcon=<GradeIcon /> onClick={() => handleSort("new")}>New</Button>
                                     </div>
+                                    <div className="post-holder">
+                                        
+                                        {posts.map((post) => <PostDisplay post={post} key={post.postID} />)}
+                                        {posts.length == 0 ? (<h1>No posts found</h1>) : null}
+                                    </div>
+                                </div>
                                 )}
                             </div>
                         </Grid2>
                         {/* Right Sidebar */}
-                        <Grid2 item xs={12} md={4} >
-                            <Paper elevation={3} sx={{ p: 3 }}>
+                        <Grid2 item xs={12} md={4} sx={{ paddingLeft: "20vh" }}>
+                            <Paper elevation={3} sx={{ p: 3}}>
                                 <Typography variant="h6" gutterBottom>
-                                    Accounts suggested for you!
+                                    Check out our Communities!
                                 </Typography>
-                                {userRec.map((rec) => (
-                                    <RecsDisplay rec={rec} key={rec.id} />
+                                {commRec.map((rec) => (
+                                    <RecsDisplayComm rec={rec} key={rec.communityID} />
+                                    
                                 ))}
                             </Paper>
                         </Grid2>
@@ -268,6 +302,6 @@ export default function Home() {
                 {/* Footer */}
                 <Footer />
             </Box>
-        </Box>
+         </Box>
     );
 }
