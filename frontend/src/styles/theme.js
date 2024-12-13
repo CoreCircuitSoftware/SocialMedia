@@ -1,5 +1,5 @@
 // src/theme/theme.js
-import { createTheme } from '@mui/material/styles';
+import { createTheme,  ThemeProvider,  alpha,  getContrastRatio } from '@mui/material/styles';
 
 const { palette } = createTheme();
 const { augmentColor } = palette;
@@ -13,7 +13,7 @@ const theme = createTheme({
   },
   palette: {
     primary: {
-      main: '#1976d2',   // Define your primary color
+      main: alpha('#1976d2', 0.75),//'#1976d2',   // Define your primary color
       dark: '#115293',   // Darker shade for hover
     },
     secondary: {

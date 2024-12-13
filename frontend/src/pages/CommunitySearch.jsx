@@ -264,7 +264,7 @@ export default function Home() {
 
                 {/* <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>  */}
                 <Container maxWidth={false} sx={{ mt: 4, mb: 4 }}>
-                    <Grid2 container spacing={4}>
+                    <Grid2 container spacing={4} style={{ flexWrap: "nowrap" }} >
                         {/* Feed */}
                         <Grid2 item xs={12} md={8} sx={{}}>
                             <div className="feed-center">
