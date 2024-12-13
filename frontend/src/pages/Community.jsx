@@ -43,25 +43,11 @@ export default function CommunityTest() {
         getCommunity();
         getMyProfile(); // Fetch current logged-in user's profile
         checkMembership();
-
-    }, [communityname, username]);
+    }, [username]);
 
     useEffect(() => {
-        checkMembership();
-
-        getPosts();
-        if (profile.id && myProfile.id) {
-            if (profile.id === myProfile.id) {
-                setIsMyProfile(true);
-            } else {
-                setIsMyProfile(false);
-            }
-            getPosts();
-
-        }
-    }, [profile, myProfile]);
-
-
+        getPosts()
+    }, [community])
 
     const checkMembership = () => {  
         // Check if the user is already a member when the page loads
