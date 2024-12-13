@@ -283,6 +283,10 @@ export default function MessagePage() {
                 width: '500px', // Full width minus Menu
                 overflow: 'hidden,',
                 border: '2px solid white', // Add white border
+                backgroundColor: '#f2f2f2',
+                borderRadius: "3dvh",
+                //height: 'auto',
+                //maxHeight: 'fit-content'
                         }}>
             <Box
                 sx={{
@@ -358,13 +362,13 @@ export default function MessagePage() {
                                 display: 'flex',
                                 // alignItems: 'center',
                                 gap: '10px', // Add spacing between input and button
-                                padding: '0px',
+                                //padding: '0px',
                                 boxShadow: '0px 2px 5px rgba(0,0,0,0.1)',
                                 borderRadius: '5px',
                                 width: '-webkit-fill-available',
-                                marginTop: "65vh",
+                                marginTop: "70vh",
                                 position: "absolute",
-                                height: "15dvh"
+                                height: "5dvh"
                             }}
                         >
                             <input
@@ -376,13 +380,14 @@ export default function MessagePage() {
                                 placeholder="Type your message..."
                                 data-cy="message-input"
                                 style={{
-                                    //flex: 1, // Make the input box grow to fill space
+                                    flex: 1, // Make the input box grow to fill space
+                                    marginTop: '0dvh',
                                     padding: '10px',
                                     border: '1px solid #ccc',
                                     borderRadius: '5px',
                                     outline: 'none',
                                     width: '-webkit-fill-available',
-                            
+                                    height: '3dvh'
                                 }}
                             />
                             <button
@@ -396,7 +401,7 @@ export default function MessagePage() {
                                     border: 'none',
                                     borderRadius: '5px',
                                     cursor: 'pointer',
-                                    
+                                    marginTop: '-1dvh'
                                 }}
                             >
                                 Send Message

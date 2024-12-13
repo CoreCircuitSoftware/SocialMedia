@@ -106,6 +106,7 @@ export default function MessageListPage({onConvoSelect, getOtherUser}) {
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     height: '100%', // Center within the available space
+                                    backgroundColor: '#FFFFFF'
                                 }}
                             >
                                 <Typography variant="h6" component="h2" sx={{ textAlign: 'center', mb: 40 }}>

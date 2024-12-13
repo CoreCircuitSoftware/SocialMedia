@@ -98,7 +98,7 @@ export default function ProfileSearch() {
                 <ul>
                     {results.length > 0 ? results.map((profile) => {
                         return (
-                            <li key={profile.username}  style={{width: '300px', height: '75px'}} data-cy="search-user">
+                            <li key={profile.username}  style={{width: '30dvh', height: '8dvh'}} data-cy="search-user">
                                 <img className="friendlistimage" style={{transform: "translateY(-5px)", marginLeft: '5px'}} src={profile.profilePicture} alt="profile" />
                                 <a href={`/profile/${profile.username}`} style={{width: '0px', transform: "translateY(-15px)"}}>{profile.username}</a>
                                 <a href={`/profile/${profile.username}/message`}>

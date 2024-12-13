@@ -32,6 +32,8 @@ export default function PostPage() {
     const [comments, setComments] = useState([])
     const [media, setMedia] = useState([])
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [postVote, setPostVote] = useState(-1)
+    const [votes, setVotes] = useState({ upvotes: 0, downvotes: 0, total: 0 })
 
     const [myProfile, setMyProfile] = useState([]);
     // const formattedDate = new Date(post.postDate).toLocaleDateString("en-US")
@@ -160,10 +162,99 @@ export default function PostPage() {
             .catch((err) => console.error("Error fetching media data:", err));
     };
 
+    const getVoteTotals = async () => { //get all votes for this post
+        api
+            .get(`api/posts/vote/gettotal/${post.postID}/`)
+            .then((res) => {
+                const votes = res.data;
+                const upvotes = votes.filter(vote => vote.vote === true).length;
+                const downvotes = votes.filter(vote => vote.vote === false).length;
+                setVotes({
+                    upvotes: upvotes,
+                    downvotes: downvotes,
+                    total: upvotes - downvotes
+                });
+            })
+    }
+
+    const getVote = async () => { //get vote for this post from current user
+        api
+            .get(`api/posts/vote/get/${post.postID}/`)
+            .then((res) => setPostVote(res.data.vote))
+            .catch((err) => setPostVote(-1))
+    }
+
+    const changeVoteCountLocally = (voteType, e) => { // 0=add, 1=remove, 2=change
+        if (e == 0) {
+            if (voteType) {
+                setVotes({
+                    upvotes: votes.upvotes + 1,
+                    downvotes: votes.downvotes,
+                    total: votes.total + 1
+                })
+            } else {
+                setVotes({
+                    upvotes: votes.upvotes,
+                    downvotes: votes.downvotes + 1,
+                    total: votes.total - 1
+                })
+            }
+        } else if (e == 1) {
+            if (voteType) {
+                setVotes({
+                    upvotes: votes.upvotes - 1,
+                    downvotes: votes.downvotes,
+                    total: votes.total - 1
+                })
+            } else {
+                setVotes({
+                    upvotes: votes.upvotes,
+                    downvotes: votes.downvotes + 1,
+                    total: votes.total + 1
+                })
+            }
+        } else if (e == 2) {
+            if (voteType) {
+                setVotes({
+                    upvotes: votes.upvotes + 1,
+                    downvotes: votes.downvotes - 1,
+                    total: votes.total + 2
+                })
+            } else {
+                setVotes({
+                    upvotes: votes.upvotes - 1,
+                    downvotes: votes.downvotes + 1,
+                    total: votes.total - 2
+                })
+            }
+        }
+    }
+
+    const handleVote = (voteType) => {
+        if (postVote == -1) {
+            changeVoteCountLocally(voteType, 0)
+            api
+                .post('/api/posts/vote/new/', { vote: voteType, post: post.postID, user: thisUser.id })
+            setPostVote(voteType)
+        } else if (postVote == voteType) {
+            changeVoteCountLocally(voteType, 1)
+            api
+                .delete(`api/posts/vote/delete/${post.postID}/`)
+            setPostVote(-1)
+        } else {
+            changeVoteCountLocally(voteType, 2)
+            api
+                .patch(`api/posts/vote/update/${post.postID}/`, { vote: voteType })
+            setPostVote(voteType)
+        }
+    }
+
 
     useEffect(() => {
         getComments()
         getMyProfile()
+        getVoteTotals()
+        getVote()
         if (post.hasMedia) { fetchMedia() }
     }, [post])
 
@@ -269,6 +360,15 @@ export default function PostPage() {
 
                     <h5 className="post-date" data-cy="post-date">{formattedDate}</h5>
                     {post.hasEdit && (<h6 className="edit-date">Edited: {formattedEditDate}</h6>)}
+                    <div className="post-stats">
+                        {votes ? <p>{votes.total} votes</p> : <p>No votes yet</p>}
+                    </div>
+                    <div className="post-options">
+                        <ButtonGroup variant="contained" >
+                            {postVote == 1 ? <Button startIcon={<ThumbUp />} onClick={() => handleVote(true)}>Upvoted</Button> : <Button startIcon={<ThumbUpAltOutlined />} onClick={() => handleVote(true)}>Upvote</Button>}
+                            {postVote == 0 ? <Button startIcon={<ThumbDown />} onClick={() => handleVote(false)}>Downvoted</Button> : <Button startIcon={<ThumbDownAltOutlined />} onClick={() => handleVote(false)}>Downvote</Button>}
+                        </ButtonGroup>
+                    </div>
                 </div>
                 <div className="comments-textbox">
                     <form>

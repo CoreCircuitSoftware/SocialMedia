@@ -15,7 +15,7 @@ export default function Footer() {
         <footer className="bg-light py-3 mt-auto">
             <Container>
                 <Row className="justify-content-center">
-                    <Col className="text-center">
+                    <Col className="text-center" style={{whiteSpace: 'nowrap'}}>
                         <p className="mb-1">© 2024 Core Circuit Software</p>
                         <a href="https://corecircuitsoftware.github.io" className="text-secondary">About us</a>
                     </Col>
