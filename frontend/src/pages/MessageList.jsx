@@ -69,6 +69,7 @@ export default function MessageListPage({onConvoSelect}) {
                     height: 'calc(100vh - 230px)', // Full height minus AppBar
                     justifyContent: conversations.length === 0 ? 'center' : 'flex-start', // Center if no conversations
                     alignItems: 'center', // Center horizontally
+                    
                    
                 }}
             >
@@ -105,6 +106,7 @@ export default function MessageListPage({onConvoSelect}) {
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     height: '100%', // Center within the available space
+                                    backgroundColor: "#FFFFFF"
                                 }}
                             >
                                 <Typography variant="h6" component="h2" sx={{ textAlign: 'center', mb: 40 }}>

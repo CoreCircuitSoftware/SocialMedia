@@ -32,14 +32,16 @@
     gap: 1dvh;
     align-items: left;
     background-color: var(--Secondary1);
-    /* border-style: groove; */
-    
+     border-style: groove; 
+    border-radius: 3dvh;
     padding: 5px;
+    margin-bottom: 1dvh;
     
 }
 .MessageListDisplayHolder-combined:hover {
     background-color: #dfdfdf; /* Light grey background on hover */
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.8); /* Subtle shadow for a hover effect */
+    border-radius: 3dvh;
 }
 .MessageListPage {
     padding: 2dvh;

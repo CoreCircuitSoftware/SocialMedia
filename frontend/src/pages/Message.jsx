@@ -277,7 +277,10 @@ export default function MessagePage() {
                     width: '500px', // Full width minus Menu
                     overflow: 'hidden,',
                     border: '2px solid white', // Add white border
-
+                    backgroundColor: "#f2f2f2",
+                    borderRadius: "3dvh",
+                    height: 'auto',
+                    maxHeight: "fit-content"
                 }}
             >
                 {selected ? (
@@ -335,12 +338,13 @@ export default function MessagePage() {
                                 display: 'flex',
                                 // alignItems: 'center',
                                 gap: '10px', // Add spacing between input and button
-                                padding: '0px',
+                                //padding: '0px',
                                 boxShadow: '0px 2px 5px rgba(0,0,0,0.1)',
                                 borderRadius: '5px',
                                 minWidth: '500px',
-                                marginTop: "590px",
-                                position: "absolute"
+                                marginTop: "70dvh",
+                                position: "absolute",
+                                
                         
                             }}
                         >
@@ -355,10 +359,13 @@ export default function MessagePage() {
                                 style={{
                                     flex: 1, // Make the input box grow to fill space
                                     padding: '10px',
+                                    marginTop: '0dvh',
                                     border: '1px solid #ccc',
                                     borderRadius: '5px',
                                     outline: 'none',
-                                    width: '500px'
+                                    width: '500px',
+                                    hight: 'auto',
+                                    
                             
                                 }}
                             />
@@ -373,7 +380,7 @@ export default function MessagePage() {
                                     border: 'none',
                                     borderRadius: '5px',
                                     cursor: 'pointer',
-                                    
+                                    marginTop: '-2.5dvh',
                                 }}
                             >
                                 Send Message
