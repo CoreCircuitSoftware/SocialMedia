@@ -1,3 +1,6 @@
+# We will Renable the server in Summer
+
+
 Instructions to get the site up and running (locally)
 
 ~ Reinstalling virtual environment
