@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-^2@x*gq%d9em7xjz#pc^=%*pkl7t_dut_$-i7_1cb91ni^1o_x'
+SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-^2@x*gq%d9em7xjz#pc^=%*pkl7t_dut_$-i7_1cb91ni^1o_x")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -49,7 +49,7 @@ SIMPLE_JWT = {
 # Application definition
 
 INSTALLED_APPS = [
-    'daphne', #ADD THIS TO EC2
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -58,7 +58,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "api",
     "rest_framework",
-    'channels', #ADD THIS TO EC2
+    'channels',
     "corsheaders",
     'django_cypress',
     'storages',
@@ -96,7 +96,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 ASGI_APPLICATION = "backend.asgi.application"
 
-CHANNEL_LAYERS = { #ADD THIS TO EC2
+CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels.layers.InMemoryChannelLayer",
     },
@@ -108,10 +108,10 @@ CHANNEL_LAYERS = { #ADD THIS TO EC2
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('DATABASE_NAME', 'socialmedia_db'),
+        'NAME': os.environ.get('DATABASE_NAME', 'circuitsocial-db'),
         'USER': os.environ.get('DATABASE_USER', 'django_user'),
         'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'django_password'),
-        'HOST': os.environ.get('DATABASE_HOST', 'db'),  # ← This needs 'db' as default
+        'HOST': os.environ.get('DATABASE_HOST', 'db'), 
         'PORT': os.environ.get('DATABASE_PORT', '3306'),
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",

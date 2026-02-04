@@ -1,28 +1,32 @@
-version: '3.8'
+# docker-compose.yml
+# Universal configuration - works for both local and RDS
 
 services:
-  # MySQL Database
+  # MySQL Database (ONLY for local development)
+  # Disable this when using RDS by setting USE_LOCAL_DB=false in .env
   db:
     image: mysql:8.0
-    container_name: socialmedia_db
+    container_name: circuitsocial-db_local
     restart: always
     environment:
-      MYSQL_DATABASE: socialmedia_db
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_USER: django_user
-      MYSQL_PASSWORD: django_password
+      MYSQL_DATABASE: ${DATABASE_NAME:-circuitsocial-db}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_USER: ${DATABASE_USER:-django_user}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD:-django_password}
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./mysql-init:/docker-entrypoint-initdb.d
     networks:
-      - socialmedia_network
+      - network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
       interval: 10s
       timeout: 5s
       retries: 5
+    # Only start if USE_LOCAL_DB=true
+    profiles:
+      - local
 
   # Django Backend
   backend:
@@ -43,17 +47,20 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DEBUG=1
-      - DATABASE_HOST=db
-      - DATABASE_NAME=socialmedia_db
-      - DATABASE_USER=django_user
-      - DATABASE_PASSWORD=django_password
-      - DATABASE_PORT=3306
+      - DEBUG=${DEBUG:-1}
+      - DATABASE_HOST=${DATABASE_HOST:-db}
+      - DATABASE_NAME=${DATABASE_NAME:-circuitsocial-db}
+      - DATABASE_USER=${DATABASE_USER:-django_user}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD:-django_password}
+      - DATABASE_PORT=${DATABASE_PORT:-3306}
+      - SECRET_KEY=${SECRET_KEY:-django-insecure-^2@x*gq%d9em7xjz#pc^=%*pkl7t_dut_$-i7_1cb91ni^1o_x}
+    # Only depend on db if using local database
     depends_on:
       db:
         condition: service_healthy
+        required: false
     networks:
-      - socialmedia_network
+      - network
 
   # React Frontend
   frontend:
@@ -68,34 +75,16 @@ services:
     ports:
       - "5173:5173"
     environment:
-      - VITE_API_URL=http://127.0.0.1:8000
-      - VITE_MESSAGE_URL=127.0.0.1:8000
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:8000}
     depends_on:
       - backend
     networks:
-      - socialmedia_network
+      - network
     stdin_open: true
     tty: true
 
-  # Nginx (Optional - for production)
-  # nginx:
-  #   image: nginx:alpine
-  #   container_name: socialmedia_nginx
-  #   restart: always
-  #   ports:
-  #     - "80:80"
-  #   volumes:
-  #     - ./nginx.conf:/etc/nginx/nginx.conf
-  #     - static_volume:/app/staticfiles
-  #     - media_volume:/app/media
-  #   depends_on:
-  #     - backend
-  #     - frontend
-  #   networks:
-  #     - socialmedia_network
-
 networks:
-  socialmedia_network:
+  network:
     driver: bridge
 
 volumes:

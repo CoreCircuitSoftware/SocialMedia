@@ -1,0 +1,60 @@
+# Multi-stage build for production
+# Save as: backend/Dockerfile.prod
+
+# Stage 1: Builder
+FROM python:3.11-slim as builder
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    default-libmysqlclient-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
+
+# Stage 2: Production
+FROM python:3.11-slim
+
+# Create user to run the app (security best practice)
+RUN groupadd -r django && useradd -r -g django django
+
+# Install runtime dependencies only
+RUN apt-get update && apt-get install -y \
+    default-libmysqlclient-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy wheels from builder and install
+COPY --from=builder /app/wheels /wheels
+COPY --from=builder /app/requirements.txt .
+RUN pip install --no-cache /wheels/*
+
+# Copy project files
+COPY . .
+
+# Create necessary directories
+RUN mkdir -p /app/media /app/staticfiles
+
+# Collect static files
+#RUN python manage.py collectstatic --noinput
+
+# Change ownership to django user
+RUN chown -R django:django /app
+
+# Switch to non-root user
+USER django
+
+# Expose port
+EXPOSE 8000
+
+# Use Gunicorn for production
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "backend.wsgi:application"]

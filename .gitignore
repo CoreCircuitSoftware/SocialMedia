@@ -12,7 +12,7 @@ backend/backend/__init__.py
 backend/backend/__pycache__/
 backend/backend/settings.py
 backend/.coverage
-*.env
+*.env*
 
 frontend/.nyc_output
 frontend/coverage

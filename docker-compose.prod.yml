@@ -1,0 +1,65 @@
+# docker-compose.prod.yml
+# Use this for EC2 deployment
+
+services:
+
+  # Django Backend with Gunicorn
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    container_name: socialmedia_backend_prod
+    restart: always
+    command: gunicorn backend.wsgi:application --bind 0.0.0.0:8000 --workers 4 --timeout 60 --access-logfile - --error-logfile -
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    environment:
+      - DEBUG=0
+      - DATABASE_HOST=${DATABASE_HOST:-db}
+      - DATABASE_NAME=${DATABASE_NAME:-circuitsocial-db}
+      - DATABASE_USER=${DATABASE_USER:-django_user}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD:-django_password}
+      - DATABASE_PORT=${DATABASE_PORT:-3306}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+    networks:
+      - network
+
+  # React Frontend (Production Build)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    container_name: socialmedia_frontend_prod
+    restart: always
+    networks:
+      - network
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: socialmedia_nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - static_volume:/app/staticfiles:ro
+      - media_volume:/app/media:ro
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - network
+
+networks:
+  network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  static_volume:
+  media_volume:
