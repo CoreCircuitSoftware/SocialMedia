@@ -54,6 +54,10 @@ services:
       - DATABASE_PASSWORD=${DATABASE_PASSWORD:-django_password}
       - DATABASE_PORT=${DATABASE_PORT:-3306}
       - SECRET_KEY=${SECRET_KEY:-django-insecure-^2@x*gq%d9em7xjz#pc^=%*pkl7t_dut_$-i7_1cb91ni^1o_x}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_STORAGE_BUCKET_NAME=${AWS_STORAGE_BUCKET_NAME}
+      - AWS_S3_REGION_NAME=${AWS_S3_REGION_NAME}
     # Only depend on db if using local database
     depends_on:
       db:

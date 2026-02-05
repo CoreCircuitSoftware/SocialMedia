@@ -31,7 +31,7 @@ class CustomUserManager(BaseUserManager):
         return user
     
 class CustomUser(AbstractBaseUser):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False) # Changed 'UserID'->'id' to use django User model
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = models.CharField(max_length=20, unique=True)
     password = models.CharField(max_length=255)
     email = models.EmailField(max_length=254)

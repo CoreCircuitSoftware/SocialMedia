@@ -10,7 +10,11 @@ services:
       dockerfile: Dockerfile.prod
     container_name: socialmedia_backend_prod
     restart: always
-    command: gunicorn backend.wsgi:application --bind 0.0.0.0:8000 --workers 4 --timeout 60 --access-logfile - --error-logfile -
+    command: >
+      sh -c " python manage.py collectstatic --noinput &&
+              python manage.py makemigrations &&
+              python manage.py migrate &&
+              gunicorn backend.wsgi:application --bind 0.0.0.0:8000 --workers 4 --timeout 60 --access-logfile - --error-logfile - "
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
@@ -23,6 +27,10 @@ services:
       - DATABASE_PORT=${DATABASE_PORT:-3306}
       - SECRET_KEY=${SECRET_KEY}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_STORAGE_BUCKET_NAME=${AWS_STORAGE_BUCKET_NAME}
+      - AWS_S3_REGION_NAME=${AWS_S3_REGION_NAME}
     networks:
       - network
 
