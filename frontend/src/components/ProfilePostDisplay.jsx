@@ -126,7 +126,7 @@ export default function PostDisplay(slug) {
 	const getVote = async () => {
 		//get vote for this post from current user
 		api
-			.get(`api/posts/vote/get/${thisPost.postID}/`)
+			.get(`/api/posts/vote/get/${thisPost.postID}/`)
 			.then((res) => setPostVote(res.data.vote))
 			.catch((err) => setPostVote(-1));
 	};
@@ -195,11 +195,11 @@ export default function PostDisplay(slug) {
 			setPostVote(voteType);
 		} else if (postVote == voteType) {
 			changeVoteCountLocally(voteType, 1);
-			api.delete(`api/posts/vote/delete/${thisPost.postID}/`);
+			api.delete(`/api/posts/vote/delete/${thisPost.postID}/`);
 			setPostVote(-1);
 		} else {
 			changeVoteCountLocally(voteType, 2);
-			api.patch(`api/posts/vote/update/${thisPost.postID}/`, {
+			api.patch(`/api/posts/vote/update/${thisPost.postID}/`, {
 				vote: voteType,
 			});
 			setPostVote(voteType);
@@ -208,7 +208,7 @@ export default function PostDisplay(slug) {
 
 	const handlePostDelete = () => {
 		api
-			.delete(`api/posts/delete/${thisPost.postID}/`)
+			.delete(`/api/posts/delete/${thisPost.postID}/`)
 			.then(() => window.location.reload());
 	};
 
